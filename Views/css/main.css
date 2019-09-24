@@ -1,0 +1,28 @@
+#barLabels {
+    height: 20;
+    color: white;
+}
+
+#components {
+    background-color: burlywood;
+}
+
+.compDiv {
+    display: inline;
+}
+
+.componentImg {
+    width: 65px;
+    height: 65;
+    margin: 5px;
+}
+
+.ComponentBar {
+    width: 80;
+    height: 20;
+    background-color: grey;
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px;
+
+}

@@ -1,0 +1,16 @@
+{
+  "name": "online_design_tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "Llewellyn Brunsdon-Haland",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
+}
