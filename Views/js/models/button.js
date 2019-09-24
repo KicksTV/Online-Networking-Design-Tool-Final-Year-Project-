@@ -1,21 +1,24 @@
+
 class Button {
-    constructor() {
+    constructor(imgPath, alt) {
         this.text;
         this.width;
         this.height;
-        this.imgPath;
-        this.imgAlt;
+        this.imgPath = imgPath;
+        this.imgAlt = alt;
 
+        this.li; 
+        this.img;
     }
     display() {
-        var div = createDiv();
-        var compImg = createImg(this.imgPath, );
+        let li = createElement('li', '');
+        let img = createImg(this.imgPath, this.imgAlt);
+        
+        img.addClass('componentImg');
+        img.parent(li);
 
-        div.addClass();
-        div.parent('components');
-
-        compImg.addClass('componentImg');
-        compImg.parent(div);
+        this.li = li;
+        this.img = img;
     }
     setText(text) {
         this.text = text;

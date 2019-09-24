@@ -5,7 +5,9 @@ class componentsBarLabel {
         this.width = width;
         this.height = height;
         this.current = false;
-        this.li = createElement('li', '');;
+
+        // CREATING NEW HTML ELEMENTS
+        this.li = createElement('li', '');
         this.a = createA('', this.title);
     }
     display() {
@@ -22,36 +24,28 @@ class componentsBarLabel {
         
         // LOOPS THROUGH ALL BUTTONS AND DISPLAY's EACH ONE
         
-        // for (let i=0; i < this.buttons.length; i++) {
+        for (let i=0; i < this.buttons.length; i++) {
+
+            this.buttons[i].display();
+
+            // ADDS BUTTON ELEMENT TO NAVBAR
+
+            this.buttons[i].li.parent('navbar-component');
             
-        //     // CREATES DIV AND IMAGE 
-            
-        //     var div = createDiv();
-        //     var compImg = createImg(this.buttons[i].imgPath, this.buttons[i].imgAlt);
-    
-        //     // APPLIES CSS TO DIV CONTAINING ALL COMPONENTS
 
-        //     div.addClass('compDiv');
-        //     div.parent('components');
-            
-        //     // APPLIES CSS TO IMG AND ADDS IT TO DIV CONTAINER
+            // CREATES A NEW COMPONENT
 
-        //     compImg.addClass('componentImg');
-        //     compImg.parent(div);
-
-        //     // CREATES A NEW COMPONENT
-
-        //     compImg.mouseClicked(function () {
+            this.buttons[i].img.mouseClicked(function () {
                 
-        //         // CREATES NEW COMPUTER
+                // CREATES NEW COMPUTER
 
-        //         let newcomp = new Computer();
+                let newcomp = new Computer();
 
-        //         // ADDS IT TO ARRAY OF ALL COMPUTERS
+                // ADDS IT TO ARRAY OF ALL COMPUTERS
 
-        //         allComputers.push(newcomp);
-        //     });
-        // }
+                allComputers.push(newcomp);
+            });
+        }
         
     }
     setCurrent(curr) {

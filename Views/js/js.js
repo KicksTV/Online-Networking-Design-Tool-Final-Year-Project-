@@ -16,6 +16,7 @@ let c;
 
 let gui;
 
+var img;
 
 function preload() {
     compBar = new componentsBarLabel("Components", 500, 50);
@@ -23,10 +24,10 @@ function preload() {
     compConnectionBar = new componentsBarLabel("Connections", 500, 50);
 
 
-    c = new Button();
-    c.setImg('../img/computer.png', 'component image');
-
+    c = new Button('../img/computer.png', 'component image');
     compBar.buttons.push(c);
+
+    img = loadImage('../img/Lely1-01.svg');
 }
 
 function setup() {
@@ -44,9 +45,12 @@ function setup() {
 function draw() {
     clear();
 
+
     applyGUIValues();
 
     displayAllComputers();
+
+    image(img,0,0,100,100);
 }
 
 function mousePressed() {
