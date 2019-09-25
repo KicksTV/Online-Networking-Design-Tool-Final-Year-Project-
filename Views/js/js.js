@@ -27,7 +27,7 @@ function preload() {
     c = new Button('../img/computer.png', 'component image');
     compBar.buttons.push(c);
 
-    img = loadImage('../img/Lely1-01.svg');
+    img = loadImage('https://upload.wikimedia.org/wikipedia/commons/b/b0/Heraldic_shield_shape_543x623.svg');
 }
 
 function setup() {
