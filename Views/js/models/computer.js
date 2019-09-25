@@ -2,11 +2,12 @@ let counter = 0;
 
 class Computer {
     constructor() {
-        this.imgPath = loadImage('../img/computer.png');
+        this.imgPath = loadImage('img/pc.svg');
         this.imgXpos = 100;
         this.imgYpos = 100;
-        this.componentSize = 50;
-        this.componentSizeMin = 50;
+        this.componentSize = 65;
+        this.height = this.componentSize / 1.2;
+        this.componentSizeMin = 65;
         this.componentSizeMax = 200;
         this.hideComponent = false;
         this.isClicked = false;
@@ -29,7 +30,9 @@ class Computer {
         return this.isClicked;
     }
     display() {
-        image(this.imgPath, this.imgXpos, this.imgYpos, this.componentSize, this.componentSize);
+
+
+        image(this.imgPath, this.imgXpos, this.imgYpos, this.componentSize, this.height);
         textSize(this.textSize);
         text(this.componentName, this.imgXpos, this.imgYpos + this.componentSize + 5, this.componentSize, 30);
         textAlign(CENTER, CENTER);

@@ -12,11 +12,9 @@ let compBar;
 let compConnectionBar
 
 
-let c;
+let button1, button2, button3;
 
 let gui;
-
-var img;
 
 function preload() {
     compBar = new componentsBarLabel("Components", 500, 50);
@@ -24,10 +22,13 @@ function preload() {
     compConnectionBar = new componentsBarLabel("Connections", 500, 50);
 
 
-    c = new Button('../img/computer.png', 'component image');
-    compBar.buttons.push(c);
+    button1 = new Button('img/router.svg', 'component image');
+    button2 = new Button('img/switch.svg', 'component image');
+    button3 = new Button('img/pc.svg', 'component image');
+    compBar.buttons.push(button1);
+    compBar.buttons.push(button2);
+    compBar.buttons.push(button3);
 
-    img = loadImage('https://upload.wikimedia.org/wikipedia/commons/b/b0/Heraldic_shield_shape_543x623.svg');
 }
 
 function setup() {
@@ -49,8 +50,6 @@ function draw() {
     applyGUIValues();
 
     displayAllComputers();
-
-    image(img,0,0,100,100);
 }
 
 function mousePressed() {
@@ -124,6 +123,7 @@ function applyGUIValues() {
             selectedComputer.hideComponent = false;
         }
         selectedComputer.componentSize = guiParams.componentSize;
+        selectedComputer.height = selectedComputer.componentSize / 1.2;
         selectedComputer.textSize = guiParams.textSize;
     }
 }
