@@ -39,6 +39,10 @@ function setup() {
 
     compConnectionBar.display();
 
+    const compp = component();
+
+    console.log(compp.clicked());
+
     
     //saveJSON(comp.prepareForJson(), 'mycomputer.json');
 
