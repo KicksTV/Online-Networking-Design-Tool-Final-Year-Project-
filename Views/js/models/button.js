@@ -1,30 +1,14 @@
-
-class Button {
-    constructor(imgPath, alt) {
-        this.text;
-        this.width;
-        this.height;
-        this.imgPath = imgPath;
-        this.imgAlt = alt;
-
-        this.li; 
-        this.img;
+function Button(imgPath, imgAlt, compType) {
+    let state = {
+        text,
+        width,
+        height,
+        imgPath,
+        imgAlt,
+        "componentType": compType,
     }
-    display() {
-        let li = createElement('li', '');
-        let img = createImg(this.imgPath, this.imgAlt);
-        
-        img.addClass('componentImg');
-        img.parent(li);
-
-        this.li = li;
-        this.img = img;
-    }
-    setText(text) {
-        this.text = text;
-    }
-    setImg(img, alt) {
-        this.imgPath = img;
-        this.imgAlt = alt;
-    }
+    return Object.assign(
+        state,
+        buttonDisplayer(state),
+    );
 }

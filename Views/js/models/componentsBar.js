@@ -35,11 +35,21 @@ class componentsBarLabel {
 
             // CREATES A NEW COMPONENT
 
-            this.buttons[i].img.mouseClicked(function () {
+            this.buttons[i].img.mouseClicked(() => {
                 
+                let newcomp;
+
                 // CREATES NEW COMPUTER
 
-                let newcomp = new Computer();
+                if (this.buttons[i].componentType == "pc") {
+                    newcomp = Computer();
+                }
+                else if (this.buttons[i].componentType == "switch") {
+                    newcomp = Switch();
+                }
+                else if (this.buttons[i].componentType == "router") {
+                    newcomp = Router();
+                }
 
                 // ADDS IT TO ARRAY OF ALL COMPUTERS
 
