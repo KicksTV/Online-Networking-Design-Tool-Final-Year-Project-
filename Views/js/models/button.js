@@ -6,6 +6,9 @@ function Button(imgPath, imgAlt, compType) {
         imgPath,
         imgAlt,
         "componentType": compType,
+
+        "li": createElement('li', ''),
+        "img": createImg(imgPath, imgAlt),
     }
     return Object.assign(
         state,

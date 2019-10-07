@@ -1,6 +1,9 @@
 let xml;
 let json;
 
+var currMenu;
+
+var allLabels = [];
 var allComponents = [];
 var getComputer;
 var selectedComputer;
@@ -18,16 +21,30 @@ let gui;
 
 function preload() {
     compBar = componentsBarLabel("Components", 500, 50);
+    compBar.init();
     compBar.setCurrent(true);
+    compBar.bar = compentsBarComponents(compBar.title);
+    allLabels.push(compBar);
+
     compConnectionBar = componentsBarLabel("Connections", 500, 50);
+    compConnectionBar.init();
+    compConnectionBar.bar = componentsBarConnections(compConnectionBar.title);
+    allLabels.push(compConnectionBar);
+
+
+
 
 
     button1 = Button('img/router.svg', 'component image', "router");
     button2 = Button('img/switch.svg', 'component image', "switch");
     button3 = Button('img/pc.svg', 'component image', "pc");
-    compBar.buttons.push(button1);
-    compBar.buttons.push(button2);
-    compBar.buttons.push(button3);
+    compBar.bar.buttons.push(button1);
+    compBar.bar.buttons.push(button2);
+    compBar.bar.buttons.push(button3);
+
+    compConnectionBar.bar.buttons.push(button3);
+    compConnectionBar.bar.buttons.push(button2);
+    compConnectionBar.bar.buttons.push(button1);
 
 }
 
@@ -35,7 +52,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
 
     compBar.display();
-    compBar.displayAllButtons();
+    //compBar.displayAllButtons();
 
     compConnectionBar.display();
 
