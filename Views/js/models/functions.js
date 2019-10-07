@@ -64,7 +64,7 @@ const compLabelDisplay = (state) => ({
     hideAllButtons: () => {
         for (var i=0;i<allLabels.length;i++) {
             if (allLabels[i].current) {
-                allLabels[i].ul.hide();
+                allLabels[i].bar.ul.hide();
             }
         } 
     }

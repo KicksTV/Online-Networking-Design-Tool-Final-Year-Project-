@@ -17,7 +17,8 @@ function componentsBarLabel (title, width, height) {
         init: () => {
             state.li.mouseClicked(() => {
                 state.hideAllButtons();
-                // state.displayAllButtons();
+                state.bar.display();
+                state.bar.displayAllButtons();
                 state.setCurrent(true);
             });
         },

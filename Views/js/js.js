@@ -52,7 +52,8 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
 
     compBar.display();
-    //compBar.displayAllButtons();
+    compBar.bar.display();
+    compBar.bar.displayAllButtons();
 
     compConnectionBar.display();
 
