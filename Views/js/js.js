@@ -44,7 +44,6 @@ function setup() {
     console.log(compp.clicked());
 
     
-    //saveJSON(comp.prepareForJson(), 'mycomputer.json');
 
 }
 function draw() {
@@ -110,7 +109,9 @@ function getCurrentSelectedComputer(mouseX, mouseY) {
 function displayAllComputers() {
     if (allComputers.length > 0) {
         for (var i=0; i<allComputers.length;i++) {
+            
 
+            
             // Check if hideComponent is true or false
             if (!allComputers[i].hideComponent) {
                 allComputers[i].display();
