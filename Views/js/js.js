@@ -22,9 +22,9 @@ function preload() {
     compConnectionBar = new componentsBarLabel("Connections", 500, 50);
 
 
-    button1 = new Button('img/router.svg', 'component image');
-    button2 = new Button('img/switch.svg', 'component image');
-    button3 = new Button('img/pc.svg', 'component image');
+    button1 = Button('img/router.svg', 'component image', "router");
+    button2 = Button('img/switch.svg', 'component image', "switch");
+    button3 = Button('img/pc.svg', 'component image', "pc");
     compBar.buttons.push(button1);
     compBar.buttons.push(button2);
     compBar.buttons.push(button3);
@@ -38,10 +38,6 @@ function setup() {
     compBar.displayAllButtons();
 
     compConnectionBar.display();
-
-    const compp = component();
-
-    console.log(compp.clicked());
 
     
 

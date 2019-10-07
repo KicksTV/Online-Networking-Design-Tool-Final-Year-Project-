@@ -1,9 +1,9 @@
-let pcCounter = 0;
+let switchCounter = 0;
 
-function Computer() {
-    pcCounter++
+function Switch() {
+    switchCounter++
     let state = {
-        "imgPath": loadImage('img/pc.svg'),
+        "imgPath": loadImage('img/switch.svg'),
         "Xpos": 100,
         "Ypos": 100,
         "componentSize": 65,
@@ -13,7 +13,7 @@ function Computer() {
         "hideComponent": false,
         "isClicked": false,
         gui,
-        "componentName": `Computer_${pcCounter}`,
+        "componentName": `Switch_${switchCounter}`,
         "textSize": 10,
     }
     return Object.assign(
@@ -23,4 +23,5 @@ function Computer() {
         mover(state),
         prepareForJson(state),
     );
+    
 }
