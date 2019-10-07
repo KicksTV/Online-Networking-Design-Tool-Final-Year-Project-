@@ -1,7 +1,7 @@
 let xml;
 let json;
 
-var allComputers = [];
+var allComponents = [];
 var getComputer;
 var selectedComputer;
 var preComputer;
@@ -17,9 +17,9 @@ let button1, button2, button3;
 let gui;
 
 function preload() {
-    compBar = new componentsBarLabel("Components", 500, 50);
+    compBar = componentsBarLabel("Components", 500, 50);
     compBar.setCurrent(true);
-    compConnectionBar = new componentsBarLabel("Connections", 500, 50);
+    compConnectionBar = componentsBarLabel("Connections", 500, 50);
 
 
     button1 = Button('img/router.svg', 'component image', "router");
@@ -38,8 +38,6 @@ function setup() {
     compBar.displayAllButtons();
 
     compConnectionBar.display();
-
-    
 
 }
 function draw() {
@@ -93,24 +91,24 @@ function mouseRelease() {
 }
 
 function getCurrentSelectedComputer(mouseX, mouseY) {
-    for (var i=0; i<allComputers.length;i++) {
-        var clicked = allComputers[i].clicked(mouseX, mouseY);
+    for (var i=0; i<allComponents.length;i++) {
+        var clicked = allComponents[i].clicked(mouseX, mouseY);
         if (clicked) {
-            return allComputers[i];
+            return allComponents[i];
         }
     }
     return null;
 }
 
 function displayAllComputers() {
-    if (allComputers.length > 0) {
-        for (var i=0; i<allComputers.length;i++) {
+    if (allComponents.length > 0) {
+        for (var i=0; i<allComponents.length;i++) {
             
 
-            
+                
             // Check if hideComponent is true or false
-            if (!allComputers[i].hideComponent) {
-                allComputers[i].display();
+            if (!allComponents[i].hideComponent) {
+                allComponents[i].display();
             }
         }
     }
