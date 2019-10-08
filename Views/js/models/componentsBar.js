@@ -1,10 +1,10 @@
-function componentsBarLabel (title, width, height) {
+function componentsBarLabel (title, width, height, bar) {
     let state = {
         title,
         width,
         height,
 
-        "bar": null,
+        bar,
         "current": false,
 
         // CREATING NEW HTML ELEMENTS
@@ -16,19 +16,32 @@ function componentsBarLabel (title, width, height) {
     const displayBarBehaviors = (state) => ({
         init: () => {
             state.li.mouseClicked(() => {
+                state.unsetCurrent();
                 state.hideAllButtons();
                 state.bar.display();
                 state.bar.displayAllButtons();
                 state.setCurrent(true);
             });
         },
+        setCurrent: () => {
+            state.current = true;
+            state.li.addClass('active');
+            state.bar.display();
+        },
+        unsetCurrent: () => {
+            for (var i=0;i<allLabels.length;i++) {
+                if (allLabels[i].current) {
+                    allLabels[i].bar.current = false;
+                    allLabels[i].li.removeClass('active');
+                }
+            }
+        }
     });
 
     return Object.assign(
         state,
         displayBarBehaviors(state),
         compLabelDisplay(state),
-        canBeCurrent(state),
     );
 }
 
@@ -96,6 +109,7 @@ function compentsBarComponents(title) {
 function componentsBarConnections(title) {
     let state = {
         title,
+        "drawConnection": false,
 
         "buttons": [],
         "ul": createElement('ul', ''),
@@ -120,24 +134,7 @@ function componentsBarConnections(title) {
                 // CREATES A NEW COMPONENT
         
                 state.buttons[i].img.mouseClicked(() => {
-                    
-                    let newcomp;
-        
-                    // CREATES NEW COMPUTER
-        
-                    if (state.buttons[i].componentType == "pc") {
-                        newcomp = Computer();
-                    }
-                    else if (state.buttons[i].componentType == "switch") {
-                        newcomp = Switch();
-                    }
-                    else if (state.buttons[i].componentType == "router") {
-                        newcomp = Router();
-                    }
-        
-                    // ADDS IT TO ARRAY OF ALL COMPUTERS
-        
-                    allComponents.push(newcomp);
+                    drawConnection = true;
                 });
             }
         },
@@ -145,6 +142,12 @@ function componentsBarConnections(title) {
             state.ul.addClass('navbar-nav mr-auto');
             state.ul.id(`${state.title}navbar-component`);
             state.ul.parent('componentsNav');
+        }
+    });
+
+    const drawBehavior = (state) => ({
+        isDrawingConnection: () => {
+            
         }
     });
 

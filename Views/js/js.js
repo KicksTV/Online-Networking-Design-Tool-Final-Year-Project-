@@ -1,8 +1,6 @@
 let xml;
 let json;
 
-var currMenu;
-
 var allLabels = [];
 var allComponents = [];
 var getComputer;
@@ -20,15 +18,14 @@ let button1, button2, button3;
 let gui;
 
 function preload() {
-    compBar = componentsBarLabel("Components", 500, 50);
+    compBar = componentsBarLabel("Components", 500, 50, compentsBarComponents("Components"));
     compBar.init();
-    compBar.setCurrent(true);
-    compBar.bar = compentsBarComponents(compBar.title);
+
+    compBar.setCurrent();
     allLabels.push(compBar);
 
-    compConnectionBar = componentsBarLabel("Connections", 500, 50);
+    compConnectionBar = componentsBarLabel("Connections", 500, 50, componentsBarConnections("Connections"));
     compConnectionBar.init();
-    compConnectionBar.bar = componentsBarConnections(compConnectionBar.title);
     allLabels.push(compConnectionBar);
 
 
@@ -52,7 +49,6 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
 
     compBar.display();
-    compBar.bar.display();
     compBar.bar.displayAllButtons();
 
     compConnectionBar.display();
@@ -61,10 +57,11 @@ function setup() {
 function draw() {
     clear();
 
-
     applyGUIValues();
 
-    displayAllComputers();
+    displayAllComponents();
+
+    drawConnection();
 }
 
 function mousePressed() {
@@ -98,6 +95,25 @@ function mousePressed() {
     }
 }
 
+var xdraw1, ydraw1;
+
+function mouseClicked() {
+    for (var i=0;i<allLabels.length;i++) {
+        if (allLabels[i].bar.drawConnection) {
+            xdraw1 = mouseX;
+            ydraw1 = mouseY;
+        }
+    }
+}
+
+function mouseMoved() {
+    for (var i=0;i<allLabels.length;i++) {
+        if (allLabels[i].bar.drawConnection) {
+            drawConnection(mouseX, mouseY);
+        }
+    }
+}
+
 function mouseDragged() {
     if (getComputer != null) {
         getComputer.move(mouseX, mouseY);
@@ -118,11 +134,9 @@ function getCurrentSelectedComputer(mouseX, mouseY) {
     return null;
 }
 
-function displayAllComputers() {
+function displayAllComponents() {
     if (allComponents.length > 0) {
         for (var i=0; i<allComponents.length;i++) {
-            
-
                 
             // Check if hideComponent is true or false
             if (!allComponents[i].hideComponent) {
@@ -143,6 +157,10 @@ function applyGUIValues() {
         selectedComputer.height = selectedComputer.componentSize / 1.2;
         selectedComputer.textSize = guiParams.textSize;
     }
+}
+
+function drawConnection(mouseX, mouseY) {
+    line(x1, y1, x2, y2)
 }
 
 // dynamically adjust the canvas to the window

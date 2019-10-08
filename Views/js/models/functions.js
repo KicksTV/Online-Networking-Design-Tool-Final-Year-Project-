@@ -73,11 +73,3 @@ const compLabelDisplay = (state) => ({
 // addButton(btn) {
 //     this.buttons.add(btn);
 // }
-
-const canBeCurrent = (state) => ({
-    setCurrent(curr) {
-        state.current = curr;
-        state.li.addClass('active');
-    },
-    
-});
