@@ -52,7 +52,57 @@ const buttonDisplayer = (state) => ({
     }
 });
 
-const compLabelDisplay = (state) => ({
+const userInteractBehavior = (state) => ({
+    hideAllButtons: () => {
+        for (var i=0;i<allComponentBarTabs.length;i++) {
+            if (allComponentBarTabs[i].current) {
+                allComponentBarTabs[i].bar.ul.hide();
+            }
+        } 
+    },
+    unsetCurrent: () => {
+        for (var i=0;i<allTabs.length();i++) {
+            if (allTabs.get(i).current) {
+                allTabs.get(i).bar.current = false;
+                allTabs.get(i).li.removeClass('active');
+            }
+        }
+    }
+});
+
+// addButton(btn) {
+//     this.buttons.add(btn);
+// }
+
+
+
+// ComponentsBar public methods
+
+const componentBarGetterAndSetter = (state) => ({
+    getBar: () => {
+        return state.bar;
+    },
+    getCurrent: () => {
+        return state.current;
+    },
+    setCurrent: (curr) => {
+        state.li.addClass('active');
+        state.bar.display();
+        state.current = curr;
+    },
+    init: () => {
+        state.li.mouseClicked(() => {
+            state.unsetCurrent();
+            state.hideAllButtons();
+            state.bar.display();
+            state.bar.displayAllButtons();
+            state.setCurrent(true);
+        });
+    },
+    
+});
+
+const componentBarDisplayer = (state) => ({
     display: () => {
         
         state.li.addClass('nav-item');
@@ -61,15 +111,4 @@ const compLabelDisplay = (state) => ({
         state.li.parent('navbar-component-links');
         state.a.parent(state.li);
     },
-    hideAllButtons: () => {
-        for (var i=0;i<allLabels.length;i++) {
-            if (allLabels[i].current) {
-                allLabels[i].bar.ul.hide();
-            }
-        } 
-    }
 });
-
-// addButton(btn) {
-//     this.buttons.add(btn);
-// }

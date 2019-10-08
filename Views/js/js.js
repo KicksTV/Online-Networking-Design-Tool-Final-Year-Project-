@@ -1,7 +1,11 @@
 let xml;
 let json;
 
-var allLabels = [];
+let canvas;
+
+var allTabs = allComponentBarTabs.getInstance();
+
+var allComponentBarTabs = [];
 var allComponents = [];
 var getComputer;
 var selectedComputer;
@@ -18,15 +22,15 @@ let button1, button2, button3;
 let gui;
 
 function preload() {
-    compBar = componentsBarLabel("Components", 500, 50, compentsBarComponents("Components"));
+    compBar = componentsBarTab("Components", 500, 50, compentsBarComponents("Components"));
     compBar.init();
 
     compBar.setCurrent();
-    allLabels.push(compBar);
+    allTabs.add(compBar);
 
-    compConnectionBar = componentsBarLabel("Connections", 500, 50, componentsBarConnections("Connections"));
+    compConnectionBar = componentsBarTab("Connections", 500, 50, componentsBarConnections("Connections"));
     compConnectionBar.init();
-    allLabels.push(compConnectionBar);
+    allTabs.add(compConnectionBar);
 
 
 
@@ -35,21 +39,21 @@ function preload() {
     button1 = Button('img/router.svg', 'component image', "router");
     button2 = Button('img/switch.svg', 'component image', "switch");
     button3 = Button('img/pc.svg', 'component image', "pc");
-    compBar.bar.buttons.push(button1);
-    compBar.bar.buttons.push(button2);
-    compBar.bar.buttons.push(button3);
+    compBar.getBar().buttons.push(button1);
+    compBar.getBar().buttons.push(button2);
+    compBar.getBar().buttons.push(button3);
 
-    compConnectionBar.bar.buttons.push(button3);
-    compConnectionBar.bar.buttons.push(button2);
-    compConnectionBar.bar.buttons.push(button1);
+    compConnectionBar.getBar().buttons.push(button3);
+    compConnectionBar.getBar().buttons.push(button2);
+    compConnectionBar.getBar().buttons.push(button1);
 
 }
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    canvas = createCanvas(windowWidth, windowHeight);
 
     compBar.display();
-    compBar.bar.displayAllButtons();
+    compBar.getBar().displayAllButtons();
 
     compConnectionBar.display();
 
@@ -61,7 +65,7 @@ function draw() {
 
     displayAllComponents();
 
-    drawConnection();
+    allTabs.drawConnection();
 }
 
 function mousePressed() {
@@ -95,23 +99,15 @@ function mousePressed() {
     }
 }
 
-var xdraw1, ydraw1;
 
 function mouseClicked() {
-    for (var i=0;i<allLabels.length;i++) {
-        if (allLabels[i].bar.drawConnection) {
-            xdraw1 = mouseX;
-            ydraw1 = mouseY;
-        }
-    }
+    allTabs.setFirstDrawConnection();
 }
 
+var xdraw2, ydraw2; 
+
 function mouseMoved() {
-    for (var i=0;i<allLabels.length;i++) {
-        if (allLabels[i].bar.drawConnection) {
-            drawConnection(mouseX, mouseY);
-        }
-    }
+    allTabs.setSecondDrawConnection();
 }
 
 function mouseDragged() {
@@ -159,9 +155,7 @@ function applyGUIValues() {
     }
 }
 
-function drawConnection(mouseX, mouseY) {
-    line(x1, y1, x2, y2)
-}
+
 
 // dynamically adjust the canvas to the window
 function windowResized() {

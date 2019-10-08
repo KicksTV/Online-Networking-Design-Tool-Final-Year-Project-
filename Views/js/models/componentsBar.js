@@ -1,4 +1,4 @@
-function componentsBarLabel (title, width, height, bar) {
+function componentsBarTab (title, width, height, bar) {
     let state = {
         title,
         width,
@@ -13,35 +13,16 @@ function componentsBarLabel (title, width, height, bar) {
         "a": createElement('a',title),
     }
 
-    const displayBarBehaviors = (state) => ({
-        init: () => {
-            state.li.mouseClicked(() => {
-                state.unsetCurrent();
-                state.hideAllButtons();
-                state.bar.display();
-                state.bar.displayAllButtons();
-                state.setCurrent(true);
-            });
-        },
-        setCurrent: () => {
-            state.current = true;
-            state.li.addClass('active');
-            state.bar.display();
-        },
-        unsetCurrent: () => {
-            for (var i=0;i<allLabels.length;i++) {
-                if (allLabels[i].current) {
-                    allLabels[i].bar.current = false;
-                    allLabels[i].li.removeClass('active');
-                }
-            }
-        }
-    });
 
-    return Object.assign(
+    // Private attributes/methods
+    
+    Object.assign(
         state,
-        displayBarBehaviors(state),
-        compLabelDisplay(state),
+        userInteractBehavior(state),
+    );
+    return Object.assign(
+        componentBarGetterAndSetter(state),
+        componentBarDisplayer(state),
     );
 }
 
@@ -134,7 +115,7 @@ function componentsBarConnections(title) {
                 // CREATES A NEW COMPONENT
         
                 state.buttons[i].img.mouseClicked(() => {
-                    drawConnection = true;
+                    state.drawConnection = true;
                 });
             }
         },
