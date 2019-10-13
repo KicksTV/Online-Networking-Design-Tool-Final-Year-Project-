@@ -5,13 +5,20 @@ function componentsBarTab (title, width, height, bar) {
         height,
 
         bar,
-        "current": false,
-
         // CREATING NEW HTML ELEMENTS
         
         "li": createElement('li', ''),
         "a": createElement('a',title),
     }
+
+    const switchBehavior = (state) => ({
+        switchCurrent: () => {
+            state.hideButtons();
+            state.unsetVisableCurrent();
+            state.bar.displayAllButtons();
+            state.setVisableCurrent();
+        }
+    });
 
 
     // Private attributes/methods
@@ -19,12 +26,19 @@ function componentsBarTab (title, width, height, bar) {
     Object.assign(
         state,
         userInteractBehavior(state),
+        switchBehavior(state),
+        componentBarGetterAndSetter(state),
+        componentBarTabDisplayer(state),
     );
     return Object.assign(
         componentBarGetterAndSetter(state),
-        componentBarDisplayer(state),
+        componentBarTabDisplayer(state),
     );
 }
+
+
+
+
 
 function compentsBarComponents(title) {
     let state = {
@@ -36,6 +50,7 @@ function compentsBarComponents(title) {
     const displayBarBehaviors = (state) => ({
         displayAllButtons: () => {
     
+
             state.ul.show();
     
             // LOOPS THROUGH ALL BUTTONS AND DISPLAY's EACH ONE
@@ -45,7 +60,7 @@ function compentsBarComponents(title) {
                 state.buttons[i].display();
         
                 // ADDS BUTTON ELEMENT TO NAVBAR
-        
+
                 state.buttons[i].li.parent(`${state.title}navbar-component`);
                 
         
@@ -74,16 +89,15 @@ function compentsBarComponents(title) {
             }
             
         },
-        display() {
-            state.ul.addClass('navbar-nav mr-auto');
-            state.ul.id(`${state.title}navbar-component`);
-            state.ul.parent('componentsNav');
-        }
     });
 
-    return Object.assign(
+    Object.assign(
         state,
+    );
+
+    return Object.assign(
         displayBarBehaviors(state),
+        getterAndSetter(state),
     );
 }
 
@@ -119,11 +133,6 @@ function componentsBarConnections(title) {
                 });
             }
         },
-        display() {
-            state.ul.addClass('navbar-nav mr-auto');
-            state.ul.id(`${state.title}navbar-component`);
-            state.ul.parent('componentsNav');
-        }
     });
 
     const drawBehavior = (state) => ({
@@ -132,8 +141,12 @@ function componentsBarConnections(title) {
         }
     });
 
-    return Object.assign(
+    Object.assign(
         state,
+    );
+
+    return Object.assign(
         displayBarBehaviors(state),
+        getterAndSetter(state),
     );
 }

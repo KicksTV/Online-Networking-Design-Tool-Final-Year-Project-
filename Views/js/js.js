@@ -5,7 +5,6 @@ let canvas;
 
 var allTabs = allComponentBarTabs.getInstance();
 
-var allComponentBarTabs = [];
 var allComponents = [];
 var getComputer;
 var selectedComputer;
@@ -25,7 +24,7 @@ function preload() {
     compBar = componentsBarTab("Components", 500, 50, compentsBarComponents("Components"));
     compBar.init();
 
-    compBar.setCurrent();
+    compBar.setVisableCurrent();
     allTabs.add(compBar);
 
     compConnectionBar = componentsBarTab("Connections", 500, 50, componentsBarConnections("Connections"));
@@ -35,28 +34,24 @@ function preload() {
 
 
 
-
+    // Creating button icons for TABS
     button1 = Button('img/router.svg', 'component image', "router");
     button2 = Button('img/switch.svg', 'component image', "switch");
     button3 = Button('img/pc.svg', 'component image', "pc");
-    compBar.getBar().buttons.push(button1);
-    compBar.getBar().buttons.push(button2);
-    compBar.getBar().buttons.push(button3);
-
-    compConnectionBar.getBar().buttons.push(button3);
-    compConnectionBar.getBar().buttons.push(button2);
-    compConnectionBar.getBar().buttons.push(button1);
+    
+    // Adding created buttons to TABS
+    compBar.getBar().add(button1);
+    compBar.getBar().add(button2);
+    compBar.getBar().add(button3);
+    compConnectionBar.getBar().add(button3);
+    compConnectionBar.getBar().add(button2);
+    compConnectionBar.getBar().add(button1);
 
 }
 
 function setup() {
     canvas = createCanvas(windowWidth, windowHeight);
-
-    compBar.display();
     compBar.getBar().displayAllButtons();
-
-    compConnectionBar.display();
-
 }
 function draw() {
     clear();
@@ -69,10 +64,7 @@ function draw() {
 }
 
 function mousePressed() {
-    // if (selectedComputer != null) {
-    //     preComputer = selectedComputer;
-    // }
-    getComputer = getCurrentSelectedComputer(mouseX, mouseY);
+    getComputer = getCurrentSelectedComponent(mouseX, mouseY);
     if (getComputer != null) {
         selectedComputer = getComputer;
     }
@@ -80,18 +72,18 @@ function mousePressed() {
         if (gui == null) {
             gui = createGui(selectedComputer.componentName).setPosition(220,220);
             guiParams = {
-                'componentSize': selectedComputer.componentSize,
+                'width': selectedComputer.width,
                 'textSize': selectedComputer.textSize,
                 'textSizeMax': 32,
-                'componentSizeMin': selectedComputer.componentSizeMin,
-                'componentSizeMax': selectedComputer.componentSizeMax,
+                'widthMin': selectedComputer.widthMin,
+                'widthMax': selectedComputer.widthMax,
                 'hideComponent': selectedComputer.hideComponent
             };
             gui.addObject(guiParams);
         } else {
             gui.setTitle(selectedComputer.componentName);
 
-            gui.setValue('componentSize', selectedComputer.componentSize);
+            gui.setValue('width', selectedComputer.width);
             gui.setValue('hideComponent', selectedComputer.hideComponent);
             gui.setValue('textSize', selectedComputer.textSize);
 
@@ -100,9 +92,9 @@ function mousePressed() {
 }
 
 
-function mouseClicked() {
-    allTabs.setFirstDrawConnection();
-}
+// function mouseClicked() {
+//     allTabs.setFirstDrawConnection();
+// }
 
 var xdraw2, ydraw2; 
 
@@ -120,7 +112,7 @@ function mouseRelease() {
     selectedComputer.isClicked = false;
 }
 
-function getCurrentSelectedComputer(mouseX, mouseY) {
+function getCurrentSelectedComponent(mouseX, mouseY) {
     for (var i=0; i<allComponents.length;i++) {
         var clicked = allComponents[i].clicked(mouseX, mouseY);
         if (clicked) {
@@ -149,8 +141,8 @@ function applyGUIValues() {
         } else {
             selectedComputer.hideComponent = false;
         }
-        selectedComputer.componentSize = guiParams.componentSize;
-        selectedComputer.height = selectedComputer.componentSize / 1.2;
+        selectedComputer.width = guiParams.width;
+        selectedComputer.height = selectedComputer.width / 1.2;
         selectedComputer.textSize = guiParams.textSize;
     }
 }
