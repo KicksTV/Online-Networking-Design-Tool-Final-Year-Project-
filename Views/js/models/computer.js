@@ -1,7 +1,7 @@
 let pcCounter = 0;
 
 function Computer() {
-    pcCounter++
+    pcCounter++;
     let state = {
         "imgPath": loadImage('img/pc.svg'),
         "Xpos": 100,
@@ -10,17 +10,24 @@ function Computer() {
         "height": 65 / 1.2,
         "widthMin": 65,
         "widthMax": 200,
+        "centerPos": [],
         "hideComponent": false,
         "isClicked": false,
         gui,
         "componentName": `Computer_${pcCounter}`,
         "textSize": 10,
     }
-    return Object.assign(
+
+    Object.assign(
         state,
+        getterSetter(state),
+    );
+
+    return Object.assign(
         clicker(state),
         componentDisplayer(state),
         mover(state),
         prepareForJson(state),
+        getterSetter(state),
     );
 }

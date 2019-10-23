@@ -61,24 +61,24 @@ function compentsBarComponents(title) {
         
                 // ADDS BUTTON ELEMENT TO NAVBAR
 
-                state.buttons[i].li.parent(`${state.title}navbar-component`);
+                state.buttons[i].getLI().parent(`${state.title}navbar-component`);
                 
         
                 // CREATES A NEW COMPONENT
         
-                state.buttons[i].img.mouseClicked(() => {
+                state.buttons[i].getIMG().mouseClicked(() => {
                     
                     let newcomp;
         
                     // CREATES NEW COMPUTER
-        
-                    if (state.buttons[i].componentType == "pc") {
+
+                    if (state.buttons[i].getComponentType() == "pc") {
                         newcomp = Computer();
                     }
-                    else if (state.buttons[i].componentType == "switch") {
+                    else if (state.buttons[i].getComponentType() == "switch") {
                         newcomp = Switch();
                     }
-                    else if (state.buttons[i].componentType == "router") {
+                    else if (state.buttons[i].getComponentType() == "router") {
                         newcomp = Router();
                     }
         
@@ -104,7 +104,6 @@ function compentsBarComponents(title) {
 function componentsBarConnections(title) {
     let state = {
         title,
-        "drawConnection": false,
 
         "buttons": [],
         "ul": createElement('ul', ''),
@@ -123,13 +122,21 @@ function componentsBarConnections(title) {
         
                 // ADDS BUTTON ELEMENT TO NAVBAR
         
-                state.buttons[i].li.parent(`${state.title}navbar-component`);
+                state.buttons[i].getLI().parent(`${state.title}navbar-component`);
                 
         
                 // CREATES A NEW COMPONENT
         
-                state.buttons[i].img.mouseClicked(() => {
-                    state.drawConnection = true;
+                state.buttons[i].getIMG().mouseClicked(() => {
+                    if (allCons.getDrawConnection()) {
+                        c = allCons.getSelectedConnection();
+                        c.setType(state.buttons[i].getComponentType());
+                    }else {
+                        c = Connection();
+                        c.setType(state.buttons[i].getComponentType());
+                        allCons.setDrawConnection(true);
+                    }
+                    allCons.add(c);
                 });
             }
         },

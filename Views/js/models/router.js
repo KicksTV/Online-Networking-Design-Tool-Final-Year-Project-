@@ -10,18 +10,25 @@ function Router() {
         "height": 65 / 1.2,
         "widthMin": 65,
         "widthMax": 200,
+        "centerPos": [],
         "hideComponent": false,
         "isClicked": false,
         gui,
         "componentName": `Router_${routerCounter}`,
         "textSize": 10,
     }
-    return Object.assign(
+
+    Object.assign(
         state,
+        getterSetter(state),
+    );
+
+    return Object.assign(
         clicker(state),
         componentDisplayer(state),
         mover(state),
         prepareForJson(state),
+        getterSetter(state),
     );
     
 }

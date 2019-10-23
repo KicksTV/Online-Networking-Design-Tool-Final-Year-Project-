@@ -4,10 +4,11 @@ let json;
 let canvas;
 
 var allTabs = allComponentBarTabs.getInstance();
+var allCons = allConnections.getInstance();
 
 var allComponents = [];
-var getComputer;
-var selectedComputer;
+var getComponent;
+var selectedComponent;
 var preComputer;
 
 var guiParams;
@@ -56,60 +57,58 @@ function setup() {
 function draw() {
     clear();
 
+    drawAllConnections();
     applyGUIValues();
-
     displayAllComponents();
-
-    allTabs.drawConnection();
 }
 
 function mousePressed() {
-    getComputer = getCurrentSelectedComponent(mouseX, mouseY);
-    if (getComputer != null) {
-        selectedComputer = getComputer;
+    getComponent = getCurrentSelectedComponent(mouseX, mouseY);
+    if (getComponent != null) {
+        selectedComponent = getComponent;
     }
-    if (getComputer != null) {
+    if (getComponent != null) {
+        
+        if (allCons.getDrawConnection()) {
+            allCons.selectConnectionForComp(getComponent);
+        }
+
+
         if (gui == null) {
-            gui = createGui(selectedComputer.componentName).setPosition(220,220);
+            gui = createGui(selectedComponent.componentName).setPosition(220,220);
             guiParams = {
-                'width': selectedComputer.width,
-                'textSize': selectedComputer.textSize,
+                'width': selectedComponent.getWidth(),
+                'textSize': selectedComponent.getTextSize(),
                 'textSizeMax': 32,
-                'widthMin': selectedComputer.widthMin,
-                'widthMax': selectedComputer.widthMax,
-                'hideComponent': selectedComputer.hideComponent
+                'widthMin': selectedComponent.getWidthMin(),
+                'widthMax': selectedComponent.getWidthMax(),
+                'hideComponent': selectedComponent.getHideComponent(),
             };
             gui.addObject(guiParams);
         } else {
-            gui.setTitle(selectedComputer.componentName);
-
-            gui.setValue('width', selectedComputer.width);
-            gui.setValue('hideComponent', selectedComputer.hideComponent);
-            gui.setValue('textSize', selectedComputer.textSize);
-
+            gui.setValue('width', selectedComponent.getWidth());
+            gui.setValue('hideComponent', selectedComponent.getHideComponent());
+            gui.setValue('textSize', selectedComponent.getTextSize());
         }
+        gui.setTitle(selectedComponent.getComponentName());
+
     }
 }
 
-
-// function mouseClicked() {
-//     allTabs.setFirstDrawConnection();
-// }
-
-var xdraw2, ydraw2; 
-
 function mouseMoved() {
-    allTabs.setSecondDrawConnection();
+    if (allCons.getDrawConnection()) {
+        allCons.drawConnetions(mouseX, mouseY);
+    }
 }
 
 function mouseDragged() {
-    if (getComputer != null) {
-        getComputer.move(mouseX, mouseY);
+    if (getComponent != null) {
+        getComponent.move(mouseX, mouseY);
     }
 }
 
 function mouseRelease() {
-    selectedComputer.isClicked = false;
+    selectedComponent.getIsClicked() = false;
 }
 
 function getCurrentSelectedComponent(mouseX, mouseY) {
@@ -125,25 +124,52 @@ function getCurrentSelectedComponent(mouseX, mouseY) {
 function displayAllComponents() {
     if (allComponents.length > 0) {
         for (var i=0; i<allComponents.length;i++) {
-                
-            // Check if hideComponent is true or false
-            if (!allComponents[i].hideComponent) {
-                allComponents[i].display();
+            // Checks if undefined
+            if (typeof allComponents[i] !== 'undefined') {
+                // Check if hideComponent is true or false
+                if (!allComponents[i].getHideComponent()) {
+                    allComponents[i].display();
+                }
+            }else {
+                console.log("comp undefined");
             }
         }
+    }
+}
+
+function drawAllConnections() {
+    if (allCons.getSelectingSecondConnection()) {
+        // allCons.get().forEach((i) => {
+        //     centerPos = i.getComponents()[0].getCenterPos();
+        //     x = centerPos[0];
+        //     y = centerPos[1];
+        //     mousePos = i.getMousePos();
+        //     line(x, y, mousePos[0], mousePos[1]);
+        // });
+
+        allCons.get().forEach((i) => {
+            i.compSelectDisplay();
+        });
+    }else {
+        allCons.get().forEach((i) => {
+            if (i != allCons.getSelectedConnection()) {
+                i.defaultDisplay();
+            }
+        });
     }
 }
 
 function applyGUIValues() {
     if (guiParams) {
         if (guiParams.hideComponent) {
-            selectedComputer.hideComponent = true;
+            selectedComponent.setHideComponent(true);
         } else {
-            selectedComputer.hideComponent = false;
+            selectedComponent.setHideComponent(false);
         }
-        selectedComputer.width = guiParams.width;
-        selectedComputer.height = selectedComputer.width / 1.2;
-        selectedComputer.textSize = guiParams.textSize;
+        selectedComponent.setWidth(guiParams.width);
+        h = (guiParams.width / 1.2);
+        selectedComponent.setHeight(h);
+        selectedComponent.setTextSize(guiParams.textSize);
     }
 }
 

@@ -10,8 +10,11 @@ function Button(imgPath, imgAlt, compType) {
         "li": createElement('li', ''),
         "img": createImg(imgPath, imgAlt),
     }
+
+    Object.assign(state);
+
     return Object.assign(
-        state,
+        buttonGetterSetter(state),
         buttonDisplayer(state),
     );
 }
