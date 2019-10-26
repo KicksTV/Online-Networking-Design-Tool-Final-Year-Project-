@@ -1,8 +1,6 @@
 let xml;
 let json;
 
-let canvas;
-
 var allTabs = allComponentBarTabs.getInstance();
 var allCons = allConnections.getInstance();
 
@@ -17,7 +15,7 @@ let compBar;
 let compConnectionBar
 
 
-let button1, button2, button3;
+let button1, button2, button3, button4;
 
 let gui;
 
@@ -36,29 +34,27 @@ function preload() {
 
 
     // Creating button icons for TABS
-    button1 = Button('img/router.svg', 'component image', "router");
-    button2 = Button('img/switch.svg', 'component image', "switch");
-    button3 = Button('img/pc.svg', 'component image', "pc");
+    button1 = Button('img/router.svg', 'component image', "router").init();
+    button2 = Button('img/switch.svg', 'component image', "switch").init();
+    button3 = Button('img/pc.svg', 'component image', "pc").init();
+    button4 = Button('img/cat5e.png', 'Connection Image', 'Cat 5e TP').init();
     
     // Adding created buttons to TABS
     compBar.getBar().add(button1);
     compBar.getBar().add(button2);
     compBar.getBar().add(button3);
-    compConnectionBar.getBar().add(button3);
-    compConnectionBar.getBar().add(button2);
-    compConnectionBar.getBar().add(button1);
-
+    compConnectionBar.getBar().add(button4);
 }
 
 function setup() {
-    canvas = createCanvas(windowWidth, windowHeight);
+    createCanvas(windowWidth, windowHeight);
     compBar.getBar().displayAllButtons();
 }
 function draw() {
     clear();
 
     drawAllConnections();
-    applyGUIValues();
+    applyGUIValuesToComp();
     displayAllComponents();
 }
 
@@ -72,26 +68,7 @@ function mousePressed() {
         if (allCons.getDrawConnection()) {
             allCons.selectConnectionForComp(getComponent);
         }
-
-
-        if (gui == null) {
-            gui = createGui(selectedComponent.componentName).setPosition(220,220);
-            guiParams = {
-                'width': selectedComponent.getWidth(),
-                'textSize': selectedComponent.getTextSize(),
-                'textSizeMax': 32,
-                'widthMin': selectedComponent.getWidthMin(),
-                'widthMax': selectedComponent.getWidthMax(),
-                'hideComponent': selectedComponent.getHideComponent(),
-            };
-            gui.addObject(guiParams);
-        } else {
-            gui.setValue('width', selectedComponent.getWidth());
-            gui.setValue('hideComponent', selectedComponent.getHideComponent());
-            gui.setValue('textSize', selectedComponent.getTextSize());
-        }
-        gui.setTitle(selectedComponent.getComponentName());
-
+        applyCompValuesToGUI();
     }
 }
 
@@ -139,14 +116,6 @@ function displayAllComponents() {
 
 function drawAllConnections() {
     if (allCons.getSelectingSecondConnection()) {
-        // allCons.get().forEach((i) => {
-        //     centerPos = i.getComponents()[0].getCenterPos();
-        //     x = centerPos[0];
-        //     y = centerPos[1];
-        //     mousePos = i.getMousePos();
-        //     line(x, y, mousePos[0], mousePos[1]);
-        // });
-
         allCons.get().forEach((i) => {
             i.compSelectDisplay();
         });
@@ -159,19 +128,43 @@ function drawAllConnections() {
     }
 }
 
-function applyGUIValues() {
+function applyGUIValuesToComp() {
     if (guiParams) {
-        if (guiParams.hideComponent) {
+        if (guiParams.Hide) {
             selectedComponent.setHideComponent(true);
         } else {
             selectedComponent.setHideComponent(false);
         }
-        selectedComponent.setWidth(guiParams.width);
-        h = (guiParams.width / 1.2);
+        selectedComponent.setComponentName(guiParams.Name);
+        selectedComponent.setWidth(guiParams.Width);
+        h = (guiParams.Width / 1.2);
         selectedComponent.setHeight(h);
-        selectedComponent.setTextSize(guiParams.textSize);
+        selectedComponent.setTextSize(guiParams.TextSize);
     }
 }
+
+function applyCompValuesToGUI() {
+    if (gui == null) {
+        gui = createGui(selectedComponent.componentName).setPosition(220,220);
+        guiParams = {
+            'Name': selectedComponent.getComponentName(),
+            'Width': selectedComponent.getWidth(),
+            'TextSize': selectedComponent.getTextSize(),
+            'TextSizeMax': 32,
+            'WidthMin': selectedComponent.getWidthMin(),
+            'WidthMax': selectedComponent.getWidthMax(),
+            'Hide': selectedComponent.getHideComponent(),
+        };
+        gui.addObject(guiParams);
+    } else {
+        gui.setValue('Name', selectedComponent.getComponentName());
+        gui.setValue('Width', selectedComponent.getWidth());
+        gui.setValue('Hide', selectedComponent.getHideComponent());
+        gui.setValue('TextSize', selectedComponent.getTextSize());
+    }
+    gui.setTitle(selectedComponent.getComponentName());
+}
+
 
 
 

@@ -89,8 +89,13 @@ const mover = (state) => ({
     move: (x, y) => {
         x = x - (state.width/2);
         y = y - (state.height/2);
-        state.Xpos = x;
-        state.Ypos = y;
+        
+        if (windowWidth > (x + state.width) && 0 < x) {
+            state.Xpos = x;
+        }
+        if (windowHeight > (y + state.height) && 0 < y) {
+            state.Ypos = y;
+        }
     }
 });
 
@@ -186,11 +191,11 @@ const getterAndSetter = (state) => ({
 // Buttons methods
 
 const buttonDisplayer = (state) => ({
-    display() {
-        state.img.addClass('componentImg');
-        state.img.parent(state.li);
-
+    display: () => {
         state.li.style('display', 'inline-block');
+    },
+    hide: () => {
+        state.li.hide();
     }
 });
 

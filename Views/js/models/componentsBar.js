@@ -49,7 +49,6 @@ function compentsBarComponents(title) {
 
     const displayBarBehaviors = (state) => ({
         displayAllButtons: () => {
-    
 
             state.ul.show();
     
@@ -136,6 +135,7 @@ function componentsBarConnections(title) {
                         c.setType(state.buttons[i].getComponentType());
                         allCons.setDrawConnection(true);
                     }
+                    alert("Please select two components!");
                     allCons.add(c);
                 });
             }
