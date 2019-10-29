@@ -40,7 +40,13 @@ function Connection(type) {
             x2 = centerPos2[0];
             y2 = centerPos2[1];
             line(x1, y1, x2, y2);
-        }
+        },
+        isHidden: () => {
+            if (state.components[0].getHideConnections() || state.components[1].getHideConnections()) {
+                return true;
+            }
+            return false;
+        },
     });
 
     Object.assign(state);

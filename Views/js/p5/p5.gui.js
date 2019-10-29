@@ -150,6 +150,7 @@
     };
 
     this.setTitle = function(title) { qs.setTitle(title); };
+    this.getTitle = function() { return qs.getTitle(); };
 
     // pass through ...
     this.show = function() { qs.show(); };

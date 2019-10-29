@@ -66,24 +66,15 @@ function compentsBarComponents(title) {
                 // CREATES A NEW COMPONENT
         
                 state.buttons[i].getIMG().mouseClicked(() => {
-                    
-                    let newcomp;
         
-                    // CREATES NEW COMPUTER
+                    // CREATES NEW COMPONENT
 
-                    if (state.buttons[i].getComponentType() == "pc") {
-                        newcomp = Computer();
-                    }
-                    else if (state.buttons[i].getComponentType() == "switch") {
-                        newcomp = Switch();
-                    }
-                    else if (state.buttons[i].getComponentType() == "router") {
-                        newcomp = Router();
-                    }
-        
-                    // ADDS IT TO ARRAY OF ALL COMPUTERS
-        
-                    allComponents.push(newcomp);
+                    loadImage(state.buttons[i].getImgPath(), img => {
+                        let newcomp = Component(state.buttons[i].getComponentType() ,img).init();
+                        
+                        // ADDS IT TO ARRAY OF ALL components
+                        allComponents.push(newcomp);
+                    });
                 });
             }
             

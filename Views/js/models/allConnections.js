@@ -55,6 +55,15 @@ var allConnections = (function() {
                 selectedConnection.setMousePos(xmouse, ymouse);
             }
         }
+        function getConnectionsRelatedToComp(c) {
+            var relatedConnections = {};
+            _connections.forEach((i) => {
+                if (c == i.components[0] || c == i.components[1]) {
+                    relatedConnections.put(i);
+                }
+            });
+            return relatedConnections;
+        }
 
         return {add:add,
                 length:length,
@@ -66,6 +75,7 @@ var allConnections = (function() {
                 getDrawConnection: getDrawConnection,
                 setDrawConnection: setDrawConnection,
                 drawConnetions:drawConnetions,
+                getConnectionsRelatedToComp:getConnectionsRelatedToComp,
                 };   
     }
 

@@ -2,6 +2,7 @@
 // COMPONENTS METHODS
 
 const getterSetter = (state) => ({
+    
     getXpos: () => {
         return state.Xpos;
     },
@@ -41,6 +42,12 @@ const getterSetter = (state) => ({
     setHideComponent: (val) => {
         state.hideComponent = val;
     },
+    getHideConnections: () => {
+        return state.hideConnections;
+    },
+    setHideConnections: (val) => {
+        state.hideConnections = val;
+    },
     getIsClicked: () => {
         return state.isClicked;
     },
@@ -59,8 +66,25 @@ const getterSetter = (state) => ({
     setTextSize: (val) => {
         state.textSize = val;
     },
-
-
+    setGUI: (gui) => {
+        state.gui = gui;
+    },
+    getGUI: () => {
+        return gui;
+    },
+    getGuiParams: () => {
+        state.guiParams = {
+            'Name': state.componentName,
+            'Width': state.width,
+            'TextSize': state.textSize,
+            'TextSizeMax': 32,
+            'WidthMin': state.widthMin,
+            'WidthMax': state.widthMax,
+            'HideComponent': state.hideComponent,
+            'HideConnections': state.hideConnections,
+        };
+        return state.guiParams;
+    },
 });
 
 const clicker = (state) => ({
@@ -205,6 +229,9 @@ const buttonGetterSetter = (state) => ({
     },
     setComponentType: (type) => {
         state.componentType = type;
+    },
+    getImgPath: () => {
+        return state.imgPath;
     },
     getLI: () => {
         return state.li;
