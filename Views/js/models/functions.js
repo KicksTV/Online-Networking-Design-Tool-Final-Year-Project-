@@ -82,6 +82,8 @@ const getterSetter = (state) => ({
             'WidthMax': state.widthMax,
             'HideComponent': state.hideComponent,
             'HideConnections': state.hideConnections,
+            'Lock': false,
+            'Connections': allCons.getConnectionsRelatedToComp(selectedComponent),
         };
         return state.guiParams;
     },
@@ -114,7 +116,7 @@ const mover = (state) => ({
         x = x - (state.width/2);
         y = y - (state.height/2);
         
-        if (windowWidth > (x + state.width) && 0 < x) {
+        if ((windowWidth- 240) > (x + state.width) && 0 < x) {
             state.Xpos = x;
         }
         if (windowHeight > (y + state.height) && 0 < y) {

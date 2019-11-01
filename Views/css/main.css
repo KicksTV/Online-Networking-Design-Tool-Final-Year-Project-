@@ -14,7 +14,11 @@
 .componentImg {
     width: 65px;
     height: 65px;
-    margin: 5px;
+    margin: 5px 15px;
+}
+.componentImg:hover {
+    opacity: 0.7;
+    cursor: pointer;
 }
 
 .ComponentBar {
@@ -29,6 +33,23 @@
 .qs_pin_container {
     display: inline-block;
 }
-.qs_pin_button {
-    
+.qs_connection {
+    display: inline-block;
+    margin: 0 5px 0 5px;
+}
+.qs_arrow {
+    display: inline-block;
+    margin: 0 5px 0 5px;
+    font-size: 5mm;
+}
+.canvasButtonContainer {
+    position: absolute;
+    z-index: 100;
+}
+.canvasButton {
+    margin: 15px 8px 0 5px;
+}
+.canvasButton:hover {
+    opacity: 0.7;
+    cursor: pointer; 
 }

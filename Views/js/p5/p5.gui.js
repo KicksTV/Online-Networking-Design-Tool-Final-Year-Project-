@@ -104,8 +104,10 @@
   function QSGui(label, parent, sketch) {
 
     // hard code the position, it can be changed later
-    let x = 20;
-    let y = 20;
+    let x = 200;
+    let y = 200;
+
+    var guiParams;
 
     var qs = QuickSettings.create(x, y, label, parent);
 
@@ -135,9 +137,17 @@
         params = Object.keys(object);
       }
 
+      guiParams = params;
+
       qs.bindParams(object, params);
     };
 
+    this.getGuiParams = function () {
+      return guiParams;
+    },
+    this.setGuiParams = function (g) {
+      guiParams = g;
+    },
 
 
     // noLoop() to call draw every time the gui changes when we are not looping
@@ -184,6 +194,7 @@
 
           case 'object':
 
+
             // color triple ?
             if(val instanceof Array && val.length === 3 && typeof val[0] === 'number') {
               // create color according to the current color mode of the current sketch
@@ -195,7 +206,12 @@
                 return ('0' + value.toString(16)).slice(-2);
               }).join('');
               this.bindColor(arg, vcolor, object);
-            } else {
+            }
+            else if (arg === "Connections") {
+              //console.log("is connection", object);
+              this.bindConnections(arg, val, object);
+            }
+            else {
               // multiple choice drop down list
               this.bindDropDown(arg, val, object);
               object[arg] = val[0];

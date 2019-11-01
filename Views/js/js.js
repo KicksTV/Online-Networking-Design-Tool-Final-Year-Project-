@@ -7,7 +7,12 @@ var allCons = allConnections.getInstance();
 var allComponents = [];
 var getComponent;
 var selectedComponent;
+var newlyCreatedComp;
 var preComputer;
+
+var componentHover = false;
+var componentDrag = false;
+var draggingNewComponent = false;
 
 var guiParams;
 
@@ -18,6 +23,18 @@ let compConnectionBar
 let button1, button2, button3, button4;
 
 let gui;
+
+
+
+var selectCompForDelete = false;
+var canvasDeleteButton;
+window.onload = function() {
+    canvasDeleteButton = document.getElementById("canvasDeleteButton");
+    canvasDeleteButton.addEventListener("click", () => {
+        selectCompForDelete = true;
+    });
+  };
+
 
 var canvasSideBar;
 
@@ -81,6 +98,7 @@ function draw() {
     drawAllConnections();
     applyGUIValuesToComp();
     displayAllComponents();
+    updateMouseCursor();
 }
 
 function mousePressed() {
@@ -89,15 +107,36 @@ function mousePressed() {
         selectedComponent = getComponent;
     }
     if (getComponent != null) {
-        
+
+        applyCompValuesToGUI();
+
+
+        // Checks if user has pressed the delete component button
+        if (selectCompForDelete) {
+            var comp = getComponent;
+            var index = allComponents.findIndex(c => c === comp);
+            allComponents = allComponents.filter((value, i, arr) => {
+                return i != index; 
+            });
+            gui.hide();
+            selectCompForDelete = false;
+        }
+
+        // Checks if users is selecting two components to make a connection
         if (allCons.getDrawConnection()) {
             allCons.selectConnectionForComp(getComponent);
         }
-        applyCompValuesToGUI();
     }
 }
 
 function mouseMoved() {
+    getComponent = getCurrentSelectedComponent(mouseX, mouseY);
+    if (getComponent != null) {
+        componentHover = true;
+    }else {
+        componentHover = false;
+    }
+    
     if (allCons.getDrawConnection()) {
         allCons.drawConnetions(mouseX, mouseY);
     }
@@ -106,11 +145,21 @@ function mouseMoved() {
 function mouseDragged() {
     if (getComponent != null) {
         getComponent.move(mouseX, mouseY);
+        componentDrag = true;
+    }
+    if (draggingNewComponent) {
+        newlyCreatedComp.move(mouseX, mouseY);
+        componentDrag = true;
     }
 }
 
-function mouseRelease() {
-    selectedComponent.getIsClicked() = false;
+function mouseReleased() {
+    if (selectedComponent) {
+        selectedComponent.setIsClicked(false);
+    }
+    draggingNewComponent = false;
+    newlyCreatedComp = null;
+    componentDrag = false;
 }
 
 function getCurrentSelectedComponent(mouseX, mouseY) {
@@ -162,6 +211,7 @@ function drawAllConnections() {
 function applyGUIValuesToComp() {
     if (gui != null) {
         // Compares the values of the two objects
+
         if (JSON.stringify(selectedComponent.getGuiParams()) != JSON.stringify(guiParams)) {
             console.log("applying gui params");
             if (guiParams) {
@@ -186,7 +236,7 @@ function applyGUIValuesToComp() {
 
 function applyCompValuesToGUI() {
     if (gui == null) {
-        gui = createGui(selectedComponent.componentName).setPosition(220,220);
+        gui = createGui(selectedComponent.componentName).setPosition(1200,400);
         guiParams = {
             'Name': selectedComponent.getComponentName(),
             'Width': selectedComponent.getWidth(),
@@ -196,6 +246,9 @@ function applyCompValuesToGUI() {
             'WidthMax': selectedComponent.getWidthMax(),
             'HideComponent': selectedComponent.getHideComponent(),
             'HideConnections': selectedComponent.getHideConnections(),
+            'Lock': false,
+            'Connections': allCons.getConnectionsRelatedToComp(selectedComponent),
+            
         };
         gui.addObject(guiParams);
     } else {
@@ -204,16 +257,31 @@ function applyCompValuesToGUI() {
         gui.setValue('HideComponent', selectedComponent.getHideComponent());
         gui.setValue('TextSize', selectedComponent.getTextSize());
         gui.setValue('HideConnections', selectedComponent.getHideConnections());
+        gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(selectedComponent));
     }
-    console.log("applying comp values to gui");
     gui.setTitle(selectedComponent.getComponentName());
+    gui.show();
 }
 
 
+function updateMouseCursor() {
+    if (componentDrag) {
+        document.body.style.cursor = "grabbing";
+    }
+    else if (allCons.getDrawConnection() || selectCompForDelete) {
+        document.body.style.cursor = "crosshair";
+    }
+    else if (componentHover) {
+        document.body.style.cursor = "grab";
+    }
+    else {
+        document.body.style.cursor = "default"; 
+    }
+}
 
 
 // dynamically adjust the canvas to the window
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
+    resizeCanvas((windowWidth - 240), windowHeight);
 }
 

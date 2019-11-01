@@ -19,6 +19,22 @@
         return label;
     }
 
+    function createCustomElement(type, text, id, className, parent) {
+        var element = document.createElement(type);
+        if (!element) return;
+        element.id = id;
+        if (className) {
+            element.className = className;
+        }
+        if (text) {
+            element.innerHTML = text;
+        }
+        if (parent) {
+            parent.appendChild(element);
+        }
+        return element;
+    }
+
     function createInput(type, id, className, parent) {
         var input = createElement("input", id, className, parent);
         input.type = type;
@@ -73,7 +89,7 @@
     // region PRIVATE/STATIC DATA AND FUNCTIONS
     ////////////////////////////////////////////////////////////////////////////////
     var cssInjected = false,
-        css = ".qs_main{background-color:#dddddd;text-align:left;position:absolute;width:200px;font:12px sans-serif;box-shadow:5px 5px 8px rgba(0,0,0,0.35);user-select:none;-webkit-user-select:none;color:#000000;border:none}.qs_content{background-color:#cccccc;overflow-y:auto}.qs_title_bar{background-color:#eeeeee;user-select:none;-webkit-user-select:none;cursor:pointer;padding:5px;font-weight:bold;border:none;color:#000000;}.qs_container{margin:5px;padding:5px;background-color:#eeeeee;border:none;position:relative}.qs_container_selected{border:none;background-color:#ffffff}.qs_range{-webkit-appearance:none;-moz-appearance:none;width:100%;height:17px;padding:0;margin:0;background-color:transparent;border:none;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.qs_range:focus{outline:none;border:none}.qs_range::-webkit-slider-runnable-track{width:100%;height:15px;cursor:pointer;background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range:focus::-webkit-slider-runnable-track{background:#cccccc}.qs_range::-webkit-slider-thumb{-webkit-appearance:none;height:15px;width:15px;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background:#999999;cursor:pointer;margin-top:0}.qs_range::-moz-range-track{width:100%;height:15px;cursor:pointer;background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range::-moz-range-thumb{height:15px;width:15px;border:none;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background:#999999;cursor:pointer}.qs_range::-ms-track{width:100%;height:15px;cursor:pointer;visibility:hidden;background:transparent}.qs_range::-ms-thumb{height:15px;width:15px;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background:#999999;cursor:pointer;border:none}.qs_range::-ms-fill-lower{background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range:focus::-ms-fill-lower{background:#cccccc}.qs_range::-ms-fill-upper{background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range:focus::-ms-fill-upper{background:#cccccc}.qs_button{background-color:#f6f6f6;color:#000000;height:30px;border:1px solid #aaaaaa;font:12px sans-serif}.qs_button:active{background-color:#ffffff;border:1px solid #aaaaaa}.qs_button:focus{border:1px solid #aaaaaa;outline:none}.qs_checkbox{cursor:pointer;display:inline}.qs_checkbox input{position:absolute;left:-99999px}.qs_checkbox span{height:16px;width:100%;display:block;text-indent:20px;background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALklEQVQ4T2OcOXPmfwYKACPIgLS0NLKMmDVrFsOoAaNhMJoOGBioFwZkZUWoJgApdFaxjUM1YwAAAABJRU5ErkJggg==') no-repeat}.qs_checkbox input:checked+span{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAvElEQVQ4T63Tyw2EIBAA0OFKBxBL40wDRovAUACcKc1IB1zZDAkG18GYZTmSmafzgTnnMgwchoDWGlJKheGcP3JtnPceCqCUAmttSZznuYtgchsXQrgC+77DNE0kUpPbmBOoJaBOIVQylnqWgAAeKhDve/AN+EaklJBzhhgjWRoJVGTbNjiOowAIret6a+4jYIwpX8aDwLIs74C2D0IIYIyVP6Gm898m9kbVm85ljHUTf16k4VUefkwDrxk+zoUEwCt0GbUAAAAASUVORK5CYII=') no-repeat}.qs_checkbox_label{position:absolute;top:7px;left:30px}.qs_label{margin-bottom:3px;user-select:none;-webkit-user-select:none;cursor:default;font:12px sans-serif}.qs_text_input{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;width:100%;padding:0 0 0 5px;height:24px;border:1px inset #ffffff;background-color:#ffffff;color:#000000;font-size:12px}.qs_text_input:focus{outline:none;background:#ffffff;border:1px inset #ffffff}.qs_select{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAp0lEQVRIS+2SsQ3FIAwF7RVYhA5mgQFhFuhYhJKWL0eKxI8SGylKZ0p4+OBsHGNM+HChAiS7qkgyBKrovaLeOxhjbgtxZ+cFtgelFMg5QwgBvPd/EO5sDbKAlBLUWo/8CjmL075zDmKMj6rEKbpCqBL9aqc4ZUQAhVbInBMQUXz5Vg/WfxOktXZsWWtZLds9uIqlqaH1NFV3jdhSJA47E1CAaE8ViYp+wGiWMZ/T+cgAAAAASUVORK5CYII=') no-repeat right #f6f6f6;-webkit-appearance:none;-moz-appearance:none;appearance:none;color:#000000;width:100%;height:24px;border:1px solid #aaaaaa;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;padding:0 5px;-moz-outline:none;font-size:14px}.qs_select option{font-size:14px}.qs_select::-ms-expand{display:none}.qs_select:focus{outline:none}.qs_number{height:24px}.qs_image{width:100%}.qs_progress{width:100%;height:15px;background-color:#cccccc;border:none;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.qs_progress_value{height:100%;background-color:#999999}.qs_textarea{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;resize:vertical;width:100%;padding:3px 5px;border:1px inset #ffffff;background-color:#ffffff;color:#000000;font-size:12px}.qs_textarea:focus{outline:none;background:#ffffff;border:1px inset #ffffff}.qs_color{position:absolute;left:-999999px}.qs_color_label{width:100%;height:20px;display:block;border:1px solid #aaaaaa;cursor:pointer;padding:0 0 0 5px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.qs_file_chooser{position:absolute;left:-999999px}.qs_file_chooser_label{background-color:#f6f6f6;color:#000000;height:30px;border:1px solid #aaaaaa;font:12px sans-serif;width:100%;display:block;cursor:pointer;padding:7px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"; // will be injected with default css
+        css = ".qs_main{background-color:#dddddd;text-align:left;position:absolute;width:280px;font:12px sans-serif;box-shadow:5px 5px 8px rgba(0,0,0,0.35);user-select:none;-webkit-user-select:none;color:#000000;border:none}.qs_content{background-color:#cccccc;overflow-y:auto}.qs_title_bar{background-color:#eeeeee;user-select:none;-webkit-user-select:none;cursor:pointer;padding:5px;font-weight:bold;border:none;color:#000000;}.qs_container{margin:5px;padding:5px;background-color:#eeeeee;border:none;position:relative}.qs_container_selected{border:none;background-color:#ffffff}.qs_range{-webkit-appearance:none;-moz-appearance:none;width:100%;height:17px;padding:0;margin:0;background-color:transparent;border:none;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.qs_range:focus{outline:none;border:none}.qs_range::-webkit-slider-runnable-track{width:100%;height:15px;cursor:pointer;background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range:focus::-webkit-slider-runnable-track{background:#cccccc}.qs_range::-webkit-slider-thumb{-webkit-appearance:none;height:15px;width:15px;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background:#999999;cursor:pointer;margin-top:0}.qs_range::-moz-range-track{width:100%;height:15px;cursor:pointer;background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range::-moz-range-thumb{height:15px;width:15px;border:none;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background:#999999;cursor:pointer}.qs_range::-ms-track{width:100%;height:15px;cursor:pointer;visibility:hidden;background:transparent}.qs_range::-ms-thumb{height:15px;width:15px;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background:#999999;cursor:pointer;border:none}.qs_range::-ms-fill-lower{background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range:focus::-ms-fill-lower{background:#cccccc}.qs_range::-ms-fill-upper{background:#cccccc;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.qs_range:focus::-ms-fill-upper{background:#cccccc}.qs_button{background-color:#f6f6f6;color:#000000;height:30px;border:1px solid #aaaaaa;font:12px sans-serif}.qs_button:active{background-color:#ffffff;border:1px solid #aaaaaa}.qs_button:focus{border:1px solid #aaaaaa;outline:none}.qs_checkbox{cursor:pointer;display:inline}.qs_checkbox input{position:absolute;left:-99999px}.qs_checkbox span{height:16px;width:100%;display:block;text-indent:20px;background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALklEQVQ4T2OcOXPmfwYKACPIgLS0NLKMmDVrFsOoAaNhMJoOGBioFwZkZUWoJgApdFaxjUM1YwAAAABJRU5ErkJggg==') no-repeat}.qs_checkbox input:checked+span{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAvElEQVQ4T63Tyw2EIBAA0OFKBxBL40wDRovAUACcKc1IB1zZDAkG18GYZTmSmafzgTnnMgwchoDWGlJKheGcP3JtnPceCqCUAmttSZznuYtgchsXQrgC+77DNE0kUpPbmBOoJaBOIVQylnqWgAAeKhDve/AN+EaklJBzhhgjWRoJVGTbNjiOowAIret6a+4jYIwpX8aDwLIs74C2D0IIYIyVP6Gm898m9kbVm85ljHUTf16k4VUefkwDrxk+zoUEwCt0GbUAAAAASUVORK5CYII=') no-repeat}.qs_checkbox_label{position:absolute;top:7px;left:30px}.qs_label{margin-bottom:3px;user-select:none;-webkit-user-select:none;cursor:default;font:12px sans-serif}.qs_text_input{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;width:100%;padding:0 0 0 5px;height:24px;border:1px inset #ffffff;background-color:#ffffff;color:#000000;font-size:12px}.qs_text_input:focus{outline:none;background:#ffffff;border:1px inset #ffffff}.qs_select{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAp0lEQVRIS+2SsQ3FIAwF7RVYhA5mgQFhFuhYhJKWL0eKxI8SGylKZ0p4+OBsHGNM+HChAiS7qkgyBKrovaLeOxhjbgtxZ+cFtgelFMg5QwgBvPd/EO5sDbKAlBLUWo/8CjmL075zDmKMj6rEKbpCqBL9aqc4ZUQAhVbInBMQUXz5Vg/WfxOktXZsWWtZLds9uIqlqaH1NFV3jdhSJA47E1CAaE8ViYp+wGiWMZ/T+cgAAAAASUVORK5CYII=') no-repeat right #f6f6f6;-webkit-appearance:none;-moz-appearance:none;appearance:none;color:#000000;width:100%;height:24px;border:1px solid #aaaaaa;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;padding:0 5px;-moz-outline:none;font-size:14px}.qs_select option{font-size:14px}.qs_select::-ms-expand{display:none}.qs_select:focus{outline:none}.qs_number{height:24px}.qs_image{width:100%}.qs_progress{width:100%;height:15px;background-color:#cccccc;border:none;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.qs_progress_value{height:100%;background-color:#999999}.qs_textarea{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;resize:vertical;width:100%;padding:3px 5px;border:1px inset #ffffff;background-color:#ffffff;color:#000000;font-size:12px}.qs_textarea:focus{outline:none;background:#ffffff;border:1px inset #ffffff}.qs_color{position:absolute;left:-999999px}.qs_color_label{width:100%;height:20px;display:block;border:1px solid #aaaaaa;cursor:pointer;padding:0 0 0 5px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.qs_file_chooser{position:absolute;left:-999999px}.qs_file_chooser_label{background-color:#f6f6f6;color:#000000;height:30px;border:1px solid #aaaaaa;font:12px sans-serif;width:100%;display:block;cursor:pointer;padding:7px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"; // will be injected with default css
 
     function injectCSS() {
         var styleTag = document.createElement("style");
@@ -1658,6 +1674,150 @@
                 object[title] = value;
             });
         },
+
+        // endregion
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // region CONNECTIONS
+        ////////////////////////////////////////////////////////////////////////////////
+
+        /**
+         * Adds a dropdown (select) control. Dropdown items can be strings ("one", "two", "three"), any other values that can be converted to strings (1, 2, 3), or an object that contains label and value properties ({label: "one", value: 77}).
+         * @param title {String} The title of the control.
+         * @param connections {Array} An array of items.
+         * @param [callback] {Function} Callback function that will be called when a new option is chosen. Callback will be passed an object containing "index", "label", and "value" properties. If the selected item is a simple value, then label and value will be the same.
+         * @returns {module:QuickSettings}
+         */
+        addConnections: function (title, connections, callback) {
+            var container = this._createContainer();
+
+            var label = createLabel("<b>" + title + "</b>", container);
+            var div = createElement("div", null, "qs_connections_container", container);
+            var conContainer = createElement("div", null, null, div);
+
+            if (connections.length == 0) {
+                createCustomElement("p", "None", null, "qs_connection", conContainer);
+            } else {
+                container.removeChild(container.lastChild);
+                connections.forEach((i) => {
+                    var conContainer = createElement("div", null, null, div);
+                    createCustomElement("p", "- " + i.getComponents()[0].getComponentName(), null, "qs_connection", conContainer);
+                    createCustomElement("p", "&#8594;", null, "qs_arrow", conContainer);
+                    createCustomElement("p", "(" + i.getType() + ")", null, "qs_connection", conContainer);
+                    var trashButton = createCustomElement("button", "",null, "qs_connection", conContainer);
+                    createCustomElement("span", "", null, "fas fa-trash-alt", trashButton);
+
+                    trashButton.addEventListener("click", function () {
+                        allCons.removeConnection(value);
+                    });
+                });
+            }
+            
+            //console.log(connections);
+
+            //console.log("creating qs connections");
+
+            // for (var i = 0; i < items.length; i++) {
+            //     var option = createElement("option"),
+            //         item = items[i];
+            //     if (item.label) {
+            //         option.value = item.value;
+            //         option.innerText = item.label;
+            //     }
+            //     else {
+            //         option.label = item;
+            //         option.innerText = item;
+            //     }
+            //     select.add(option);
+            // }
+            
+
+            var self = this;
+            // select.addEventListener("change", function () {
+            //     var index = select.selectedIndex,
+            //         options = select.options;
+
+            //     if (callback) {
+            //         callback({
+            //             index: index,
+            //             label: options[index].label,
+            //             value: items[index].value || items[index]
+            //         });
+            //     }
+            //     self._callGCH(title);
+            // });
+
+            this._controls[title] = {
+                container: container,
+                label: label,
+                div: div,
+                getValue: function () {
+                    // var index = this.control.selectedIndex;
+                    // return {
+                    //     index: index,
+                    //     label: this.control.options[index].label,
+                    //     value: items[index].value || items[index]
+                    // }
+                    console.log("getValue");
+                    return this.control.connections;
+                },
+                setValue: function (value) {
+                    if (value.length > 0) {
+                        //conContainer.removeChild(conContainer.lastChild);
+                        while (div.hasChildNodes()) {
+                            div.removeChild(div.lastChild);
+                        }
+                        value.forEach((i) => {
+                            var conContainer = createElement("div", null, null, div);
+                            createCustomElement("p", "- " + i.getComponents()[0].getComponentName(), null, "qs_connection", conContainer);
+                            createCustomElement("p", "&#8594;", null, "qs_arrow", conContainer);
+                            createCustomElement("p", i.getComponents()[1].getComponentName(), null, "qs_connection", conContainer);
+                            createCustomElement("p", "(" + i.getType() + ")", null, "qs_connection", conContainer);
+                            var trashButton = createCustomElement("button", "", null, "qs_connection", conContainer);
+                            createCustomElement("span", "", null, "fas fa-trash-alt", trashButton);
+
+                            trashButton.addEventListener("click", function () {
+                                allCons.removeConnection(i);
+                                if (callback) {
+                                    callback(allCons.getConnectionsRelatedToComp(selectedComponent));
+                                }
+                                self._callGCH(title);
+                            });
+                        });
+                        
+                        
+                    }else {
+                        while (div.hasChildNodes()) {
+                            div.removeChild(div.lastChild);
+                        }
+                        conContainer.removeChild(conContainer.lastChild);
+                        conContainer = createElement("div", null, null, div);
+                        createCustomElement("p", "None", null, "qs_connection", conContainer);
+                    }
+                },
+            };
+            return this;
+        },
+
+        /**
+         * Adds a dropdown (select) control bound to an object.
+         * @param title {String} The title of the control.
+         * @param connections {Array} An array of strings or values that will be converted to string and displayed as options.
+         * @param object {Object} Object the control is bound to. When the value of the control changes, a property on this object, with the name of the title of this control, will be set to the current value of this control.
+         * @returns {module:QuickSettings}
+         */
+
+        bindConnections: function  (title, connections, object) {
+            return this.addConnections(title, connections, function (value) {
+                object[title] = value;
+            });
+        },
+        
+        // bindDropDown: function (title, items, object) {
+        //     return this.addDropDown(title, items, function (value) {
+        //         object[title] = value.value;
+        //     });
+        // },
         // endregion
 
 

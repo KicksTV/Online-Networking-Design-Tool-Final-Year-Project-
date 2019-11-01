@@ -24,6 +24,12 @@ var allConnections = (function() {
         function getConnetion(num) {
             return _connections[num];
         }
+        function removeConnection(con) {
+            var index = _connections.findIndex(c => c === con);
+            _connections = _connections.filter((value, i, arr) => {
+                return i != index; 
+            });
+        }
         function getSelectedConnection() {
             return selectedConnection;
         }
@@ -48,6 +54,7 @@ var allConnections = (function() {
                 selectingSecondConnection = false;
                 selectedConnection = null;
                 compAddConnectionCounter=0;
+                updateMouseCursor();
             }
         }
         function drawConnetions(xmouse, ymouse) {
@@ -56,10 +63,13 @@ var allConnections = (function() {
             }
         }
         function getConnectionsRelatedToComp(c) {
-            var relatedConnections = {};
+            var relatedConnections = [];
+
             _connections.forEach((i) => {
-                if (c == i.components[0] || c == i.components[1]) {
-                    relatedConnections.put(i);
+                if (i != selectedConnection) {
+                    if (c == i.getComponents()[0] || c == i.getComponents()[1]) {
+                        relatedConnections.push(i);
+                    }
                 }
             });
             return relatedConnections;
@@ -69,6 +79,7 @@ var allConnections = (function() {
                 length:length,
                 get:get,
                 getConnetion:getConnetion,
+                removeConnection:removeConnection,
                 getSelectedConnection:getSelectedConnection,
                 getSelectingSecondConnection:getSelectingSecondConnection,
                 selectConnectionForComp:selectConnectionForComp,

@@ -63,18 +63,25 @@ function compentsBarComponents(title) {
                 state.buttons[i].getLI().parent(`${state.title}navbar-component`);
                 
         
-                // CREATES A NEW COMPONENT
+                // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS CLICKED
+                state.buttons[i].getIMG().mousePressed(() => {
         
-                state.buttons[i].getIMG().mouseClicked(() => {
-        
+                    draggingNewComponent = true;
+
                     // CREATES NEW COMPONENT
 
                     loadImage(state.buttons[i].getImgPath(), img => {
                         let newcomp = Component(state.buttons[i].getComponentType() ,img).init();
-                        
+                        newlyCreatedComp = newcomp;
                         // ADDS IT TO ARRAY OF ALL components
                         allComponents.push(newcomp);
                     });
+                });
+
+
+                // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS DRAGGED
+                state.buttons[i].getIMG().mouseClicked(() => {
+
                 });
             }
             
