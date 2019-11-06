@@ -128,10 +128,16 @@ const mover = (state) => ({
 const prepareForJson = (state) => ({
     prepareForJson: () => {
         let parms = {
+            "imgPath": state.imgPath,
+            "type": state.type,
             "Xpos": state.Xpos,
             "Ypos": state.Ypos,
-            "componentSize": state.width,
-            "hideComponent": state.hideComponent
+            "width": state.width,
+            "height": state.height,
+            "hideComponent": state.hideComponent,
+            "hideConnections": state.hideConnections,
+            "componentName": state.componentName,
+            "textSize": state.textSize,
         }
         return parms;
     }

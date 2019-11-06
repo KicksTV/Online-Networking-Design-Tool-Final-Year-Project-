@@ -27,13 +27,31 @@ let gui;
 
 
 var selectCompForDelete = false;
+var canvasLoadProject;
+var canvasSaveProject;
 var canvasDeleteButton;
 window.onload = function() {
     canvasDeleteButton = document.getElementById("canvasDeleteButton");
+    canvasLoadProject = document.getElementById("canvasLoadProject");
+    canvasSaveProject = document.getElementById("canvasSaveProject");
+
+    canvasLoadProject.addEventListener("click", () => {
+        loadJSON('../project.json', loadComponents);
+    });
+
+    canvasSaveProject.addEventListener("click", () => {
+        var json = new this.Array();
+        allComponents.forEach((c) => {
+            json.push(JSON.parse(JSON.stringify(c.prepareForJson())));
+        });
+        saveJSON(json, 'test.json')
+
+    });
+
     canvasDeleteButton.addEventListener("click", () => {
         selectCompForDelete = true;
     });
-  };
+};
 
 
 var canvasSideBar;
@@ -279,6 +297,23 @@ function updateMouseCursor() {
     }
 }
 
+function loadComponents(array) {
+    
+    array.components.forEach((c) => {
+        loadImage(c.imgPath, img => {
+            var newcomp = Component(c.type, img);
+            newcomp.setXpos(c.Xpos);
+            newcomp.setYpos(c.Ypos);
+            newcomp.setWidth(c.width);
+            newcomp.setHeight(c.height);
+            newcomp.setHideComponent(c.hideComponent);
+            newcomp.setHideConnections(c.hideConnections);
+            newcomp.setComponentName(c.componentName);
+            newcomp.setTextSize(c.textSize);
+            allComponents.push(newcomp);
+        });
+    });
+}
 
 // dynamically adjust the canvas to the window
 function windowResized() {

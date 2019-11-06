@@ -1,0 +1,78 @@
+
+{
+  "components":[
+      {
+        "imgPath": "/img/pc.svg",
+        "type": "PC",
+        "Xpos": 544.75,
+        "Ypos": 340.5,
+        "width": 78.5,
+        "height": 75,
+        "hideComponent": false,
+        "hideConnections": false,
+        "componentName": "PC_1",
+        "textSize": 10
+      },
+      {
+        "imgPath": "/img/pc.svg",
+        "type": "PC",
+        "Xpos": 180.75,
+        "Ypos": 292.5,
+        "width": 78.5,
+        "height": 75,
+        "hideComponent": false,
+        "hideConnections": false,
+        "componentName": "PC_2",
+        "textSize": 10
+      },
+      {
+        "imgPath": "/img/pc.svg",
+        "type": "PC",
+        "Xpos": 364.75,
+        "Ypos": 127.5,
+        "width": 78.5,
+        "height": 75,
+        "hideComponent": false,
+        "hideConnections": false,
+        "componentName": "PC_3",
+        "textSize": 10
+      },
+      {
+        "imgPath": "/img/pc.svg",
+        "type": "PC",
+        "Xpos": 809.75,
+        "Ypos": 91.5,
+        "width": 78.5,
+        "height": 75,
+        "hideComponent": false,
+        "hideConnections": false,
+        "componentName": "PC_4",
+        "textSize": 10
+      },
+      {
+        "imgPath": "/img/router.svg",
+        "type": "Router",
+        "Xpos": 254,
+        "Ypos": 521.75,
+        "width": 150,
+        "height": 62.5,
+        "hideComponent": false,
+        "hideConnections": false,
+        "componentName": "Router_5",
+        "textSize": 10
+      },
+      {
+        "imgPath": "/img/switch.svg",
+        "type": "Switch",
+        "Xpos": 792,
+        "Ypos": 328.75,
+        "width": 150,
+        "height": 66.5,
+        "hideComponent": false,
+        "hideConnections": false,
+        "componentName": "Switch_6",
+        "textSize": 10
+      }
+  ]
+}
+  
