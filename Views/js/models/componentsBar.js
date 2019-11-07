@@ -70,19 +70,23 @@ function compentsBarComponents(title) {
 
                     // CREATES NEW COMPONENT
 
-                    loadImage(state.buttons[i].getImgPath(), img => {
-                        let newcomp = Component(state.buttons[i].getComponentType() ,img).init();
+                    var path = state.buttons[i].getImgPath();
+                    var type = state.buttons[i].getComponentType();
+
+                    loadImage(path, img => {
+                        let newcomp = Component(type, path, img).init();
                         newlyCreatedComp = newcomp;
                         // ADDS IT TO ARRAY OF ALL components
+
                         allComponents.push(newcomp);
                     });
                 });
 
 
                 // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS DRAGGED
-                state.buttons[i].getIMG().mouseClicked(() => {
+                // state.buttons[i].getIMG().mouseClicked(() => {
 
-                });
+                // });
             }
             
         },

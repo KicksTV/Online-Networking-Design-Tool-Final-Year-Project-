@@ -40,10 +40,12 @@ window.onload = function() {
     });
 
     canvasSaveProject.addEventListener("click", () => {
-        var json = new this.Array();
+        var json = new Array();
         allComponents.forEach((c) => {
             json.push(JSON.parse(JSON.stringify(c.prepareForJson())));
         });
+        console.log("saving");
+
         saveJSON(json, 'test.json')
 
     });
@@ -299,9 +301,9 @@ function updateMouseCursor() {
 
 function loadComponents(array) {
     
-    array.components.forEach((c) => {
+    array.forEach((c) => {
         loadImage(c.imgPath, img => {
-            var newcomp = Component(c.type, img);
+            var newcomp = Component(c.type, c.imgPath, img);
             newcomp.setXpos(c.Xpos);
             newcomp.setYpos(c.Ypos);
             newcomp.setWidth(c.width);
