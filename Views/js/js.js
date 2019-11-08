@@ -40,12 +40,15 @@ window.onload = function() {
     });
 
     canvasSaveProject.addEventListener("click", () => {
-        var json = new this.Array();
-        allComponents.forEach((c) => {
-            json.push(JSON.parse(JSON.stringify(c.prepareForJson())));
-        });
-        saveJSON(json, 'test.json')
-
+        if (!isEmpty(allComponents)) {
+            var json = new this.Array();
+            allComponents.forEach((c) => {
+                json.push(JSON.parse(JSON.stringify(c.prepareForJson())));
+            });
+            saveJSON(json, 'test.json');
+        }else {
+            alert("Canvas is empty");
+        }
     });
 
     canvasDeleteButton.addEventListener("click", () => {
@@ -281,6 +284,13 @@ function applyCompValuesToGUI() {
     gui.show();
 }
 
+function isEmpty(array) {
+    if (array.length == 0) {
+        return true;
+    }else {
+        return false;
+    }
+}
 
 function updateMouseCursor() {
     if (componentDrag) {
