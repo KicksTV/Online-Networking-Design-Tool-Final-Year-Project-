@@ -41,14 +41,21 @@ window.onload = function() {
 
     canvasSaveProject.addEventListener("click", () => {
         if (!isEmpty(allComponents)) {
-            var json = new this.Array();
+            var json = new Array();
             allComponents.forEach((c) => {
-                json.push(JSON.parse(JSON.stringify(c.prepareForJson())));
+                var obj = JSON.stringify(c.prepareForJson());
+                allCons.getConnectionsRelatedToComp(c).forEach((c) => {
+                    obj += JSON.stringify(c.prepareForJson());
+                });
+                console.log(obj);
+                console.log(JSON.parse(obj));
+                json.push(obj);
             });
-            saveJSON(json, 'test.json');
+            //saveJSON(json, 'test.json');
         }else {
             alert("Canvas is empty");
         }
+
     });
 
     canvasDeleteButton.addEventListener("click", () => {
@@ -309,9 +316,9 @@ function updateMouseCursor() {
 
 function loadComponents(array) {
     
-    array.components.forEach((c) => {
+    array.forEach((c) => {
         loadImage(c.imgPath, img => {
-            var newcomp = Component(c.type, img);
+            var newcomp = Component(c.type, c.imgPath, img);
             newcomp.setXpos(c.Xpos);
             newcomp.setYpos(c.Ypos);
             newcomp.setWidth(c.width);

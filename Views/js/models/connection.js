@@ -47,6 +47,14 @@ function Connection(type) {
             }
             return false;
         },
+        prepareForJson: () => {
+            let params = {
+                "type": state.type,
+                "components": state.components,
+                "mousePos": state.mousePos,
+            }
+            return params;
+        },
     });
 
     Object.assign(state);

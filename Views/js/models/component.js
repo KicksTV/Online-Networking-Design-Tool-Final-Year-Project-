@@ -1,9 +1,10 @@
 let counter = 0;
 
-function Component(type ,image) {
+function Component(type, path, image) {
     counter++
     let state = {
-        "imgPath": image,
+        "imgPath": path,
+        "image": image,
         "type": type,
         "Xpos": 100,
         "Ypos": 100,
@@ -23,8 +24,8 @@ function Component(type ,image) {
 
     const componentInitiator = (state) => ({
         init: () => {
-            state.width = state.imgPath.width/2;
-            state.height = state.imgPath.height/2;
+            state.width = state.image.width/2;
+            state.height = state.image.height/2;
             return Object.assign(
                 componentInitiator(state),
                 clicker(state),

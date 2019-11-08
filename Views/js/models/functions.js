@@ -2,7 +2,13 @@
 // COMPONENTS METHODS
 
 const getterSetter = (state) => ({
-    
+    getImage: () => {
+        return state.image;
+    },
+    setImage: (val) => {
+        state.image = val;
+        return state.objectToReturn();
+    },
     getXpos: () => {
         return state.Xpos;
     },
@@ -66,12 +72,6 @@ const getterSetter = (state) => ({
     setTextSize: (val) => {
         state.textSize = val;
     },
-    setGUI: (gui) => {
-        state.gui = gui;
-    },
-    getGUI: () => {
-        return gui;
-    },
     getGuiParams: () => {
         state.guiParams = {
             'Name': state.componentName,
@@ -104,7 +104,7 @@ const clicker = (state) => ({
 
 const componentDisplayer = (state) => ({
     display: () => {
-        image(state.imgPath, state.Xpos, state.Ypos, state.width, state.height);
+        image(state.image, state.Xpos, state.Ypos, state.width, state.height);
         textSize(state.textSize);
         text(state.componentName, state.Xpos, state.Ypos + state.height, state.width, 30);
         textAlign(CENTER, CENTER);
