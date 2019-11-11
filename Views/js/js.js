@@ -42,11 +42,19 @@ window.onload = function() {
     canvasSaveProject.addEventListener("click", () => {
         var json = new Array();
         allComponents.forEach((c) => {
-            json.push(JSON.parse(JSON.stringify(c.prepareForJson())));
+            //console.log(allCons.getConnectionsRelatedToComp(c));
+            var jsonString = JSON.stringify(c.prepareForJson());
+            var connections = new Array();
+            if (!allCons.getConnectionsRelatedToComp(c).isEmpty()) {
+                allCons.getConnectionsRelatedToComp(c).forEach((con) => {
+                    connections.push(con.getJSON());
+                });
+            }
+            
+            console.log(json2);
+            json.push(jsonString);
         });
-        console.log("saving");
-
-        saveJSON(json, 'test.json')
+        //saveJSON(json, 'test.json')
 
     });
 

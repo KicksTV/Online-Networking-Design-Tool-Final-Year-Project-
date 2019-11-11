@@ -127,7 +127,6 @@ const mover = (state) => ({
 
 const prepareForJson = (state) => ({
     prepareForJson: () => {
-        console.log(state.imgPath);
         let parms = {
             "imgPath": state.imgPath,
             "type": state.type,
