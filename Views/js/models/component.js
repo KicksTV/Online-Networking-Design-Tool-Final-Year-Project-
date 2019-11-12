@@ -14,7 +14,6 @@ function Component(type, path, image) {
         "hideConnections": false,
         "hasConnection": false,
         "isClicked": false,
-        "gui": null,
         "componentName": `${type}_${counter}`,
         "textSize": 10,
         "guiParams": null,
@@ -22,10 +21,6 @@ function Component(type, path, image) {
 
     const componentInitiator = (state) => ({
         init: () => {
-
-            //state.image.width /= 2;
-            //state.image.height /= 2;
-
             state.aspectRatio[0] = state.image.width;
             state.aspectRatio[1] = state.image.heigt;
             return Object.assign(

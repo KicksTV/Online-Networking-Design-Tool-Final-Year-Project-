@@ -24,8 +24,6 @@ let button1, button2, button3, button4;
 
 let gui;
 
-
-
 var selectCompForDelete = false;
 var canvasLoadProject;
 var canvasSaveProject;
