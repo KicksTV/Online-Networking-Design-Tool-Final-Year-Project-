@@ -114,7 +114,10 @@ const componentDisplayer = (state) => ({
         textSize(state.textSize);
         text(state.componentName, state.Xpos, state.Ypos + state.height, state.width, 30);
         textAlign(CENTER, CENTER);
-    }
+    },
+    reSize: () => {
+        state.image.resize(state.width, 0);
+    },
 });
 
 const mover = (state) => ({

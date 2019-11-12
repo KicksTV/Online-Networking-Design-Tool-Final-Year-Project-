@@ -136,7 +136,7 @@ function setup() {
     compBar.getBar().displayAllButtons();
 }
 function draw() {
-    clear();
+    //clear();
 
     drawAllConnections();
     applyGUIValuesToComp();
@@ -264,12 +264,13 @@ function applyGUIValuesToComp() {
                     selectedComponent.setHideComponent(false);
                 }
                 selectedComponent.setComponentName(guiParams.Name);
-                var w = selectedComponent.getWidth() + (guiParams.Width - selectedComponent.getWidth());
-                var h = selectedComponent.getHeight() + (guiParams.Width - selectedComponent.getWidth());
-                selectedComponent.setWidth(w);
-                if (h > 20){
-                    selectedComponent.setHeight(h);
-                }
+                //var w = selectedComponent.getWidth() + (guiParams.Width - selectedComponent.getWidth());
+                //var h = selectedComponent.getHeight() + (guiParams.Width - selectedComponent.getWidth());
+                selectedComponent.setWidth(guiParams.Width);
+                selectedComponent.reSize();
+                // if (h > 20){
+                //     selectedComponent.setHeight(h);
+                // }
                 selectedComponent.setTextSize(guiParams.TextSize);
                 selectedComponent.setHideConnections(guiParams.HideConnections);
             }
