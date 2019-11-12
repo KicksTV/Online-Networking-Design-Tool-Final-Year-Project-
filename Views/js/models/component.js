@@ -8,10 +8,7 @@ function Component(type, path, image) {
         "type": type,
         "Xpos": 100,
         "Ypos": 100,
-        "width": 0,
-        "height": 0,
-        "widthMin": 65,
-        "widthMax": 200,
+        "aspectRatio": [],
         "centerPos": [],
         "hideComponent": false,
         "hideConnections": false,
@@ -25,8 +22,12 @@ function Component(type, path, image) {
 
     const componentInitiator = (state) => ({
         init: () => {
-            state.width = state.image.width/2;
-            state.height = state.image.height/2;
+
+            //state.image.width /= 2;
+            //state.image.height /= 2;
+
+            state.aspectRatio[0] = state.image.width;
+            state.aspectRatio[1] = state.image.heigt;
             return Object.assign(
                 componentInitiator(state),
                 clicker(state),

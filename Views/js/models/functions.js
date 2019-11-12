@@ -22,10 +22,10 @@ const getterSetter = (state) => ({
         state.Ypos = val;
     },
     getWidth: () => {
-        return state.width;
+        return state.image.width;
     },
     setWidth: (val) => {
-        state.width = val;
+        state.image.width = val;
     },
     getWidthMin: () => {
         return state.widthMin;
@@ -34,10 +34,10 @@ const getterSetter = (state) => ({
         return state.widthMax;
     },
     getHeight: () => {
-        return state.height;
+        return state.image.height;
     },
     setHeight: (val) => {
-        state.height = val;
+        state.image.height = val;
     },
     getCenterPos: () => {
         return state.centerPos = [state.Xpos+(state.width/2), state.Ypos+(state.height/2)];
@@ -81,11 +81,10 @@ const getterSetter = (state) => ({
     getGuiParams: () => {
         state.guiParams = {
             'Name': state.componentName,
-            'Width': state.width,
+            'Width': state.image.width,
+            'Height': state.image.height,
             'TextSize': state.textSize,
             'TextSizeMax': 32,
-            'WidthMin': state.widthMin,
-            'WidthMax': state.widthMax,
             'HideComponent': state.hideComponent,
             'HideConnections': state.hideConnections,
             'Lock': false,
@@ -97,8 +96,8 @@ const getterSetter = (state) => ({
 
 const clicker = (state) => ({
     clicked: () => {
-        var d = dist(state.Xpos + (state.width/2), state.Ypos + (state.height/2), mouseX, mouseY);
-        if (d < (state.width/2)) {
+        var d = dist(state.Xpos + (state.image.width/2), state.Ypos + (state.image.height/2), mouseX, mouseY);
+        if (d < (state.image.width/2)) {
             state.isClicked = true;
         }else {
             state.isClicked = false;
@@ -110,25 +109,26 @@ const clicker = (state) => ({
 
 const componentDisplayer = (state) => ({
     display: () => {
-        image(state.image, state.Xpos, state.Ypos, state.width, state.height);
+        image(state.image, state.Xpos, state.Ypos);
         textSize(state.textSize);
-        text(state.componentName, state.Xpos, state.Ypos + state.height, state.width, 30);
+        text(state.componentName, state.Xpos, state.Ypos + state.image.height, state.image.width, 30);
         textAlign(CENTER, CENTER);
     },
-    reSize: () => {
-        state.image.resize(state.width, 0);
+    reSize: (newWidth) => {
+        state.image.height = newWidth * (state.image.height / state.image.width);
+        state.image.width = newWidth;
     },
 });
 
 const mover = (state) => ({
     move: (x, y) => {
-        x = x - (state.width/2);
-        y = y - (state.height/2);
+        x = x - (state.image.width/2);
+        y = y - (state.image.height/2);
         
-        if ((windowWidth- 240) > (x + state.width) && 0 < x) {
+        if ((windowWidth- 240) > (x + state.image.width) && 0 < x) {
             state.Xpos = x;
         }
-        if (windowHeight > (y + state.height) && 0 < y) {
+        if (windowHeight > (y + state.image.height) && 0 < y) {
             state.Ypos = y;
         }
     }

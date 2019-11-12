@@ -132,11 +132,10 @@ function setup() {
     canvasSideBar.class("col-md-auto");
     canvasSideBar.id("canvasSideBar");
     canvasSideBar.parent("canvasRow");
-    
     compBar.getBar().displayAllButtons();
 }
 function draw() {
-    //clear();
+    clear();
 
     drawAllConnections();
     applyGUIValuesToComp();
@@ -264,13 +263,7 @@ function applyGUIValuesToComp() {
                     selectedComponent.setHideComponent(false);
                 }
                 selectedComponent.setComponentName(guiParams.Name);
-                //var w = selectedComponent.getWidth() + (guiParams.Width - selectedComponent.getWidth());
-                //var h = selectedComponent.getHeight() + (guiParams.Width - selectedComponent.getWidth());
-                selectedComponent.setWidth(guiParams.Width);
-                selectedComponent.reSize();
-                // if (h > 20){
-                //     selectedComponent.setHeight(h);
-                // }
+                selectedComponent.reSize(guiParams.Width);
                 selectedComponent.setTextSize(guiParams.TextSize);
                 selectedComponent.setHideConnections(guiParams.HideConnections);
             }
@@ -286,8 +279,8 @@ function applyCompValuesToGUI() {
             'Width': selectedComponent.getWidth(),
             'TextSize': selectedComponent.getTextSize(),
             'TextSizeMax': 32,
-            'WidthMin': selectedComponent.getWidthMin(),
-            'WidthMax': selectedComponent.getWidthMax(),
+            'WidthMin': 65,
+            'WidthMax': (selectedComponent.getWidth()+100),
             'HideComponent': selectedComponent.getHideComponent(),
             'HideConnections': selectedComponent.getHideConnections(),
             'Lock': false,

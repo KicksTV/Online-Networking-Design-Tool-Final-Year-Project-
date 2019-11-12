@@ -74,6 +74,8 @@ function compentsBarComponents(title) {
                     var type = state.buttons[i].getComponentType();
 
                     loadImage(path, img => {
+                        img.width = img.width/2;
+                        img.height = img.height/2;
                         let newcomp = Component(type, path, img).init();
                         newlyCreatedComp = newcomp;
                         // ADDS IT TO ARRAY OF ALL components
