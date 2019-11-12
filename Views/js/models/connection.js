@@ -25,6 +25,9 @@ function Connection(type) {
         getComponents: () => {
             return state.components;
         },
+        setComponent: (index, val) => {
+            state.components[index] = val;
+        },
         compSelectDisplay: () => {
             centerPos = state.components[0].getCenterPos();
             x = centerPos[0];
@@ -46,6 +49,9 @@ function Connection(type) {
                 return true;
             }
             return false;
+        },
+        getJSON: () => {
+            return Object.assign(state);
         },
     });
 

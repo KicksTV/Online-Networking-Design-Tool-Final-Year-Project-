@@ -60,6 +60,12 @@ const getterSetter = (state) => ({
     setIsClicked: (val) => {
         state.isClicked = val;
     },
+    getHasConnection: () => {
+        return state.hasConnection;
+    },
+    setHasConnection: (val) => {
+        state.hasConnection = val;
+    },
     getComponentName: () => {
         return state.componentName;
     },

@@ -45,6 +45,7 @@ var allConnections = (function() {
         function selectConnectionForComp(comp) {
             console.log("adding comp to selected connection");
             selectedConnection.addComponent(comp);
+            comp.setHasConnection(true);
             compAddConnectionCounter++;
             if (compAddConnectionCounter == 1) {
                 selectingSecondConnection = true;

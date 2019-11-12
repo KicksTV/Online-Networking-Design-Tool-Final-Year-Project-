@@ -40,21 +40,36 @@ window.onload = function() {
     });
 
     canvasSaveProject.addEventListener("click", () => {
-        var json = new Array();
-        allComponents.forEach((c) => {
-            //console.log(allCons.getConnectionsRelatedToComp(c));
-            var jsonString = JSON.stringify(c.prepareForJson());
-            var connections = new Array();
-            if (!allCons.getConnectionsRelatedToComp(c).isEmpty()) {
-                allCons.getConnectionsRelatedToComp(c).forEach((con) => {
-                    connections.push(con.getJSON());
-                });
-            }
-            
-            console.log(json2);
-            json.push(jsonString);
-        });
-        //saveJSON(json, 'test.json')
+        
+        // Setup of json format
+        var json = {
+            "connections": [],
+            "components": [],
+        };
+
+        // Checking if anything exists on canvas
+        if (!isEmpty(allComponents)) {
+            // looping through all connections
+            allCons.get().forEach((c) => {
+                var newcon = Connection();
+                newcon.setType(c.getType());
+                newcon.setMousePos(c.getMousePos()[0], c.getMousePos()[1]);
+                newcon.addComponent(c.getComponents()[0].prepareForJson());
+                newcon.addComponent(c.getComponents()[1].prepareForJson());
+                json.connections.push(newcon.getJSON());
+            });
+
+            // looping through all components to get any that haven't got a connection
+            allComponents.forEach((c) => {
+                if (!c.getHasConnection()) {
+                    json.components.push(c.prepareForJson());
+                }
+            });
+            // Saves json to file
+            saveJSON(json, 'test.json');
+        }else {
+            alert("Canvas is empty");
+        }
 
     });
 
@@ -291,6 +306,13 @@ function applyCompValuesToGUI() {
     gui.show();
 }
 
+function isEmpty(array) {
+    if (array.length == 0) {
+        return true;
+    }else {
+        return false;
+    }
+}
 
 function updateMouseCursor() {
     if (componentDrag) {

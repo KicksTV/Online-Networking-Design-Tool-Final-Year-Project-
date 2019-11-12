@@ -15,6 +15,7 @@ function Component(type, path, image) {
         "centerPos": [],
         "hideComponent": false,
         "hideConnections": false,
+        "hasConnection": false,
         "isClicked": false,
         "gui": null,
         "componentName": `${type}_${counter}`,
