@@ -3,6 +3,7 @@ let counter = 0;
 function Component(type, path, image) {
     counter++
     let state = {
+        "id": null,
         "imgPath": path,
         "image": image,
         "type": type,
@@ -21,6 +22,9 @@ function Component(type, path, image) {
 
     const componentInitiator = (state) => ({
         init: () => {
+            var val = Math.floor(1000 + Math.random() * 900000);
+            state.id = `${state.componentName}${val}`;
+            
             state.aspectRatio[0] = state.image.width;
             state.aspectRatio[1] = state.image.heigt;
             return Object.assign(

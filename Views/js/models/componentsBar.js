@@ -66,7 +66,7 @@ function compentsBarComponents(title) {
                 // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS CLICKED
                 state.buttons[i].getIMG().mousePressed(() => {
         
-                    draggingNewComponent = true;
+                    allComps.setDraggingNewComponent(true);
 
                     // CREATES NEW COMPONENT
 
@@ -77,10 +77,10 @@ function compentsBarComponents(title) {
                         img.width = img.width/2;
                         img.height = img.height/2;
                         let newcomp = Component(type, path, img).init();
-                        newlyCreatedComp = newcomp;
+                        allComps.setNewlyCreatedComp(newcomp);
                         // ADDS IT TO ARRAY OF ALL components
 
-                        allComponents.push(newcomp);
+                        allComps.add(newcomp);
                     });
                 });
 

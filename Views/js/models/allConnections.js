@@ -24,6 +24,25 @@ var allConnections = (function() {
         function getConnetion(num) {
             return _connections[num];
         }
+        function drawAllConnections() {
+            if (allCons.getSelectingSecondConnection()) {
+                allCons.get().forEach((i) => {
+                    i.compSelectDisplay();
+                });
+            }else {
+                allCons.get().forEach((i) => {
+                    
+                    // Prevents displaying incomplete set connections
+                    if (i != allCons.getSelectedConnection()) {
+                        
+                        // Checks if linking component wishs to hide its connection
+                        if (!(i.isHidden())) {
+                            i.defaultDisplay();
+                        }
+                    }
+                });
+            }
+        }
         function removeConnection(con) {
             var index = _connections.findIndex(c => c === con);
             _connections = _connections.filter((value, i, arr) => {
@@ -80,6 +99,7 @@ var allConnections = (function() {
                 length:length,
                 get:get,
                 getConnetion:getConnetion,
+                drawAllConnections:drawAllConnections,
                 removeConnection:removeConnection,
                 getSelectedConnection:getSelectedConnection,
                 getSelectingSecondConnection:getSelectingSecondConnection,

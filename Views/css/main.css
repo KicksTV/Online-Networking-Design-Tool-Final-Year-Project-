@@ -44,6 +44,8 @@
 }
 .canvasButtonContainer {
     position: absolute;
+    overflow: hidden;
+    height: 50px;
     z-index: 100;
 }
 .canvasButton {
@@ -52,4 +54,8 @@
 .canvasButton:hover {
     opacity: 0.7;
     cursor: pointer; 
+}
+
+.upload_input {
+    display: none;
 }

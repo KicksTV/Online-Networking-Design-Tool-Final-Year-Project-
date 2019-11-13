@@ -4,38 +4,66 @@ let json;
 var allTabs = allComponentBarTabs.getInstance();
 var allCons = allConnections.getInstance();
 
-var allComponents = [];
-var getComponent;
-var selectedComponent;
-var newlyCreatedComp;
-var preComputer;
-
-var componentHover = false;
-var componentDrag = false;
-var draggingNewComponent = false;
+var allComps = allComponents.getInstance();
 
 var guiParams;
 
 let compBar;
-let compConnectionBar
-
-
+let compConnectionBar;
 let button1, button2, button3, button4;
 
 let gui;
 
-var selectCompForDelete = false;
+var canvasSideBar;
+
 var canvasLoadProject;
 var canvasSaveProject;
 var canvasDeleteButton;
+
 window.onload = function() {
     canvasDeleteButton = document.getElementById("canvasDeleteButton");
     canvasLoadProject = document.getElementById("canvasLoadProject");
     canvasSaveProject = document.getElementById("canvasSaveProject");
 
+    var input = document.getElementById("upload_input");
     canvasLoadProject.addEventListener("click", () => {
-        loadJSON('../project.json', loadComponents);
+        input.click();
     });
+
+    input.onchange = function (evt) {
+        var result = evt.target;
+        if ('files' in result) {
+            if (result.files.length == 0) {
+                // user didnt select file
+            }else {
+                var files = result.files;
+                // loops all selected files or file
+                for (var i=0, f;f = files[i]; i++) {
+                    var reader = new FileReader();
+
+                    // Only process json files.
+                    if (!f.type.match('json.*')) {
+                        continue;
+                    }
+
+                    // Closure to capture the file information.
+                    reader.onload = (function(theFile) {
+                        return function(e) {
+                            loadJSON(e.target.result, loadComponents);
+                        };
+                    })(f);
+
+                    reader.onerror = (evt) => {
+                        if(evt.target.error.name == "NotReadableError") {
+                            // The file could not be read
+                            console.log("file could not be read");
+                        }
+                    }
+                    reader.readAsDataURL(f);
+                }
+            }
+        }
+    }
 
     canvasSaveProject.addEventListener("click", () => {
         
@@ -46,7 +74,7 @@ window.onload = function() {
         };
 
         // Checking if anything exists on canvas
-        if (!isEmpty(allComponents)) {
+        if (!allComps.isEmpty()) {
             // looping through all connections
             allCons.get().forEach((c) => {
                 var newcon = Connection();
@@ -58,13 +86,13 @@ window.onload = function() {
             });
 
             // looping through all components to get any that haven't got a connection
-            allComponents.forEach((c) => {
+            allComps.get().forEach((c) => {
                 if (!c.getHasConnection()) {
                     json.components.push(c.prepareForJson());
                 }
             });
             // Saves json to file
-            saveJSON(json, 'test.json');
+            saveJSON(json, 'network_design_project.json');
         }else {
             alert("Canvas is empty");
         }
@@ -72,12 +100,9 @@ window.onload = function() {
     });
 
     canvasDeleteButton.addEventListener("click", () => {
-        selectCompForDelete = true;
+        allComps.setSelectCompForDelete(true);
     });
 };
-
-
-var canvasSideBar;
 
 function preload() {
     compBar = componentsBarTab("Components", 500, 50, compentsBarComponents("Components"));
@@ -135,46 +160,47 @@ function setup() {
 function draw() {
     clear();
 
-    drawAllConnections();
+    allCons.drawAllConnections();
     applyGUIValuesToComp();
-    displayAllComponents();
+    allComps.displayAllComponents();
     updateMouseCursor();
 }
 
 function mousePressed() {
-    getComponent = getCurrentSelectedComponent(mouseX, mouseY);
-    if (getComponent != null) {
-        selectedComponent = getComponent;
+    allComps.setComponent(allComps.getCurrentSelectedComponent(mouseX, mouseY));
+    if (allComps.getComponent() != null) {
+        allComps.setSelectedComponent(allComps.getComponent());
     }
-    if (getComponent != null) {
+    if (allComps.getComponent() != null) {
 
         applyCompValuesToGUI();
 
 
         // Checks if user has pressed the delete component button
-        if (selectCompForDelete) {
-            var comp = getComponent;
-            var index = allComponents.findIndex(c => c === comp);
-            allComponents = allComponents.filter((value, i, arr) => {
+        if (allComps.getSelectCompForDelete()) {
+            var comp = allComps.getComponent();
+            var index = allComps.get().findIndex(c => c === comp);
+            var newList = allComps.get().filter((value, i, arr) => {
                 return i != index; 
             });
+            allComps.set(newList);
             gui.hide();
-            selectCompForDelete = false;
+            allComps.setSelectCompForDelete(false);
         }
 
         // Checks if users is selecting two components to make a connection
         if (allCons.getDrawConnection()) {
-            allCons.selectConnectionForComp(getComponent);
+            allCons.selectConnectionForComp(allComps.getComponent());
         }
     }
 }
 
 function mouseMoved() {
-    getComponent = getCurrentSelectedComponent(mouseX, mouseY);
-    if (getComponent != null) {
-        componentHover = true;
+    allComps.setComponent(allComps.getCurrentSelectedComponent(mouseX, mouseY));
+    if (allComps.getComponent() != null) {
+        allComps.setComponentHover(true);
     }else {
-        componentHover = false;
+        allComps.setComponentHover(false);
     }
     
     if (allCons.getDrawConnection()) {
@@ -183,87 +209,41 @@ function mouseMoved() {
 }
 
 function mouseDragged() {
-    if (getComponent != null) {
-        getComponent.move(mouseX, mouseY);
-        componentDrag = true;
+    if (allComps.getComponent() != null) {
+        allComps.getComponent().move(mouseX, mouseY);
+        allComps.setComponentDrag(true);
     }
-    if (draggingNewComponent) {
-        newlyCreatedComp.move(mouseX, mouseY);
-        componentDrag = true;
+    if (allComps.getDraggingNewComponent()) {
+        allComps.getNewlyCreatedComp().move(mouseX, mouseY);
+        allComps.setComponentDrag(true);
     }
 }
 
 function mouseReleased() {
-    if (selectedComponent) {
-        selectedComponent.setIsClicked(false);
+    if (allComps.getSelectedComponent()) {
+        allComps.getSelectedComponent().setIsClicked(false);
     }
-    draggingNewComponent = false;
-    newlyCreatedComp = null;
-    componentDrag = false;
-}
-
-function getCurrentSelectedComponent(mouseX, mouseY) {
-    for (var i=0; i<allComponents.length;i++) {
-        var clicked = allComponents[i].clicked(mouseX, mouseY);
-        if (clicked) {
-            return allComponents[i];
-        }
-    }
-    return null;
-}
-
-function displayAllComponents() {
-    if (allComponents.length > 0) {
-        for (var i=0; i<allComponents.length;i++) {
-            // Checks if undefined
-            if (typeof allComponents[i] !== 'undefined') {
-                // Check if hideComponent is true or false
-                if (!allComponents[i].getHideComponent()) {
-                    allComponents[i].display();
-                }
-            }else {
-                console.log("comp undefined");
-            }
-        }
-    }
-}
-
-function drawAllConnections() {
-    if (allCons.getSelectingSecondConnection()) {
-        allCons.get().forEach((i) => {
-            i.compSelectDisplay();
-        });
-    }else {
-        allCons.get().forEach((i) => {
-            
-            // Prevents displaying incomplete set connections
-            if (i != allCons.getSelectedConnection()) {
-                
-                // Checks if linking component wishs to hide its connection
-                if (!(i.isHidden())) {
-                    i.defaultDisplay();
-                }
-            }
-        });
-    }
+    allComps.setDraggingNewComponent(false);
+    allComps.setNewlyCreatedComp(null);
+    allComps.setComponentDrag(false);
 }
 
 function applyGUIValuesToComp() {
     if (gui != null) {
         // Compares the values of the two objects
 
-        if (JSON.stringify(selectedComponent.getGuiParams()) != JSON.stringify(guiParams)) {
+        if (JSON.stringify(allComps.getSelectedComponent().getGuiParams()) != JSON.stringify(guiParams)) {
             console.log("applying gui params");
             if (guiParams) {
                 if (guiParams.HideComponent) {
-                    selectedComponent.setHideComponent(true);
+                    allComps.getSelectedComponent().setHideComponent(true);
                 } else {
-                    selectedComponent.setHideComponent(false);
+                    allComps.getSelectedComponent().setHideComponent(false);
                 }
-                selectedComponent.setComponentName(guiParams.Name);
-                selectedComponent.reSize(guiParams.Width);
-                selectedComponent.setTextSize(guiParams.TextSize);
-                selectedComponent.setHideConnections(guiParams.HideConnections);
+                allComps.getSelectedComponent().setComponentName(guiParams.Name);
+                allComps.getSelectedComponent().reSize(guiParams.Width);
+                allComps.getSelectedComponent().setTextSize(guiParams.TextSize);
+                allComps.getSelectedComponent().setHideConnections(guiParams.HideConnections);
             }
         }
     }
@@ -271,49 +251,41 @@ function applyGUIValuesToComp() {
 
 function applyCompValuesToGUI() {
     if (gui == null) {
-        gui = createGui(selectedComponent.componentName).setPosition(1200,400);
+        gui = createGui(allComps.getSelectedComponent().getComponentName()).setPosition(1200,400);
         guiParams = {
-            'Name': selectedComponent.getComponentName(),
-            'Width': selectedComponent.getWidth(),
-            'TextSize': selectedComponent.getTextSize(),
+            'Name': allComps.getSelectedComponent().getComponentName(),
+            'Width': allComps.getSelectedComponent().getWidth(),
+            'TextSize': allComps.getSelectedComponent().getTextSize(),
             'TextSizeMax': 32,
             'WidthMin': 65,
-            'WidthMax': (selectedComponent.getWidth()+100),
-            'HideComponent': selectedComponent.getHideComponent(),
-            'HideConnections': selectedComponent.getHideConnections(),
+            'WidthMax': (allComps.getSelectedComponent().getWidth()+100),
+            'HideComponent': allComps.getSelectedComponent().getHideComponent(),
+            'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
-            'Connections': allCons.getConnectionsRelatedToComp(selectedComponent),
+            'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
         };
         gui.addObject(guiParams);
     } else {
-        gui.setValue('Name', selectedComponent.getComponentName());
-        gui.setValue('Width', selectedComponent.getWidth());
-        gui.setValue('HideComponent', selectedComponent.getHideComponent());
-        gui.setValue('TextSize', selectedComponent.getTextSize());
-        gui.setValue('HideConnections', selectedComponent.getHideConnections());
-        gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(selectedComponent));
+        gui.setValue('Name', allComps.getSelectedComponent().getComponentName());
+        gui.setValue('Width', allComps.getSelectedComponent().getWidth());
+        gui.setValue('HideComponent', allComps.getSelectedComponent().getHideComponent());
+        gui.setValue('TextSize', allComps.getSelectedComponent().getTextSize());
+        gui.setValue('HideConnections', allComps.getSelectedComponent().getHideConnections());
+        gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
     }
-    gui.setTitle(selectedComponent.getComponentName());
+    gui.setTitle(allComps.getSelectedComponent().getComponentName());
     gui.show();
 }
 
-function isEmpty(array) {
-    if (array.length == 0) {
-        return true;
-    }else {
-        return false;
-    }
-}
-
 function updateMouseCursor() {
-    if (componentDrag) {
+    if (allComps.getComponentDrag()) {
         document.body.style.cursor = "grabbing";
     }
-    else if (allCons.getDrawConnection() || selectCompForDelete) {
+    else if (allCons.getDrawConnection() || allComps.getSelectCompForDelete()) {
         document.body.style.cursor = "crosshair";
     }
-    else if (componentHover) {
+    else if (allComps.getComponentHover()) {
         document.body.style.cursor = "grab";
     }
     else {
@@ -323,21 +295,70 @@ function updateMouseCursor() {
 
 function loadComponents(array) {
     
-    array.forEach((c) => {
+    console.log("loading components");
+    console.log(array);
+    array.components.forEach((c) => {
         loadImage(c.imgPath, img => {
-            var newcomp = Component(c.type, c.imgPath, img);
-            newcomp.setXpos(c.Xpos);
-            newcomp.setYpos(c.Ypos);
-            newcomp.setWidth(c.width);
-            newcomp.setHeight(c.height);
-            newcomp.setHideComponent(c.hideComponent);
-            newcomp.setHideConnections(c.hideConnections);
-            newcomp.setComponentName(c.componentName);
-            newcomp.setTextSize(c.textSize);
-            allComponents.push(newcomp);
+            var newcomp = createNewComponent(img, c);
+            console.log(allComps.doesComponentExist(c.id));
+            if (allComps.doesComponentExist(c.id) == false) {
+                allComps.add(newcomp);
+            }
+        });
+    });
+    array.connections.forEach((con) => {
+        var newconnection = Connection();
+        newconnection.setType(con.type);
+        newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
+        
+        con.components.forEach((c) => {
+            
+            
+            loadImage(c.imgPath, img => {
+                var newcomp = createNewComponent(img, c);
+                
+                var exists = false;
+                if (allComps.get().length > 0) {
+                    allComps.get().forEach((comp) => {
+                        // console.log(comp.getID());
+                        // console.log(id);
+                        // console.log(comp.getID() == id);
+                        if (comp.getID() == newcomp.getID()) {
+                            exists = true;
+                        }
+                    });
+                }
+                console.log(exists);
+                if (exists == false) {
+                    console.log("adding to all comps");
+                    allComps.add(newcomp);
+                }
+                if (newconnection) {
+                    newconnection.addComponent(newcomp);
+                    allCons.add(newconnection);
+                }
+            });
         });
     });
 }
+
+function createNewComponent(img, c) {
+    
+    var newcomp = Component(c.type, c.imgPath, img).init();
+    newcomp.setID(c.id);
+    newcomp.setXpos(c.Xpos);
+    newcomp.setYpos(c.Ypos);
+    newcomp.setWidth(c.width);
+    newcomp.setHeight(c.height);
+    newcomp.setHideComponent(c.hideComponent);
+    newcomp.setHideConnections(c.hideConnections);
+    newcomp.setComponentName(c.componentName);
+    newcomp.setType(c.type);
+    newcomp.setTextSize(c.textSize);
+    
+    return newcomp;
+}
+
 
 // dynamically adjust the canvas to the window
 function windowResized() {

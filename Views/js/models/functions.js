@@ -2,12 +2,24 @@
 // COMPONENTS METHODS
 
 const getterSetter = (state) => ({
+    getID: () => {
+        return state.id;
+    },
+    setID: (val) => {
+        state.id = val;
+    },
     getImage: () => {
         return state.image;
     },
     setImage: (val) => {
         state.image = val;
         return state.objectToReturn();
+    },
+    getType: () => {
+        return state.type;
+    },
+    setType: (val) => {
+        state.type = val;
     },
     getXpos: () => {
         return state.Xpos;
@@ -40,7 +52,7 @@ const getterSetter = (state) => ({
         state.image.height = val;
     },
     getCenterPos: () => {
-        return state.centerPos = [state.Xpos+(state.width/2), state.Ypos+(state.height/2)];
+        return state.centerPos = [state.Xpos+(state.image.width/2), state.Ypos+(state.image.height/2)];
     },
     getHideComponent: () => {
         return state.hideComponent;
@@ -88,7 +100,7 @@ const getterSetter = (state) => ({
             'HideComponent': state.hideComponent,
             'HideConnections': state.hideConnections,
             'Lock': false,
-            'Connections': allCons.getConnectionsRelatedToComp(selectedComponent),
+            'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
         };
         return state.guiParams;
     },
@@ -137,6 +149,7 @@ const mover = (state) => ({
 const prepareForJson = (state) => ({
     prepareForJson: () => {
         let parms = {
+            "id": state.id,
             "imgPath": state.imgPath,
             "type": state.type,
             "Xpos": state.Xpos,
