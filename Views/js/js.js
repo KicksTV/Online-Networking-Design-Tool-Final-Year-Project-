@@ -95,8 +95,8 @@ window.onload = function() {
                 }
             });
             // Saves json to file
-            console.log(json);
-            //saveJSON(json, 'network_design_project.json');
+            //console.log(json);
+            saveJSON(json, 'network_design_project.json');
         }else {
             alert("Canvas is empty");
         }
