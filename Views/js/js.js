@@ -25,11 +25,12 @@ window.onload = function() {
     canvasLoadProject = document.getElementById("canvasLoadProject");
     canvasSaveProject = document.getElementById("canvasSaveProject");
 
+
+    // LOAD
     var input = document.getElementById("upload_input");
     canvasLoadProject.addEventListener("click", () => {
         input.click();
     });
-
     input.onchange = function (evt) {
         var result = evt.target;
         if ('files' in result) {
@@ -49,6 +50,7 @@ window.onload = function() {
                     // Closure to capture the file information.
                     reader.onload = (function(theFile) {
                         return function(e) {
+                            console.log("running loadJSON");
                             loadJSON(e.target.result, loadComponents);
                         };
                     })(f);
@@ -65,6 +67,7 @@ window.onload = function() {
         }
     }
 
+    // SAVE
     canvasSaveProject.addEventListener("click", () => {
         
         // Setup of json format
@@ -92,13 +95,15 @@ window.onload = function() {
                 }
             });
             // Saves json to file
-            saveJSON(json, 'network_design_project.json');
+            console.log(json);
+            //saveJSON(json, 'network_design_project.json');
         }else {
             alert("Canvas is empty");
         }
 
     });
 
+    // DELETE COMPONENT
     canvasDeleteButton.addEventListener("click", () => {
         allComps.setSelectCompForDelete(true);
     });
@@ -297,49 +302,54 @@ function loadComponents(array) {
     
     console.log("loading components");
     console.log(array);
+
+    // LOADING COMPONENTS WITHOUT A CONNECTION
     array.components.forEach((c) => {
         loadImage(c.imgPath, img => {
             var newcomp = createNewComponent(img, c);
-            console.log(allComps.doesComponentExist(c.id));
-            if (allComps.doesComponentExist(c.id) == false) {
-                allComps.add(newcomp);
-            }
+            allComps.add(newcomp);
         });
     });
+
+    // LOADING CONNECTIONS
     array.connections.forEach((con) => {
+        // new connection
         var newconnection = Connection();
         newconnection.setType(con.type);
         newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
         
+        // looping through all the components in the connection
         con.components.forEach((c) => {
-            
             
             loadImage(c.imgPath, img => {
                 var newcomp = createNewComponent(img, c);
                 
                 var exists = false;
+                var existingComp;
                 if (allComps.get().length > 0) {
                     allComps.get().forEach((comp) => {
-                        // console.log(comp.getID());
-                        // console.log(id);
-                        // console.log(comp.getID() == id);
                         if (comp.getID() == newcomp.getID()) {
                             exists = true;
+                            existingComp = comp;
                         }
                     });
                 }
-                console.log(exists);
                 if (exists == false) {
-                    console.log("adding to all comps");
                     allComps.add(newcomp);
                 }
                 if (newconnection) {
-                    newconnection.addComponent(newcomp);
-                    allCons.add(newconnection);
+                    if (exists == true) {
+                        newconnection.addComponent(existingComp);
+                    }else {
+                        newconnection.addComponent(newcomp);
+                    }
                 }
             });
         });
+        allCons.add(newconnection);
     });
+
+
 }
 
 function createNewComponent(img, c) {

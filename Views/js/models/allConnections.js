@@ -11,7 +11,6 @@ var allConnections = (function() {
 
         
         function add(connection) {
-            selectedConnection = connection;
             _connections.push(connection);
         }
 
@@ -32,12 +31,16 @@ var allConnections = (function() {
             }else {
                 allCons.get().forEach((i) => {
                     
-                    // Prevents displaying incomplete set connections
-                    if (i != allCons.getSelectedConnection()) {
-                        
-                        // Checks if linking component wishs to hide its connection
-                        if (!(i.isHidden())) {
-                            i.defaultDisplay();
+                    if (i.getComponents()[0] && i.getComponents()[1]) {
+                        //console.log(i.getComponents()[0].getComponentName(), i.getComponents()[1].getComponentName());
+                        //console.log(allCons.getSelectedConnection());
+                        // Prevents displaying incomplete set connections
+                        if (i != allCons.getSelectedConnection()) {
+                            
+                            // Checks if linking component wishs to hide its connection
+                            if (!(i.isHidden())) {
+                                i.defaultDisplay();
+                            }
                         }
                     }
                 });
@@ -51,6 +54,9 @@ var allConnections = (function() {
         }
         function getSelectedConnection() {
             return selectedConnection;
+        }
+        function setSelectedConnection(val) {
+            selectedConnection = val;
         }
         function getDrawConnection() {
             return drawConnection;
@@ -102,6 +108,7 @@ var allConnections = (function() {
                 drawAllConnections:drawAllConnections,
                 removeConnection:removeConnection,
                 getSelectedConnection:getSelectedConnection,
+                setSelectedConnection:setSelectedConnection,
                 getSelectingSecondConnection:getSelectingSecondConnection,
                 selectConnectionForComp:selectConnectionForComp,
                 getDrawConnection: getDrawConnection,

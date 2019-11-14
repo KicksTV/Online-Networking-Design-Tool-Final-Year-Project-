@@ -138,6 +138,7 @@ function componentsBarConnections(title) {
                         c = Connection();
                         c.setType(state.buttons[i].getComponentType());
                         allCons.setDrawConnection(true);
+                        allCons.setSelectedConnection(c);
                     }
                     alert("Please select two components!");
                     allCons.add(c);
