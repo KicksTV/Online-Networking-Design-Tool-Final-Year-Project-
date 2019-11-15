@@ -48,10 +48,12 @@ const server = http.createServer((req, res) => {
 
     // Read file
     fs.readFile(filePath, (err, content) => {
+        let filename = path.basename(req.url).split(".");
         if (err) {
             if (err.code == 'ENOENT') {
                 // Page not found
                 fs.readFile(path.join(__dirname, 'Views', '404.html'), (err, content) => {
+                    //res.url = filename;
                     res.writeHead(200, {'Content-Type': 'text/html'});
                     res.end(content, 'utf8');
                 });
@@ -62,6 +64,7 @@ const server = http.createServer((req, res) => {
             }
         } else {
             // Success
+            //res.url = filename;
             res.writeHead(200, {'Content-Type': contentType});
             res.end(content, 'utf8');
         }
