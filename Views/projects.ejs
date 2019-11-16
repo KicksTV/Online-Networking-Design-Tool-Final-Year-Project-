@@ -1,0 +1,38 @@
+<html lang="en">
+    <% include partials/head %>
+    <body>
+        <% include partials/header %>
+
+        <div class="container-fluid">
+            <% if (typeof user !== 'undefined') { %>
+                <h1 class="display-4"><strong>Welcome back,<br> <% user.name %></strong></h1>
+            <% }else { %>
+                <h1 class="display-4"><strong>Create or load a project</strong></h1>
+                <div class="card" style="width: 18rem;">
+                    <img src="/assets/img/add.png" class="card-img-top" alt="Image of plus icon">
+                    <div class="card-body">
+                        <h5 class="card-title">New Project</h5>
+                        <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                        <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
+                    </div>
+                </div>
+                
+                <h1 class="display-4">Or, here are some included projects</h1>
+                
+                <% defaultProjects.projects.forEach((p) => { %>
+                    <div class="card" style="width: 18rem;">
+                        <img src="<%= p.projectIMG %>" class="card-img-top" alt="<%= p.projectIMGalt %>">
+                        <div class="card-body">
+                          <h5 class="card-title"><%= p.projectName %></h5>
+                          <p class="card-text"><%= p.projectDescription %></p>
+                          <a href="#" class="btn btn-primary">Load Project</a>
+                        </div>
+                      </div>
+                <% }); %>
+            <% } %>
+
+        </div>
+
+        <% include partials/scripts %>
+    </body>
+</html>

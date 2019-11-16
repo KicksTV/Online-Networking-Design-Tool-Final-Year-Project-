@@ -124,18 +124,18 @@ function preload() {
 
 
     // Creating button icons for TABS
-    button1 = Button('img/router.svg', 'component image', "Router").init();
-    button2 = Button('img/switch.svg', 'component image', "Switch").init();
-    button3 = Button('img/pc.svg', 'component image', "PC").init();
-    button4 = Button('img/printer.svg', 'component image', "Printer").init();
-    button5 = Button('img/laptop.svg', 'component image', "Laptop").init();
-    button6 = Button('img/smartphone.svg', 'component image', "Smartphone").init();
-    button7 = Button('img/server.svg', 'component image', "Server").init();
-    button8 = Button('img/cloud.svg', 'component image', "Cloud").init();
+    button1 = Button('/assets/img/router.svg', 'component image', "Router").init();
+    button2 = Button('/assets/img/switch.svg', 'component image', "Switch").init();
+    button3 = Button('/assets/img/pc.svg', 'component image', "PC").init();
+    button4 = Button('/assets/img/printer.svg', 'component image', "Printer").init();
+    button5 = Button('/assets/img/laptop.svg', 'component image', "Laptop").init();
+    button6 = Button('/assets/img/smartphone.svg', 'component image', "Smartphone").init();
+    button7 = Button('/assets/img/server.svg', 'component image', "Server").init();
+    button8 = Button('/assets/img/cloud.svg', 'component image', "Cloud").init();
 
-    button9 = Button('img/tp-cable.svg', 'Connection Image', 'Twisted Pair').init();
-    button10 = Button('img/coaxial-cable.svg', 'Connection Image', 'Coaxial').init();
-    button11 = Button('img/fibre-cable.svg', 'Connection Image', 'Fibre').init();
+    button9 = Button('/assets/img/tp-cable.svg', 'Connection Image', 'Twisted Pair').init();
+    button10 = Button('/assets/img/coaxial-cable.svg', 'Connection Image', 'Coaxial').init();
+    button11 = Button('/assets/img/fibre-cable.svg', 'Connection Image', 'Fibre').init();
     
     // Adding created buttons to TABS
     compBar.getBar().add(button1);
