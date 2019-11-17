@@ -5,7 +5,9 @@
     padding-left: .5rem;
 }
 
-
+a>.card:hover {
+    border-color: #007bff!important;
+}
 
 #barLabels {
     height: 20;

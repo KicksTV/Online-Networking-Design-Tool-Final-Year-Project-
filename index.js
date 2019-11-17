@@ -100,9 +100,10 @@ app.use('/assets', express.static('assets'));
 
 app.get('/', function (req, res) {
     var pagedata = {
-        'title': 'FrontPage'
+        'title': 'FrontPage',
+        'navExpand': 'show',
     };
-    res.render('frontpage', pagedata);
+    res.render('frontpage', {pagedata:pagedata});
 });
 app.get('/projects', function (req, res) {
     var user;
