@@ -132,10 +132,11 @@ function preload() {
     button6 = Button('/assets/img/smartphone.svg', 'component image', "Smartphone").init();
     button7 = Button('/assets/img/server.svg', 'component image', "Server").init();
     button8 = Button('/assets/img/cloud.svg', 'component image', "Cloud").init();
+    button9 = Button('/assets/img/wireless-access-point.svg', 'component image', "Access Point").init();
 
-    button9 = Button('/assets/img/tp-cable.svg', 'Connection Image', 'Twisted Pair').init();
-    button10 = Button('/assets/img/coaxial-cable.svg', 'Connection Image', 'Coaxial').init();
-    button11 = Button('/assets/img/fibre-cable.svg', 'Connection Image', 'Fibre').init();
+    button10 = Button('/assets/img/tp-cable.svg', 'Connection Image', 'Twisted Pair').init();
+    button11 = Button('/assets/img/coaxial-cable.svg', 'Connection Image', 'Coaxial').init();
+    button12 = Button('/assets/img/fibre-cable.svg', 'Connection Image', 'Fibre').init();
     
     // Adding created buttons to TABS
     compBar.getBar().add(button1);
@@ -146,9 +147,10 @@ function preload() {
     compBar.getBar().add(button6);
     compBar.getBar().add(button7);
     compBar.getBar().add(button8);
-    compConnectionBar.getBar().add(button9);
+    compBar.getBar().add(button9);
     compConnectionBar.getBar().add(button10);
     compConnectionBar.getBar().add(button11);
+    compConnectionBar.getBar().add(button12);
 
 }
 

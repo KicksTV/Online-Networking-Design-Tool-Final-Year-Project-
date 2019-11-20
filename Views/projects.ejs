@@ -44,16 +44,14 @@
                                 <div class="card-body">
                                 <h5 class="card-title"><%= p.projectName %></h5>
                                 <p class="card-text"><%= p.projectDescription %></p>
-                                <a href="#" class="btn btn-primary">Load Project</a>
+                                <button href="#" class="btn btn-primary" disabled>Load Project</button>
                                 </div>
                             </div>
                         <% }); %>
                     </div>
                 </div>
             <% } %>
-
         </div>
-
         <% include partials/scripts %>
     </body>
 </html>
