@@ -164,6 +164,7 @@ function setup() {
     canvasSideBar.parent("canvasRow");
     compBar.getBar().displayAllButtons();
 }
+
 function draw() {
     clear();
 
@@ -171,6 +172,9 @@ function draw() {
     applyGUIValuesToComp();
     allComps.displayAllComponents();
     updateMouseCursor();
+
+
+    checkForCopyAndPastEvent();
 }
 
 function mousePressed() {
@@ -352,6 +356,42 @@ function loadComponents(array) {
     });
 
 
+}
+var pasted = null;
+function checkForCopyAndPastEvent() {
+    if (keyIsDown(17) && keyIsDown(67)) {
+        // get the selected component
+        if (allComps.getSelectedComponent()) {
+            alert("Copied Component");
+            pasted = false;
+            console.log("copied"); 
+        }
+    }
+    if (keyIsDown(17) && keyIsDown(86) && pasted == false) {
+        if (allComps.getSelectedComponent()) {
+            var clonedComponent = clone(allComps.getSelectedComponent());
+            clonedComponent.setXpos(mouseX);
+            clonedComponent.setYpos(mouseY);
+            allComps.add(clonedComponent);
+            pasted = true;
+            console.log("paste"); 
+        }
+    }
+}
+
+function clone(obj) {
+    var newcomp = Component();
+    newcomp.setXpos(obj.getXpos());
+    newcomp.setYpos(obj.getYpos());
+    newcomp.setImage(obj.getImage());
+    newcomp.setType(obj.getType());
+    newcomp.setWidth(obj.getWidth());
+    newcomp.setHeight(obj.getHeight());
+    newcomp.setHideComponent(obj.getHideComponent());
+    newcomp.setHideConnections(obj.getHideConnections());
+    newcomp.setComponentName(obj.getComponentName());
+    newcomp.setTextSize(obj.getTextSize());
+    return newcomp;
 }
 
 function createNewComponent(img, c) {

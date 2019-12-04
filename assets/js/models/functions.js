@@ -13,7 +13,7 @@ const getterSetter = (state) => ({
     },
     setImage: (val) => {
         state.image = val;
-        return state.objectToReturn();
+        return state.image;
     },
     getType: () => {
         return state.type;
