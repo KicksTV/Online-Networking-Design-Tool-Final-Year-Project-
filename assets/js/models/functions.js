@@ -39,12 +39,12 @@ const getterSetter = (state) => ({
     setWidth: (val) => {
         state.image.width = val;
     },
-    getWidthMin: () => {
-        return state.widthMin;
-    },
-    getWidthMax: () => {
-        return state.widthMax;
-    },
+    // getWidthMin: () => {
+    //     return state.widthMin;
+    // },
+    // getWidthMax: () => {
+    //     return state.image.width+100;
+    // },
     getHeight: () => {
         return state.image.height;
     },
@@ -94,7 +94,8 @@ const getterSetter = (state) => ({
         state.guiParams = {
             'Name': state.componentName,
             'Width': state.image.width,
-            'Height': state.image.height,
+            'WidthMin': 65,
+            'WidthMax': 200,
             'TextSize': state.textSize,
             'TextSizeMax': 32,
             'HideComponent': state.hideComponent,

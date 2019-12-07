@@ -242,7 +242,8 @@ function mouseReleased() {
 function applyGUIValuesToComp() {
     if (gui != null) {
         // Compares the values of the two objects
-
+        // console.log(JSON.stringify(allComps.getSelectedComponent().getGuiParams()));
+        // console.log(JSON.stringify(guiParams));
         if (JSON.stringify(allComps.getSelectedComponent().getGuiParams()) != JSON.stringify(guiParams)) {
             console.log("applying gui params");
             if (guiParams) {
@@ -266,10 +267,10 @@ function applyCompValuesToGUI() {
         guiParams = {
             'Name': allComps.getSelectedComponent().getComponentName(),
             'Width': allComps.getSelectedComponent().getWidth(),
+            'WidthMin': 65,
+            'WidthMax': 200,
             'TextSize': allComps.getSelectedComponent().getTextSize(),
             'TextSizeMax': 32,
-            'WidthMin': 65,
-            'WidthMax': (allComps.getSelectedComponent().getWidth()+100),
             'HideComponent': allComps.getSelectedComponent().getHideComponent(),
             'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
@@ -357,22 +358,41 @@ function loadComponents(array) {
 
 
 }
-var pasted = null;
+var pasted;
+var copied;
+var cut;
 function checkForCopyAndPastEvent() {
     if (keyIsDown(17) && keyIsDown(67)) {
         // get the selected component
         if (allComps.getSelectedComponent()) {
             alert("Copied Component");
+            copied = true;
             pasted = false;
             console.log("copied"); 
         }
     }
+    if (keyIsDown(17) && keyIsDown(88)) {
+        // get the selected component
+        if (allComps.getSelectedComponent()) {
+            alert("Cut Component");
+            cut = true;
+            pasted = false;
+            console.log("Component is cut"); 
+        }
+    }
     if (keyIsDown(17) && keyIsDown(86) && pasted == false) {
         if (allComps.getSelectedComponent()) {
-            var clonedComponent = clone(allComps.getSelectedComponent());
-            clonedComponent.setXpos(mouseX);
-            clonedComponent.setYpos(mouseY);
-            allComps.add(clonedComponent);
+            if (copied) {
+                var clonedComponent = clone(allComps.getSelectedComponent());
+                clonedComponent.setXpos(mouseX);
+                clonedComponent.setYpos(mouseY);
+                allComps.add(clonedComponent);
+            }
+            else if (cut) {
+                var comp = allComps.getSelectedComponent();
+                comp.setXpos(mouseX);
+                comp.setYpos(mouseY);
+            }
             pasted = true;
             console.log("paste"); 
         }
