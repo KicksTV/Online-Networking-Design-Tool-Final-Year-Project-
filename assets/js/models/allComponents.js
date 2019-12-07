@@ -23,6 +23,9 @@ var allComponents = (function() {
         function add(comp) {
             _components.push(comp);
         }
+        function length() {
+            return _components.length;
+        }
         function getComponent() {
             return clickCheck;
         }
@@ -118,6 +121,7 @@ var allComponents = (function() {
             get:get,
             set:set,
             add:add,
+            length:length,
             getComponent:getComponent,
             setComponent:setComponent,
             getSelectedComponent:getSelectedComponent,

@@ -164,6 +164,7 @@ function setup() {
     canvasSideBar.parent("canvasRow");
     compBar.getBar().displayAllButtons();
 }
+
 function draw() {
     clear();
 
@@ -171,6 +172,9 @@ function draw() {
     applyGUIValuesToComp();
     allComps.displayAllComponents();
     updateMouseCursor();
+
+
+    checkForCopyAndPastEvent();
 }
 
 function mousePressed() {
@@ -238,7 +242,8 @@ function mouseReleased() {
 function applyGUIValuesToComp() {
     if (gui != null) {
         // Compares the values of the two objects
-
+        // console.log(JSON.stringify(allComps.getSelectedComponent().getGuiParams()));
+        // console.log(JSON.stringify(guiParams));
         if (JSON.stringify(allComps.getSelectedComponent().getGuiParams()) != JSON.stringify(guiParams)) {
             console.log("applying gui params");
             if (guiParams) {
@@ -262,10 +267,10 @@ function applyCompValuesToGUI() {
         guiParams = {
             'Name': allComps.getSelectedComponent().getComponentName(),
             'Width': allComps.getSelectedComponent().getWidth(),
+            'WidthMin': 65,
+            'WidthMax': 200,
             'TextSize': allComps.getSelectedComponent().getTextSize(),
             'TextSizeMax': 32,
-            'WidthMin': 65,
-            'WidthMax': (allComps.getSelectedComponent().getWidth()+100),
             'HideComponent': allComps.getSelectedComponent().getHideComponent(),
             'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
@@ -352,6 +357,61 @@ function loadComponents(array) {
     });
 
 
+}
+var pasted;
+var copied;
+var cut;
+function checkForCopyAndPastEvent() {
+    if (keyIsDown(17) && keyIsDown(67)) {
+        // get the selected component
+        if (allComps.getSelectedComponent()) {
+            alert("Copied Component");
+            copied = true;
+            pasted = false;
+            console.log("copied"); 
+        }
+    }
+    if (keyIsDown(17) && keyIsDown(88)) {
+        // get the selected component
+        if (allComps.getSelectedComponent()) {
+            alert("Cut Component");
+            cut = true;
+            pasted = false;
+            console.log("Component is cut"); 
+        }
+    }
+    if (keyIsDown(17) && keyIsDown(86) && pasted == false) {
+        if (allComps.getSelectedComponent()) {
+            if (copied) {
+                var clonedComponent = clone(allComps.getSelectedComponent());
+                clonedComponent.setXpos(mouseX);
+                clonedComponent.setYpos(mouseY);
+                allComps.add(clonedComponent);
+            }
+            else if (cut) {
+                var comp = allComps.getSelectedComponent();
+                comp.setXpos(mouseX);
+                comp.setYpos(mouseY);
+            }
+            pasted = true;
+            console.log("paste"); 
+        }
+    }
+}
+
+function clone(obj) {
+    var newcomp = Component();
+    newcomp.setXpos(obj.getXpos());
+    newcomp.setYpos(obj.getYpos());
+    newcomp.setImage(obj.getImage());
+    newcomp.setType(obj.getType());
+    newcomp.setWidth(obj.getWidth());
+    newcomp.setHeight(obj.getHeight());
+    newcomp.setHideComponent(obj.getHideComponent());
+    newcomp.setHideConnections(obj.getHideConnections());
+    newcomp.setComponentName(obj.getComponentName());
+    newcomp.setTextSize(obj.getTextSize());
+    return newcomp;
 }
 
 function createNewComponent(img, c) {
