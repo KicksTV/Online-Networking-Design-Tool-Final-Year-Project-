@@ -387,11 +387,13 @@ function checkForCopyAndPastEvent() {
                 clonedComponent.setXpos(mouseX);
                 clonedComponent.setYpos(mouseY);
                 allComps.add(clonedComponent);
+                copied = false;
             }
             else if (cut) {
                 var comp = allComps.getSelectedComponent();
                 comp.setXpos(mouseX);
                 comp.setYpos(mouseY);
+                cut = false;
             }
             pasted = true;
             console.log("paste"); 
