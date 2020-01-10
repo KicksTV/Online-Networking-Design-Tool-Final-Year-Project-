@@ -32,6 +32,7 @@ function Connection(type) {
             centerPos = state.components[0].getCenterPos();
             x = centerPos[0];
             y = centerPos[1];
+            stroke('black');
             strokeWeight(2);
             line(x, y, state.mousePos[0], state.mousePos[1]);
         },
@@ -42,6 +43,7 @@ function Connection(type) {
             y1 = centerPos1[1];
             x2 = centerPos2[0];
             y2 = centerPos2[1];
+            stroke('black');
             line(x1, y1, x2, y2);
         },
         isHidden: () => {
