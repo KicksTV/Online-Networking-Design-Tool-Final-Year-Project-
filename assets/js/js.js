@@ -155,6 +155,8 @@ function preload() {
 }
 
 function setup() {
+    frameRate(60);
+
     var canvas = createCanvas((windowWidth - 240), windowHeight);
     canvas.parent("canvasDiv");
 
@@ -180,7 +182,22 @@ function draw() {
 function mousePressed() {
     allComps.setComponent(allComps.getCurrentSelectedComponent(mouseX, mouseY));
     if (allComps.getComponent() != null) {
+
+        var multiSelect = checkForMultiSelect();
+        if (!allComps.hasClickedSelectedComponent(allComps.getComponent()) && !multiSelect) {
+            allComps.clearSelectList();
+        }
+        if (allComps.isSelectListEmpty()) {
+            allComps.addSelectList(allComps.getComponent());
+        }
+        if (multiSelect) {
+            if (!allComps.hasClickedSelectedComponent(allComps.getComponent())) {
+                allComps.addSelectList(allComps.getComponent());
+            }
+        }
         allComps.setSelectedComponent(allComps.getComponent());
+    }else {
+        allComps.clearSelectList();
     }
     if (allComps.getComponent() != null) {
 
@@ -219,8 +236,18 @@ function mouseMoved() {
     }
 }
 
-function mouseDragged() {
-    if (allComps.getComponent() != null) {
+function mouseDragged(event) {
+    //console.log(event.movementX);
+    //console.log(event.movementY);
+    if (allComps.getSelectList().length > 1) {
+        console.log("multi move");
+        allComps.getSelectList().forEach((c) => {
+            c.multiMove(event.movementX, event.movementY);
+        });
+        allComps.setComponentDrag(true);
+    }
+    else if (allComps.getComponent() != null) {
+        console.log("default move");
         allComps.getComponent().move(mouseX, mouseY);
         allComps.setComponentDrag(true);
     }
@@ -398,6 +425,13 @@ function checkForCopyAndPastEvent() {
             pasted = true;
             console.log("paste"); 
         }
+    }
+}
+function checkForMultiSelect() {
+    if (keyIsDown(17)) {
+        return true;
+    }else {
+        return false;
     }
 }
 

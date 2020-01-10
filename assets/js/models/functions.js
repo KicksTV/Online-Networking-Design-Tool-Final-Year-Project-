@@ -123,6 +123,7 @@ const clicker = (state) => ({
 const componentDisplayer = (state) => ({
     display: () => {
         image(state.image, state.Xpos, state.Ypos);
+        noStroke();
         textSize(state.textSize);
         text(state.componentName, state.Xpos, state.Ypos + state.image.height, state.image.width, 30);
         textAlign(CENTER, CENTER);
@@ -143,6 +144,14 @@ const mover = (state) => ({
         }
         if (windowHeight > (y + state.image.height) && 0 < y) {
             state.Ypos = y;
+        }
+    },
+    multiMove: (x, y) => {
+        if ((windowWidth- 240) > (x + state.image.width) && 0 < (x + state.Xpos)) {
+            state.Xpos += x;
+        }
+        if (windowHeight > (y + state.image.height) && 0 < (y + state.Ypos)) {
+            state.Ypos += y;
         }
     }
 });

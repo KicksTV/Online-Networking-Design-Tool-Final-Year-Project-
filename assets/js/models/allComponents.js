@@ -8,6 +8,7 @@ var allComponents = (function() {
         var selectedComponent = null;
         var newlyCreatedComp = null;
         var preComputer = null;
+        var _multiSelectList = [];
 
         var componentHover = false;
         var componentDrag = false;
@@ -71,10 +72,40 @@ var allComponents = (function() {
         function setSelectCompForDelete(val) {
             selectCompForDelete = val;
         }
+        function hasClickedSelectedComponent(comp) {
+            var b = false;
+            if (comp == selectedComponent) {
+                b = true;
+            }else {
+                _multiSelectList.forEach((c) => {
+                    if (c.getID() === comp.getID()) {
+                        console.log(c.getID() === comp.getID());
+                        b = true;
+                    }
+                });
+            }
+            return b;
+        }
         function isEmpty() {
             if (_components.length == 0) {
                 return true;
-            }else {
+            } else {
+                return false;
+            }
+        }
+        function addSelectList(comp) {
+            _multiSelectList.push(comp);
+        }
+        function getSelectList() {
+            return _multiSelectList;
+        }
+        function clearSelectList() {
+            _multiSelectList = [];
+        }
+        function isSelectListEmpty() {
+            if (_multiSelectList.length == 0) {
+                return true;
+            } else {
                 return false;
             }
         }
@@ -85,9 +116,14 @@ var allComponents = (function() {
                     if (typeof _components[i] !== 'undefined') {
                         // Check if hideComponent is true or false
                         if (!_components[i].getHideComponent()) {
+                            if (allComps.hasClickedSelectedComponent(_components[i])) {
+                                stroke(color(0, 0, 255));
+                                strokeWeight(1);
+                                rect(_components[i].getXpos()-20, _components[i].getYpos()-20, _components[i].getWidth()+40, _components[i].getHeight()+40);
+                            }
                             _components[i].display();
                         }
-                    }else {
+                    } else {
                         console.log("comp undefined");
                     }
                 }
@@ -124,6 +160,11 @@ var allComponents = (function() {
             length:length,
             getComponent:getComponent,
             setComponent:setComponent,
+            addSelectList:addSelectList,
+            getSelectList:getSelectList,
+            clearSelectList:clearSelectList,
+            isSelectListEmpty:isSelectListEmpty,
+            hasClickedSelectedComponent:hasClickedSelectedComponent,
             getSelectedComponent:getSelectedComponent,
             setSelectedComponent:setSelectedComponent,
             getNewlyCreatedComp:getNewlyCreatedComp,
