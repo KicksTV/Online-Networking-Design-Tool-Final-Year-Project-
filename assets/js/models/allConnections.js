@@ -67,21 +67,45 @@ var allConnections = (function() {
         function getSelectingSecondConnection() {
             return selectingSecondConnection;
         }
-        function selectConnectionForComp(comp) {
+        function selectConnectionForComp(comp1) {
             console.log("adding comp to selected connection");
-            selectedConnection.addComponent(comp);
-            comp.setHasConnection(true);
+            
+            // getting second connection
+            var comp2 = selectedConnection.getComponents()[0];
+            comp1.setHasConnection(true);
             compAddConnectionCounter++;
+
+            if (compAddConnectionCounter == 2) {
+                if (allVRules.isValidConnection(comp1.getType(), comp2.getType())) {
+                    // Adding component to connection object
+                    selectedConnection.addComponent(comp1);
+                } else {
+                    // Deleting connection object
+                    removeConnection(selectedConnection);
+
+                    // display error message
+                    print(allVRules.getLastBrokenRule().getWarningMsg());
+                }
+            } else {
+                // Adding component to connection object
+                selectedConnection.addComponent(comp1);
+            }
+
+            
             if (compAddConnectionCounter == 1) {
+                // Second component should now be selected
                 selectingSecondConnection = true;
             }
             else if (compAddConnectionCounter == 2) {
+                
+                // End selection process
                 drawConnection = false;
                 selectingSecondConnection = false;
                 selectedConnection = null;
                 compAddConnectionCounter=0;
                 updateMouseCursor();
             }
+            print(get());
         }
         function drawConnetions(xmouse, ymouse) {
             if (selectingSecondConnection == true) {

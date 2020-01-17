@@ -5,6 +5,8 @@ var allTabs = allComponentBarTabs.getInstance();
 var allCons = allConnections.getInstance();
 
 var allComps = allComponents.getInstance();
+var allVRules = allValidationRules.getInstance();
+
 
 var guiParams;
 
@@ -152,6 +154,19 @@ function preload() {
     compConnectionBar.getBar().add(button11);
     compConnectionBar.getBar().add(button12);
 
+    var validationRules1 = validationRule("Server","Smartphone", false, "Connection is not allowed!");
+    var validationRules2 = validationRule("Access Point","Cloud", false, "Connection is not allowed!");
+    var validationRules3 = validationRule("Smartphone","Switch", false, "Connection is not allowed!");
+    var validationRules4 = validationRule("Laptop","Smartphone", false, "Connection is not allowed!");
+    var validationRules5 = validationRule("Access Point","Laptop", false, "Connection is not allowed!");
+    var validationRules6 = validationRule("Access Point","Printer", false, "Connection is not allowed!");
+
+    allVRules.add(validationRules1);
+    allVRules.add(validationRules2);
+    allVRules.add(validationRules3);
+    allVRules.add(validationRules4);
+    allVRules.add(validationRules5);
+    allVRules.add(validationRules6);
 }
 
 function setup() {
