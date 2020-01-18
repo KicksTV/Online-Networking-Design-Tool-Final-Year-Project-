@@ -255,14 +255,14 @@ function mouseDragged(event) {
     //console.log(event.movementX);
     //console.log(event.movementY);
     if (allComps.getSelectList().length > 1) {
-        console.log("multi move");
+        //console.log("multi move");
         allComps.getSelectList().forEach((c) => {
             c.multiMove(event.movementX, event.movementY);
         });
         allComps.setComponentDrag(true);
     }
     else if (allComps.getComponent() != null) {
-        console.log("default move");
+        //console.log("default move");
         allComps.getComponent().move(mouseX, mouseY);
         allComps.setComponentDrag(true);
     }

@@ -18,6 +18,7 @@ function Component(type, path, image) {
         "componentName": `${type}_${counter}`,
         "textSize": 10,
         "guiParams": null,
+        "validLinkingComponents": ["Twisted Pair"],
     }
 
     const componentInitiator = (state) => ({

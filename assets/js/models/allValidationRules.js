@@ -17,13 +17,15 @@ var allValidationRules = (function() {
         }
         function isValidConnection(type1, type2) {
             validConnection = true;
+            
             _rules.forEach((r) => {
-
                 if (r.getRuleType(0) == type1 && r.getRuleType(1) == type2 || r.getRuleType(0) == type2 && r.getRuleType(1) == type1) {
                     lastBrokenRule = r;
+                    print("lastBrokenRule");
                     validConnection = false;
                 }
             });
+            
             return validConnection;
         }
         function getLastBrokenRule() {

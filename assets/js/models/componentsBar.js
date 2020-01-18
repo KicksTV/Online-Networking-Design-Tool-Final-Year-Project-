@@ -77,9 +77,17 @@ function compentsBarComponents(title) {
                         img.width = img.width/2;
                         img.height = img.height/2;
                         let newcomp = Component(type, path, img).init();
+                        
+                        // NEED FUCNTION TO LOAD COMP PROPORTIES
+                        
+                        //TEMP needs to be removed!!!!!!!!!!!!!!!!
+                        if (newcomp.getType() == "Smartphone") {
+                            newcomp.setValidLinkningComponents([]);
+                        }
+                        
+                        
                         allComps.setNewlyCreatedComp(newcomp);
                         // ADDS IT TO ARRAY OF ALL components
-
                         allComps.add(newcomp);
                     });
                 });
@@ -141,7 +149,7 @@ function componentsBarConnections(title) {
                         allCons.setSelectedConnection(c);
                     }
                     alert("Please select two components!");
-                    allCons.add(c);
+                    
                 });
             }
         },

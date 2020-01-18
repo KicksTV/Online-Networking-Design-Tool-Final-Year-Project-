@@ -90,6 +90,15 @@ const getterSetter = (state) => ({
     setTextSize: (val) => {
         state.textSize = val;
     },
+    getValidLinkingComponent: (index) => {
+        return state.validLinkingComponents[index];
+    },
+    setValidLinkningComponents: (comps) => {
+        state.validLinkingComponents = comps;
+    },
+    addValidLinkningComponent: (comp) =>  {
+        state.validLinkingComponents.push(comp);
+    },
     getGuiParams: () => {
         state.guiParams = {
             'Name': state.componentName,
@@ -104,6 +113,15 @@ const getterSetter = (state) => ({
             'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
         };
         return state.guiParams;
+    },
+    checkValidLinkingComponent: (comp) => {
+        var isValid = false;
+        state.validLinkingComponents.forEach((c)=> {
+            if (comp.getType() == c) {
+                isValid = true;
+            }
+        });
+        return isValid;
     },
 });
 

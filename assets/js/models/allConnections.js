@@ -67,43 +67,56 @@ var allConnections = (function() {
         function getSelectingSecondConnection() {
             return selectingSecondConnection;
         }
-        function selectConnectionForComp(comp1) {
+        function selectConnectionForComp(comp) {
             console.log("adding comp to selected connection");
-            
             // getting second connection
-            var comp2 = selectedConnection.getComponents()[0];
-            comp1.setHasConnection(true);
+            var preComp = selectedConnection.getComponents()[0];
+            //comp.setHasConnection(true);
             compAddConnectionCounter++;
 
+            // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
-                if (allVRules.isValidConnection(comp1.getType(), comp2.getType())) {
+                //print(checkValidConnection(true, comp, preComp));
+                if (checkValidConnection(true, comp, preComp)) {
                     // Adding component to connection object
-                    selectedConnection.addComponent(comp1);
+                    selectedConnection.addComponent(comp);
                 } else {
                     // Deleting connection object
                     removeConnection(selectedConnection);
 
                     // display error message
-                    print(allVRules.getLastBrokenRule().getWarningMsg());
+                    alert("Connection type not possible!");
                 }
-            } else {
-                // Adding component to connection object
-                selectedConnection.addComponent(comp1);
-            }
 
-            
-            if (compAddConnectionCounter == 1) {
-                // Second component should now be selected
-                selectingSecondConnection = true;
-            }
-            else if (compAddConnectionCounter == 2) {
-                
                 // End selection process
                 drawConnection = false;
                 selectingSecondConnection = false;
                 selectedConnection = null;
                 compAddConnectionCounter=0;
                 updateMouseCursor();
+            } 
+            else if (compAddConnectionCounter == 1) {
+                if (checkValidConnection(false, comp, null)) {
+                    print("connecting first component");
+                    // Second component should now be selected
+                    selectingSecondConnection = true;
+                    // Adding component to connection object
+                    print(comp);
+                    selectedConnection.addComponent(comp);
+                    allCons.add(c);
+                } else {
+                    // End selection process
+                    drawConnection = false;
+                    selectingSecondConnection = false;
+                    selectedConnection = null;
+                    compAddConnectionCounter=0;
+                    updateMouseCursor();
+
+                    // Deleting connection object
+                    removeConnection(selectedConnection);
+
+                    alert("Connection type not possible!");
+                }
             }
             print(get());
         }
@@ -123,6 +136,23 @@ var allConnections = (function() {
                 }
             });
             return relatedConnections;
+        }
+        function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
+            var isValidConnection = false;
+            var isValidConnectionType1 = comp.checkValidLinkingComponent(selectedConnection);
+            if (hasSelectedBothComponents) {
+                var isValidConnectionType2 = preComp.checkValidLinkingComponent(selectedConnection);
+                if (allVRules.isValidConnection(comp.getType(), preComp.getType()) && isValidConnectionType1 && isValidConnectionType2) {
+                    isValidConnection = true;
+                }
+                print(isValidConnectionType2);
+            } else {
+                if (isValidConnectionType1) {
+                    isValidConnection = true;
+                }
+            }
+            print(isValidConnectionType1);
+            return isValidConnection;
         }
 
         return {add:add,
