@@ -114,6 +114,8 @@
         _titleBar: null,
         _content: null,
         _pinButton: null,
+        _pinIcon: null,
+
         _startX: 0,
         _startY: 0,
         _hidden: false,
@@ -281,11 +283,11 @@
             this._titleBar = createElement("div", null, "qs_title_bar", this._panel);
             this._titleBar.textContent = text;
 
-            this._pinButton = createElement("div", null, "qs_pin_container offset-sm-8 col-sm-1", this._titleBar);
-            var button = createInput("button", null, "qs_pin_button", this._pinButton);
+            this._pinButton = createElement("div", null, "qs_pin_container", this._titleBar);
+            this._pinIcon = createElement("i", null, "fas fa-thumbtack", this._pinButton);
+            this._pinIcon.style.transform = "rotate(30deg)";
+            this._pinIcon.addEventListener("click", this._pin);
 
-            button.addEventListener("click", this._pin);
-            
             
             this._titleBar.addEventListener("mousedown", this._startDrag);
             this._titleBar.addEventListener("dblclick", this._doubleClickTitle);
@@ -401,14 +403,16 @@
         },
 
         _drag: function (event) {
-            var x = parseInt(this._panel.style.left),
-                y = parseInt(this._panel.style.top),
-                mouseX = event.clientX,
-                mouseY = event.clientY;
+            if (! this._pinned) {
+                var x = parseInt(this._panel.style.left),
+                    y = parseInt(this._panel.style.top),
+                    mouseX = event.clientX,
+                    mouseY = event.clientY;
 
-            this.setPosition(x + mouseX - this._startX, y + mouseY - this._startY);
-            this._startX = mouseX;
-            this._startY = mouseY;
+                this.setPosition(x + mouseX - this._startX, y + mouseY - this._startY);
+                this._startX = mouseX;
+                this._startY = mouseY;
+            }
             event.preventDefault();
         },
 
@@ -421,12 +425,19 @@
         _pin: function (event) {
             console.log("pin");
             if (this._pinned) {
-                this._panel.style.position = "absolute";
-                this._panel.style.float = "none";
+                this._pinIcon.style.transform = "rotate(30deg)";
+                
+                var mouseX = event.clientX;
+                this._panel.style.left = mouseX - 300;
                 this._pinned = false;
             }else {
-                this._panel.style.position = "static";
-                canvasSideBar.child(this._panel);
+                this._pinIcon.style.transform = "rotate(0deg)";
+                
+                this._panel.style.right = 0;
+                this._panel.style.left = "initial";
+
+                // Starting top position of canvas
+                this._panel.style.top = 189;
                 this._pinned = true;
             }
             event.preventDefault();

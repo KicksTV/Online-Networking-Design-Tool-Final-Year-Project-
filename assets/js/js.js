@@ -485,6 +485,6 @@ function createNewComponent(img, c) {
 
 // dynamically adjust the canvas to the window
 function windowResized() {
-    resizeCanvas((windowWidth - 240), windowHeight);
+    resizeCanvas((windowWidth), windowHeight);
 }
 

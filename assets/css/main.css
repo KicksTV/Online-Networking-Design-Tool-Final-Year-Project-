@@ -45,6 +45,11 @@ a>.card:hover {
 }
 .qs_pin_container {
     display: inline-block;
+    float: right;
+    margin-right: 5px;
+}
+.qs_pin_button {
+
 }
 .qs_connection {
     display: inline-block;
