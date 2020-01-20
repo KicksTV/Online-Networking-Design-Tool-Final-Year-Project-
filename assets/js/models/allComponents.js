@@ -79,7 +79,6 @@ var allComponents = (function() {
             }else {
                 _multiSelectList.forEach((c) => {
                     if (c.getID() === comp.getID()) {
-                        console.log(c.getID() === comp.getID());
                         b = true;
                     }
                 });
@@ -152,6 +151,13 @@ var allComponents = (function() {
                 return false;
             }
         }
+        function removeComponent(comp) {
+            var index = allComps.get().findIndex(c => c === comp);
+            // creates a new list without the component.
+            _components = allComps.get().filter((value, i, arr) => {
+                return i != index; 
+            });
+        }
 
         return {
             get:get,
@@ -182,6 +188,7 @@ var allComponents = (function() {
             displayAllComponents:displayAllComponents,
             getCurrentSelectedComponent:getCurrentSelectedComponent,
             doesComponentExist:doesComponentExist,
+            removeComponent:removeComponent,
         };   
     }
 

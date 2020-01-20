@@ -1723,52 +1723,12 @@
                     });
                 });
             }
-            
-            //console.log(connections);
-
-            //console.log("creating qs connections");
-
-            // for (var i = 0; i < items.length; i++) {
-            //     var option = createElement("option"),
-            //         item = items[i];
-            //     if (item.label) {
-            //         option.value = item.value;
-            //         option.innerText = item.label;
-            //     }
-            //     else {
-            //         option.label = item;
-            //         option.innerText = item;
-            //     }
-            //     select.add(option);
-            // }
-            
-
             var self = this;
-            // select.addEventListener("change", function () {
-            //     var index = select.selectedIndex,
-            //         options = select.options;
-
-            //     if (callback) {
-            //         callback({
-            //             index: index,
-            //             label: options[index].label,
-            //             value: items[index].value || items[index]
-            //         });
-            //     }
-            //     self._callGCH(title);
-            // });
-
             this._controls[title] = {
                 container: container,
                 label: label,
                 div: div,
                 getValue: function () {
-                    // var index = this.control.selectedIndex;
-                    // return {
-                    //     index: index,
-                    //     label: this.control.options[index].label,
-                    //     value: items[index].value || items[index]
-                    // }
                     console.log("getValue");
                     return this.control.connections;
                 },
@@ -1779,6 +1739,8 @@
                             div.removeChild(div.lastChild);
                         }
                         value.forEach((i) => {
+                            
+                            // Creates all the HTML display of all connections for a given component
                             var conContainer = createElement("div", null, null, div);
                             createCustomElement("p", "- " + i.getComponents()[0].getComponentName(), null, "qs_connection", conContainer);
                             createCustomElement("p", "&#8594;", null, "qs_arrow", conContainer);
@@ -1788,9 +1750,11 @@
                             createCustomElement("span", "", null, "fas fa-trash-alt", trashButton);
 
                             trashButton.addEventListener("click", function () {
-                                allCons.removeConnection(i);
+                                // removes connection and returns updated list without the removed connection
+                                var connections = allCons.removeConnection(i);
+                                // When delete button is pressed, call function again to refresh properties bar
                                 if (callback) {
-                                    callback(allCons.getConnectionsRelatedToComp(selectedComponent));
+                                    callback(connections);
                                 }
                                 self._callGCH(title);
                             });

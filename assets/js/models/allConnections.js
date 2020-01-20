@@ -51,6 +51,7 @@ var allConnections = (function() {
             _connections = _connections.filter((value, i, arr) => {
                 return i != index; 
             });
+            return _connections;
         }
         function getSelectedConnection() {
             return selectedConnection;

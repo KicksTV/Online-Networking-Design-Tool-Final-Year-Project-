@@ -172,13 +172,9 @@ function preload() {
 function setup() {
     frameRate(60);
 
-    var canvas = createCanvas((windowWidth - 240), windowHeight);
+    var canvas = createCanvas((windowWidth), windowHeight);
     canvas.parent("canvasDiv");
 
-    canvasSideBar = createDiv();
-    canvasSideBar.class("col-md-auto");
-    canvasSideBar.id("canvasSideBar");
-    canvasSideBar.parent("canvasRow");
     compBar.getBar().displayAllButtons();
 }
 
@@ -211,30 +207,17 @@ function mousePressed() {
             }
         }
         allComps.setSelectedComponent(allComps.getComponent());
-    }else {
-        allComps.clearSelectList();
-    }
-    if (allComps.getComponent() != null) {
 
         applyCompValuesToGUI();
-
-
-        // Checks if user has pressed the delete component button
-        if (allComps.getSelectCompForDelete()) {
-            var comp = allComps.getComponent();
-            var index = allComps.get().findIndex(c => c === comp);
-            var newList = allComps.get().filter((value, i, arr) => {
-                return i != index; 
-            });
-            allComps.set(newList);
-            gui.hide();
-            allComps.setSelectCompForDelete(false);
-        }
+        checkComponentDeleteEvent();
 
         // Checks if users is selecting two components to make a connection
         if (allCons.getDrawConnection()) {
             allCons.selectConnectionForComp(allComps.getComponent());
         }
+
+    }else {
+        allComps.clearSelectList();
     }
 }
 
@@ -447,6 +430,25 @@ function checkForMultiSelect() {
         return true;
     }else {
         return false;
+    }
+}
+
+function checkComponentDeleteEvent() {
+    // Checks if user has pressed the delete canvas button
+    if (allComps.getSelectCompForDelete()) {
+        
+        var comp = allComps.getComponent();
+        allComps.removeComponent(comp);
+        gui.hide();
+
+        // get connection
+        var connectionsToDel = allCons.getConnectionsRelatedToComp(comp);
+        connectionsToDel.forEach((c) => {
+            allCons.removeConnection(c);
+        });
+
+
+        allComps.setSelectCompForDelete(false);
     }
 }
 
