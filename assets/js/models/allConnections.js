@@ -51,7 +51,6 @@ var allConnections = (function() {
             _connections = _connections.filter((value, i, arr) => {
                 return i != index; 
             });
-            return _connections;
         }
         function getSelectedConnection() {
             return selectedConnection;
@@ -90,6 +89,9 @@ var allConnections = (function() {
                 }
 
                 // End selection process
+
+                comp.setHasConnection(true);
+                preComp.setHasConnection(true);
                 drawConnection = false;
                 selectingSecondConnection = false;
                 selectedConnection = null;
@@ -104,6 +106,8 @@ var allConnections = (function() {
                     // Adding component to connection object
                     print(comp);
                     selectedConnection.addComponent(comp);
+                    
+                    // adding connection to list of allCons
                     allCons.add(c);
                 } else {
                     // End selection process
@@ -127,16 +131,16 @@ var allConnections = (function() {
             }
         }
         function getConnectionsRelatedToComp(c) {
-            var relatedConnections = [];
+            var _relatedConnections = [];
 
             _connections.forEach((i) => {
                 if (i != selectedConnection) {
                     if (c == i.getComponents()[0] || c == i.getComponents()[1]) {
-                        relatedConnections.push(i);
+                        _relatedConnections.push(i);
                     }
                 }
             });
-            return relatedConnections;
+            return _relatedConnections;
         }
         function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
             var isValidConnection = false;

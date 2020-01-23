@@ -25,6 +25,9 @@ function Connection(type) {
         getComponents: () => {
             return state.components;
         },
+        getComponent: (index) => {
+            return state.components[index];
+        },
         setComponent: (index, val) => {
             state.components[index] = val;
         },

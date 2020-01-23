@@ -7,6 +7,7 @@ var allCons = allConnections.getInstance();
 var allComps = allComponents.getInstance();
 var allVRules = allValidationRules.getInstance();
 
+var numberOfSubnetsForComponent = 0;
 
 var guiParams;
 
@@ -85,8 +86,10 @@ window.onload = function() {
                 var newcon = Connection();
                 newcon.setType(c.getType());
                 newcon.setMousePos(c.getMousePos()[0], c.getMousePos()[1]);
-                newcon.addComponent(c.getComponents()[0].prepareForJson());
-                newcon.addComponent(c.getComponents()[1].prepareForJson());
+                //print(c.getComponent(0).prepareForJson());
+                //print(c.getComponent(1).prepareForJson());
+                newcon.addComponent(c.getComponent(0).prepareForJson());
+                newcon.addComponent(c.getComponent(1).prepareForJson());
                 json.connections.push(newcon.getJSON());
             });
 
@@ -299,6 +302,8 @@ function applyCompValuesToGUI() {
             'HideComponent': allComps.getSelectedComponent().getHideComponent(),
             'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
+            'TotalSubnets': calculateAllSubnets(),
+            'TotalHosts': calculateAllHost(),
             'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
         };
@@ -310,10 +315,14 @@ function applyCompValuesToGUI() {
         gui.setValue('TextSize', allComps.getSelectedComponent().getTextSize());
         gui.setValue('HideConnections', allComps.getSelectedComponent().getHideConnections());
         gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
+        gui.setValue('TotalSubnets', calculateAllSubnets());
+        gui.setValue('TotalHosts', calculateAllHost());
     }
     gui.setTitle(allComps.getSelectedComponent().getComponentName());
     gui.show();
 }
+
+
 
 function updateMouseCursor() {
     if (allComps.getComponentDrag()) {
@@ -329,6 +338,8 @@ function updateMouseCursor() {
         document.body.style.cursor = "default"; 
     }
 }
+
+// PROJECT LOADING FUNCTION
 
 function loadComponents(array) {
     
@@ -356,6 +367,9 @@ function loadComponents(array) {
             loadImage(c.imgPath, img => {
                 var newcomp = createNewComponent(img, c);
                 
+                // comp has a connection
+                newcomp.setHasConnection(true);
+
                 var exists = false;
                 var existingComp;
                 if (allComps.get().length > 0) {
@@ -453,11 +467,9 @@ function checkComponentDeleteEvent() {
 }
 
 function clone(obj) {
-    var newcomp = Component();
+    var newcomp = Component(obj.getType(), obj.getImgPath(), obj.getImage()).init();
     newcomp.setXpos(obj.getXpos());
     newcomp.setYpos(obj.getYpos());
-    newcomp.setImage(obj.getImage());
-    newcomp.setType(obj.getType());
     newcomp.setWidth(obj.getWidth());
     newcomp.setHeight(obj.getHeight());
     newcomp.setHideComponent(obj.getHideComponent());
@@ -482,6 +494,102 @@ function createNewComponent(img, c) {
     newcomp.setTextSize(c.textSize);
     
     return newcomp;
+}
+
+
+// network functions
+
+function calculateAllHost() {
+    var totalNumberOfHosts = 0;
+
+    allComps.get().forEach((comp) => {
+        if (comp.getType() == "PC" || comp.getType() == "Laptop" || 
+            comp.getType() == "Printer" || comp.getType() == "Smartphone" ||
+            comp.getType() == "Server") {
+
+                totalNumberOfHosts += 1;
+        }
+    });
+
+    return totalNumberOfHosts.toString();
+}
+
+function calculateAllSubnets() {
+    var totalNumberOfSubnets = 0;
+    var connections = [];
+    
+    allComps.get().forEach((comp) => {
+        //print(comp.getComponentName());
+        //print(allCons.getConnectionsRelatedToComp(comp));
+        if (comp.getType() == "Router") {
+            //print("found router");
+            allCons.getConnectionsRelatedToComp(comp).forEach((con) => {
+                connections.push(con);
+            });
+        }
+    });
+    if (connections != null) {
+        connections = connections.filter((connections, index, self) =>
+            index === self.findIndex((c) => (
+                c.getComponent(0).getID() === connections.getComponent(0).getID() &&
+                c.getComponent(1).getID() === connections.getComponent(1).getID()
+            ))
+        );
+        totalNumberOfSubnets += connections.length;
+    }
+    return totalNumberOfSubnets.toString();
+}
+
+function calculateSubnets(comp) {
+    if (allComps.getComponent().getType() == "Router" && comp == null) {
+        var routerConnections = allCons.getConnectionsRelatedToComp(subnetRouter);
+
+        numberOfSubnetsForComponent = routerConnections.length;
+    } else {
+        if (comp == null) {
+            var connections = allCons.getConnectionsRelatedToComp(allComps.getComponent());
+        } else {
+            var connections = allCons.getConnectionsRelatedToComp(comp);
+        }   
+        // check for router or switch connection
+        var check = searchForConnectionToRouter(connections);
+
+        var subnetRouter = check[0];
+        var Switch = check[1];
+
+        if (subnetRouter != null) {
+            var routerConnections = allCons.getConnectionsRelatedToComp(subnetRouter);
+            numberOfSubnetsForComponent = routerConnections.length;
+        } else {
+            numberOfSubnetsForComponent = 0;
+            if (Switch != null) {
+                calculateSubnets(Switch)
+            }
+        }
+    }
+
+}
+
+function searchForConnectionToRouter(connections) {
+    var subnetRouter = null;
+    var Switch = null;
+    
+    connections.forEach((c) => {
+        if (c.getComponent(0).getType() == "Router") {
+            subnetRouter = c.getComponent(0);
+        }
+        else if (c.getComponent(1).getType() == "Router") {
+            subnetRouter = c.getComponent(1);
+        } else {
+            if (c.getComponent(0).getType() == "Switch") {
+                Switch = c.getComponent(0);
+            }
+            else if (c.getComponent(1).getType() == "Switch") {
+                Switch = c.getComponent(1);
+            }
+        }
+    });
+    return [subnetRouter, Switch];
 }
 
 

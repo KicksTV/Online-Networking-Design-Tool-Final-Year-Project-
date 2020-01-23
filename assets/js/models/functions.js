@@ -8,6 +8,12 @@ const getterSetter = (state) => ({
     setID: (val) => {
         state.id = val;
     },
+    getImgPath: () => {
+        return state.imgPath;
+    },
+    setImgPath: (path) => {
+        state.imgPath = path;
+    },
     getImage: () => {
         return state.image;
     },
@@ -72,7 +78,7 @@ const getterSetter = (state) => ({
     setIsClicked: (val) => {
         state.isClicked = val;
     },
-    getHasConnection: () => {
+    hasConnection: () => {
         return state.hasConnection;
     },
     setHasConnection: (val) => {

@@ -28,6 +28,8 @@ function Component(type, path, image) {
             
             state.aspectRatio[0] = state.image.width;
             state.aspectRatio[1] = state.image.heigt;
+
+            //print(state);
             return Object.assign(
                 componentInitiator(state),
                 clicker(state),
