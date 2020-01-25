@@ -95,7 +95,7 @@ window.onload = function() {
 
             // looping through all components to get any that haven't got a connection
             allComps.get().forEach((c) => {
-                if (!c.getHasConnection()) {
+                if (!c.hasConnection()) {
                     json.components.push(c.prepareForJson());
                 }
             });
@@ -498,6 +498,14 @@ function createNewComponent(img, c) {
 
 
 // network functions
+
+function calculateSupernetMask() {
+
+}
+
+function calculateSubnetMask() {
+    
+}
 
 function calculateAllHost() {
     var totalNumberOfHosts = 0;
