@@ -304,6 +304,7 @@ function applyCompValuesToGUI() {
             'Lock': false,
             'TotalSubnets': calculateAllSubnets(),
             'TotalHosts': calculateAllHost(),
+            'SubnetMask': calculateSubnetMask(),
             'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
         };
@@ -317,6 +318,7 @@ function applyCompValuesToGUI() {
         gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
         gui.setValue('TotalSubnets', calculateAllSubnets());
         gui.setValue('TotalHosts', calculateAllHost());
+        gui.setValue('SubnetMask', calculateSubnetMask());
     }
     gui.setTitle(allComps.getSelectedComponent().getComponentName());
     gui.show();
@@ -500,16 +502,49 @@ function createNewComponent(img, c) {
 // network functions
 
 function calculateSupernetMask() {
-
-}
-
-function calculateSubnetMask() {
+    
     
 }
 
+function calculateSubnetMask() {
+    var hosts = 270;
+    var x = 2;
+    var hostBits;
+    // calculating the necessary host bits needed, includes id and broadcast addresses
+    for (var i=0;Math.pow(2, i) < hosts+2;) {
+        i++;
+        hostBits = i;
+    }
+    //print("host bit required: " + hostBits);
+    //print("Total number of host ip addresses + id and broadcast addresses: " + Math.pow(x, hostBits));
+    
+    // Total number of bits in an IP address
+    var totalBits = 32;
+    // Calculation for slashValue
+    var slashValue = totalBits - hostBits;
+
+    // Calculate the subnet mask representation in decimal notation
+    var k=0;
+    var subnetMaskDecimalNotation = "";
+    for (var i=0; i <= slashValue; i++) {
+        if (k == 8) {
+            subnetMaskDecimalNotation += "255."
+            k=0;
+        } 
+        else if (i==slashValue) {
+            subnetMaskDecimalNotation += "" + Math.pow(x, k) + ".";
+        }
+        k++;
+    }
+
+    // Removes any trailing dots
+    subnetMaskDecimalNotation = subnetMaskDecimalNotation.slice(0, -1);
+    return subnetMaskDecimalNotation;
+}
+
+// Calculates all the host devices currently displayed on canvas
 function calculateAllHost() {
     var totalNumberOfHosts = 0;
-
     allComps.get().forEach((comp) => {
         if (comp.getType() == "PC" || comp.getType() == "Laptop" || 
             comp.getType() == "Printer" || comp.getType() == "Smartphone" ||
@@ -518,10 +553,10 @@ function calculateAllHost() {
                 totalNumberOfHosts += 1;
         }
     });
-
     return totalNumberOfHosts.toString();
 }
 
+// Calculates number of subnets currently on canvas
 function calculateAllSubnets() {
     var totalNumberOfSubnets = 0;
     var connections = [];
@@ -547,6 +582,7 @@ function calculateAllSubnets() {
     }
     return totalNumberOfSubnets.toString();
 }
+
 
 function calculateSubnets(comp) {
     if (allComps.getComponent().getType() == "Router" && comp == null) {
