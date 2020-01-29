@@ -13,7 +13,7 @@ function Component(type, path, image) {
         "centerPos": [],
         "hideComponent": false,
         "hideConnections": false,
-        "hasConnection": false,
+        "hasCon": false,
         "isClicked": false,
         "componentName": `${type}_${counter}`,
         "textSize": 10,

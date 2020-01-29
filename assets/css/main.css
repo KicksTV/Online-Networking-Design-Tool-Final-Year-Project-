@@ -77,3 +77,8 @@ a>.card:hover {
 .upload_input {
     display: none;
 }
+
+
+.bg-dark {
+    background-color: #191919!important;
+}

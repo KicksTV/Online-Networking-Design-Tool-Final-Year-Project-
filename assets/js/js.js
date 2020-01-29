@@ -95,6 +95,8 @@ window.onload = function() {
 
             // looping through all components to get any that haven't got a connection
             allComps.get().forEach((c) => {
+                print("pushing non-connection object");
+                print(c.hasConnection());
                 if (!c.hasConnection()) {
                     json.components.push(c.prepareForJson());
                 }
@@ -290,6 +292,9 @@ function applyGUIValuesToComp() {
 }
 
 function applyCompValuesToGUI() {
+    var hosts = calculateAllHost();
+    var subnets = calculateAllSubnets();
+    
     if (gui == null) {
         gui = createGui(allComps.getSelectedComponent().getComponentName()).setPosition(1200,400);
         guiParams = {
@@ -302,9 +307,10 @@ function applyCompValuesToGUI() {
             'HideComponent': allComps.getSelectedComponent().getHideComponent(),
             'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
-            'TotalSubnets': calculateAllSubnets(),
-            'TotalHosts': calculateAllHost(),
-            'SubnetMask': calculateSubnetMask(),
+            'TotalHosts': hosts.toString(),
+            'TotalSubnets': subnets.toString(),
+            'SubnetMask': calculateSubnetMask(hosts),
+            'SupernetMask': calculateSupernetMask(subnets),
             'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
         };
@@ -316,9 +322,10 @@ function applyCompValuesToGUI() {
         gui.setValue('TextSize', allComps.getSelectedComponent().getTextSize());
         gui.setValue('HideConnections', allComps.getSelectedComponent().getHideConnections());
         gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
-        gui.setValue('TotalSubnets', calculateAllSubnets());
-        gui.setValue('TotalHosts', calculateAllHost());
-        gui.setValue('SubnetMask', calculateSubnetMask());
+        gui.setValue('TotalSubnets', subnets.toString());
+        gui.setValue('TotalHosts', hosts.toString());
+        gui.setValue('SubnetMask', calculateSubnetMask(hosts));
+        gui.setValue('SupernetMask', calculateSupernetMask(subnets));
     }
     gui.setTitle(allComps.getSelectedComponent().getComponentName());
     gui.show();
@@ -501,20 +508,55 @@ function createNewComponent(img, c) {
 
 // network functions
 
-function calculateSupernetMask() {
+var hostBits = 0;
+
+
+function calculateSupernetMask(subnets) {
+    // Calculates the Supernet Mask for network,
+    // Must have already calculated Subnet Mask to get hostbits.
     
-    
+    //var subnets = 16;
+    var x = 2;
+    var subnetBits;
+
+    print("Number of subnets: " + subnets);
+
+    // calculating the necessary subnet bits needed
+    var i=0;
+    while (subnets >= Math.pow(2, i)) {
+        i++;
+        subnetBits = i;
+    }
+
+    // Total number of bits in an IP address
+    var totalBits = 32;
+
+    var slashValue = totalBits - (subnetBits + hostBits);
+
+    // calculates the decimal representation of slash value.
+    var decimalNotationOfSupernetmask = calculateDecimalFromSlashValue(slashValue);
+
+    return decimalNotationOfSupernetmask;
 }
 
-function calculateSubnetMask() {
-    var hosts = 270;
+function calculateSubnetMask(hosts) {
+    hostBits = 0;
+    //var hosts = 16;
     var x = 2;
-    var hostBits;
+    
+    // Required hosts bits + Network ID and Broadcase ID
+    hosts += 2;
+    print("Number of hosts: " + hosts);
+
+
     // calculating the necessary host bits needed, includes id and broadcast addresses
-    for (var i=0;Math.pow(2, i) < hosts+2;) {
+    var i=0;
+    while (hosts > Math.pow(2, i)) {
         i++;
         hostBits = i;
     }
+
+    print("Number of possible IP addresses: " + Math.pow(2, hostBits));
     //print("host bit required: " + hostBits);
     //print("Total number of host ip addresses + id and broadcast addresses: " + Math.pow(x, hostBits));
     
@@ -523,24 +565,57 @@ function calculateSubnetMask() {
     // Calculation for slashValue
     var slashValue = totalBits - hostBits;
 
-    // Calculate the subnet mask representation in decimal notation
-    var k=0;
-    var subnetMaskDecimalNotation = "";
+    print("slashValue: " + slashValue);
+
+    // Calculate the subnet mask representation in decimal notation.
+    var decimalNotationOfSubnetmask = calculateDecimalFromSlashValue(slashValue);
+
+    return decimalNotationOfSubnetmask;
+}
+
+function calculateDecimalFromSlashValue(slashValue) {
+    // Can be used to calculate the Supernet or Subnet Mask dotted decimal notation.
+    var bits=0;
+    var decimalNotation = "";
     for (var i=0; i <= slashValue; i++) {
-        if (k == 8) {
-            subnetMaskDecimalNotation += "255."
-            k=0;
+        if (bits == 8) {
+            decimalNotation += "255."
+            bits=0;
         } 
         else if (i==slashValue) {
-            subnetMaskDecimalNotation += "" + Math.pow(x, k) + ".";
+            var mask = 0;
+            var addedBits = 0;
+            for (var l=7;l>7-bits;) {
+                mask += Math.pow(2, l);
+                //print(Math.pow(2, l));
+                l--;
+            }
+            //print("addedbits: " + addedBits);
+            mask -= addedBits;
+            decimalNotation += "" + mask + ".";
         }
-        k++;
+        bits++;
     }
 
-    // Removes any trailing dots
-    subnetMaskDecimalNotation = subnetMaskDecimalNotation.slice(0, -1);
-    return subnetMaskDecimalNotation;
+    // Adding trailing 0's at end of subnet mask if it is less than /24
+    var numberOfOctets = decimalNotation.split(".").length -1;
+    //print("numberOfOctets: " + numberOfOctets);
+    for (var i=0; i < 4 - numberOfOctets; i++) {
+        if (i+1 == 4 - numberOfOctets) {
+            decimalNotation += "0";
+        } else {
+            decimalNotation += "0.";
+        }
+    }
+
+    // Remove any additional periods
+    if (numberOfOctets > 3) {
+        decimalNotation = decimalNotation.slice(0, -1);
+    }
+
+    return decimalNotation;
 }
+
 
 // Calculates all the host devices currently displayed on canvas
 function calculateAllHost() {
@@ -553,7 +628,7 @@ function calculateAllHost() {
                 totalNumberOfHosts += 1;
         }
     });
-    return totalNumberOfHosts.toString();
+    return totalNumberOfHosts;
 }
 
 // Calculates number of subnets currently on canvas
@@ -580,7 +655,7 @@ function calculateAllSubnets() {
         );
         totalNumberOfSubnets += connections.length;
     }
-    return totalNumberOfSubnets.toString();
+    return totalNumberOfSubnets;
 }
 
 

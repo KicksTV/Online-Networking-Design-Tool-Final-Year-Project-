@@ -79,10 +79,10 @@ const getterSetter = (state) => ({
         state.isClicked = val;
     },
     hasConnection: () => {
-        return state.hasConnection;
+        return state.hasCon;
     },
     setHasConnection: (val) => {
-        state.hasConnection = val;
+        state.hasCon = val;
     },
     getComponentName: () => {
         return state.componentName;
