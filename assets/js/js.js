@@ -177,7 +177,7 @@ function preload() {
 function setup() {
     frameRate(60);
 
-    var canvas = createCanvas((windowWidth), windowHeight);
+    var canvas = createCanvas((windowWidth-20), windowHeight);
     canvas.parent("canvasDiv");
 
     compBar.getBar().displayAllButtons();
@@ -294,7 +294,7 @@ function applyGUIValuesToComp() {
 function applyCompValuesToGUI() {
     var hosts = calculateAllHost();
     var subnets = calculateAllSubnets();
-    
+
     if (gui == null) {
         gui = createGui(allComps.getSelectedComponent().getComponentName()).setPosition(1200,400);
         guiParams = {
@@ -309,7 +309,7 @@ function applyCompValuesToGUI() {
             'Lock': false,
             'TotalHosts': hosts.toString(),
             'TotalSubnets': subnets.toString(),
-            'SubnetMask': calculateSubnetMask(hosts),
+            'SubnetMask': calculateSubnetMask(),
             'SupernetMask': calculateSupernetMask(subnets),
             'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
@@ -324,7 +324,7 @@ function applyCompValuesToGUI() {
         gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
         gui.setValue('TotalSubnets', subnets.toString());
         gui.setValue('TotalHosts', hosts.toString());
-        gui.setValue('SubnetMask', calculateSubnetMask(hosts));
+        gui.setValue('SubnetMask', calculateSubnetMask());
         gui.setValue('SupernetMask', calculateSupernetMask(subnets));
     }
     gui.setTitle(allComps.getSelectedComponent().getComponentName());
@@ -539,24 +539,27 @@ function calculateSupernetMask(subnets) {
     return decimalNotationOfSupernetmask;
 }
 
-function calculateSubnetMask(hosts) {
+function calculateSubnetMask() {
     hostBits = 0;
     //var hosts = 16;
     var x = 2;
     
-    // Required hosts bits + Network ID and Broadcase ID
-    hosts += 2;
+    var hosts = getLargestSubnet();
+
+    // Required hosts bits
+    hosts += 1;
     print("Number of hosts: " + hosts);
 
 
     // calculating the necessary host bits needed, includes id and broadcast addresses
     var i=0;
-    while (hosts > Math.pow(2, i)) {
+    while (hosts > Math.pow(2, i)-2) {
+        print(Math.pow(2, i));
         i++;
         hostBits = i;
     }
 
-    print("Number of possible IP addresses: " + Math.pow(2, hostBits));
+    print("Number of possible IP addresses: " + (Math.pow(2, hostBits)-2));
     //print("host bit required: " + hostBits);
     //print("Total number of host ip addresses + id and broadcast addresses: " + Math.pow(x, hostBits));
     
@@ -621,11 +624,8 @@ function calculateDecimalFromSlashValue(slashValue) {
 function calculateAllHost() {
     var totalNumberOfHosts = 0;
     allComps.get().forEach((comp) => {
-        if (comp.getType() == "PC" || comp.getType() == "Laptop" || 
-            comp.getType() == "Printer" || comp.getType() == "Smartphone" ||
-            comp.getType() == "Server") {
-
-                totalNumberOfHosts += 1;
+        if (allComps.isEndDevice(comp)) {
+            totalNumberOfHosts += 1;
         }
     });
     return totalNumberOfHosts;
@@ -656,6 +656,164 @@ function calculateAllSubnets() {
         totalNumberOfSubnets += connections.length;
     }
     return totalNumberOfSubnets;
+}
+
+var largestSubnet = 0;
+var numberOfEndDevices = 0;
+var previousComp = null;
+var currentRouter = null;
+
+var numberOfConnections = 0;
+var traveledConnections = [];
+var previousConnection = null;
+
+function getLargestSubnet() {
+    var allRouters = [];
+    traveledConnections = [];
+    largestSubnet = 0;
+
+    allComps.get().forEach((comp) => {
+        if (comp.getType() == "Router") {
+            allRouters.push(comp);
+        }
+    });
+
+    allRouters.forEach((r) => {
+        var routerConnections = allCons.getConnectionsRelatedToComp(r);
+
+        currentRouter = r;
+        previousComp = r;
+        routerConnections.forEach((c) => {
+
+            // reset counter for hosts per subnet
+            numberOfEndDevices = 0;
+            
+            // comp should not equal a router
+            var comp = null;
+            if (c.getComponent(0).getType() != "Router") {
+                comp = c.getComponent(0);
+            }
+            else if (c.getComponent(1).getType() != "Router") {
+                comp = c.getComponent(1);
+            }
+            
+            if (comp != null) {
+                //print("name: " + comp.getComponentName());
+                travelSubnetTree(comp, comp);
+            }
+        });
+    });
+
+    print("largest Subnet: " +largestSubnet);
+
+    return largestSubnet;
+}
+
+
+function travelSubnetTree(currentComp, rootComp) {
+    
+    // check if all connections have been iterated through
+    var connections = allCons.getConnectionsRelatedToComp(currentComp);
+    numberOfConnections = connections.length;
+    var currentConnection = null;
+
+    print("current comp: "+currentComp.getComponentName());
+    traveledConnections.forEach((c) => {
+        print("Traveled connections: "+c.getComponent(0).getComponentName() + " - " + c.getComponent(1).getComponentName());
+    });
+    print("numberOfEndDevices: "+numberOfEndDevices)
+
+    connections.forEach((c) => {
+        print("----");
+        print("checking connection: "+c.getComponent(0).getComponentName() + " - " +c.getComponent(1).getComponentName());
+        print(hasBeenTraveled(c), isPreviousRoute(c));
+        if (! hasBeenTraveled(c) && !isPreviousRoute(c)) {
+            print("valid")
+            currentConnection = c;
+        }
+    });
+
+    // need to fix this!!!
+    print("ids: ", previousComp.getID(), currentRouter.getID());
+    //print(previousConnection.getComponent(0).getComponentName(),previousConnection.getComponent(1).getComponentName());
+    print(currentConnection, hasBeenTraveled(previousConnection));
+    if (currentConnection == null && hasBeenTraveled(previousConnection)) {
+        print("finished");
+        if (largestSubnet < numberOfEndDevices) {
+            largestSubnet = numberOfEndDevices;
+        }
+        return;
+    } else {
+        // Checking for next connection
+        findAllEndDevices(currentComp, rootComp);
+    }
+    
+}
+
+function findAllEndDevices(currentComp, rootComp) {
+    var connections = allCons.getConnectionsRelatedToComp(currentComp);
+    var numberOfConnections = connections.length;
+
+    var currentConnection = null;
+    print("--- finding all end devies ---");
+    connections.forEach((c) => {
+        print("----");
+        print("checking connection: "+c.getComponent(0).getComponentName() + " - " +c.getComponent(1).getComponentName());
+        if (! hasBeenTraveled(c) && !isPreviousRoute(c)) {
+            print("valid");
+            currentConnection = c;
+        }
+    });
+    // checks if there are any end devices.
+    var nextComp = null;
+    if (currentConnection == null && previousConnection != null) {
+        print("all end devices found");
+        traveledConnections.push(previousConnection);
+        previousComp = currentRouter;
+        travelSubnetTree(rootComp, rootComp);
+    } else {
+        if (currentConnection.getComponent(0).getID() != currentComp.getID()) {
+            nextComp = currentConnection.getComponent(0);
+        } else {
+            nextComp = currentConnection.getComponent(1);
+        }
+    }
+
+    //print("nextComp: "+nextComp.getComponentName());
+    if (nextComp) {
+        if (allComps.isEndDevice(nextComp)) {
+            numberOfEndDevices++;
+            traveledConnections.push(currentConnection);
+            previousComp = currentRouter;
+            travelSubnetTree(rootComp, rootComp);
+        
+        } else {
+            previousComp = currentComp;
+            travelSubnetTree(nextComp, rootComp);
+        }
+    }
+}   
+
+function hasBeenTraveled(connection) {
+    var hasBeenTraveled = false;
+    if (traveledConnections.length != 0) {
+        traveledConnections.forEach((c) => {
+            if (c === connection) {
+                hasBeenTraveled = true;
+            }
+        });
+    }
+    return hasBeenTraveled;
+}
+
+function isPreviousRoute(connection) {
+    var isPreviousRoute = false;
+    print("previous route check: "+connection.getComponent(0).getID(), connection.getComponent(1).getID(), previousComp.getID());
+    if (connection.getComponent(0).getID() === previousComp.getID() || connection.getComponent(1).getID() === previousComp.getID()) {
+        previousConnection = connection;
+        isPreviousRoute = true;
+    }
+    return isPreviousRoute;
 }
 
 
@@ -714,6 +872,6 @@ function searchForConnectionToRouter(connections) {
 
 // dynamically adjust the canvas to the window
 function windowResized() {
-    resizeCanvas((windowWidth), windowHeight);
+    resizeCanvas((windowWidth-20), windowHeight);
 }
 

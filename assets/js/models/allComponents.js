@@ -158,6 +158,16 @@ var allComponents = (function() {
                 return i != index; 
             });
         }
+        function isEndDevice(comp) {
+            var isEndDevice = false;
+            if (comp.getType() == "PC" || comp.getType() == "Laptop" || 
+                comp.getType() == "Printer" || comp.getType() == "Smartphone" ||
+                comp.getType() == "Server") {
+
+                    isEndDevice = true;
+            }
+            return isEndDevice;
+        }
 
         return {
             get:get,
@@ -189,6 +199,7 @@ var allComponents = (function() {
             getCurrentSelectedComponent:getCurrentSelectedComponent,
             doesComponentExist:doesComponentExist,
             removeComponent:removeComponent,
+            isEndDevice:isEndDevice,
         };   
     }
 
