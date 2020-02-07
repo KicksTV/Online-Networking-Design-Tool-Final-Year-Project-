@@ -15,15 +15,39 @@ let compBar;
 let compConnectionBar;
 let button1, button2, button3, button4;
 
-let gui;
+var compPropertiesGUIContainer;
+let compPropertiesGUI;
+
+var networkPropertiesGUIContainer;
+let networkPropertiesGUI;
+
 
 var canvasSideBar;
-
+var canvas;
 var canvasLoadProject;
 var canvasSaveProject;
 var canvasDeleteButton;
 
+
+//EVENTS
+var networkChangeEvent = new CustomEvent('networkChangeEvent');
+var componentClickEvent = new CustomEvent('componentClickEvent');
+
+
 window.onload = function() {
+
+    networkPropertiesGUIContainer = document.getElementById("GUI_qs_1");
+    compPropertiesGUIContainer = document.getElementById("GUI_qs_2");
+   
+    // Adding Event Listeners to Properties bars
+    networkPropertiesGUIContainer.addEventListener('networkChangeEvent', applyNetworkPropertiesToGUI);
+    compPropertiesGUIContainer.addEventListener('networkChangeEvent', applyCompValuesToGUI);
+    compPropertiesGUIContainer.addEventListener('change', applyGUIValuesToComp, true);
+
+
+    
+
+
     canvasDeleteButton = document.getElementById("canvasDeleteButton");
     canvasLoadProject = document.getElementById("canvasLoadProject");
     canvasSaveProject = document.getElementById("canvasSaveProject");
@@ -47,6 +71,7 @@ window.onload = function() {
 
                     // Only process json files.
                     if (!f.type.match('json.*')) {
+                        alert("Not JSON File!");
                         continue;
                     }
 
@@ -116,18 +141,18 @@ window.onload = function() {
     });
 };
 
+
 function preload() {
-    compBar = componentsBarTab("Components", 500, 50, compentsBarComponents("Components"));
+
+    compBar = componentsBarTab("Components", 500, 50, new ComponentBarComponents("Components"));
     compBar.init();
 
-    compBar.setVisableCurrent();
+    allTabs.setVisableCurrent(compBar);
     allTabs.add(compBar);
 
-    compConnectionBar = componentsBarTab("Connections", 500, 50, componentsBarConnections("Connections"));
+    compConnectionBar = componentsBarTab("Connections", 500, 50, new ComponentBarConnections("Connections"));
     compConnectionBar.init();
     allTabs.add(compConnectionBar);
-
-
 
 
     // Creating button icons for TABS
@@ -177,28 +202,31 @@ function preload() {
 function setup() {
     frameRate(60);
 
-    var canvas = createCanvas((windowWidth-20), windowHeight);
+    canvas = createCanvas((windowWidth-20), windowHeight);
     canvas.parent("canvasDiv");
 
     compBar.getBar().displayAllButtons();
+
+    networkPropertiesGUI = createGui("Network Properties").setPositionRight(320).setPositionTop(188).lock(true);
+    compPropertiesGUI = createGui("NA").disablePin(false).setPosition(1250,500).hide();
+
 }
 
 function draw() {
     clear();
-
     allCons.drawAllConnections();
-    applyGUIValuesToComp();
     allComps.displayAllComponents();
     updateMouseCursor();
 
-
     checkForCopyAndPastEvent();
 }
+
 
 function mousePressed() {
     allComps.setComponent(allComps.getCurrentSelectedComponent(mouseX, mouseY));
     if (allComps.getComponent() != null) {
 
+        
         var multiSelect = checkForMultiSelect();
         if (!allComps.hasClickedSelectedComponent(allComps.getComponent()) && !multiSelect) {
             allComps.clearSelectList();
@@ -269,34 +297,43 @@ function mouseReleased() {
     allComps.setComponentDrag(false);
 }
 
-function applyGUIValuesToComp() {
-    if (gui != null) {
-        // Compares the values of the two objects
-        // console.log(JSON.stringify(allComps.getSelectedComponent().getGuiParams()));
-        // console.log(JSON.stringify(guiParams));
-        if (JSON.stringify(allComps.getSelectedComponent().getGuiParams()) != JSON.stringify(guiParams)) {
-            console.log("applying gui params");
-            if (guiParams) {
-                if (guiParams.HideComponent) {
-                    allComps.getSelectedComponent().setHideComponent(true);
-                } else {
-                    allComps.getSelectedComponent().setHideComponent(false);
-                }
-                allComps.getSelectedComponent().setComponentName(guiParams.Name);
-                allComps.getSelectedComponent().reSize(guiParams.Width);
-                allComps.getSelectedComponent().setTextSize(guiParams.TextSize);
-                allComps.getSelectedComponent().setHideConnections(guiParams.HideConnections);
-            }
+function applyNetworkPropertiesToGUI() {
+    var hosts = calculateAllHost();
+    var subnets = calculateAllSubnets();
+    if (typeof networkPropertiesGUI.getGuiParams() == 'undefined') {
+        let guiParams = {
+            'TotalHosts': hosts.toString(),
+            'TotalSubnets': subnets.toString(),
+            'SubnetMask': calculateSubnetMask(),
+            'SupernetMask': calculateSupernetMask(subnets),
         }
+        networkPropertiesGUI.addObject(guiParams);
+    } else {
+        networkPropertiesGUI.setValue('TotalSubnets', subnets.toString());
+        networkPropertiesGUI.setValue('TotalHosts', hosts.toString());
+        networkPropertiesGUI.setValue('SubnetMask', calculateSubnetMask());
+        networkPropertiesGUI.setValue('SupernetMask', calculateSupernetMask(subnets));
+    }
+}
+
+function applyGUIValuesToComp() {
+    console.log("applying gui params");
+    if (guiParams) {
+        if (guiParams.HideComponent) {
+            allComps.getSelectedComponent().setHideComponent(true);
+        } else {
+            allComps.getSelectedComponent().setHideComponent(false);
+        }
+        allComps.getSelectedComponent().setComponentName(guiParams.Name);
+        allComps.getSelectedComponent().reSize(guiParams.Width);
+        allComps.getSelectedComponent().setTextSize(guiParams.TextSize);
+        allComps.getSelectedComponent().setHideConnections(guiParams.HideConnections);
     }
 }
 
 function applyCompValuesToGUI() {
-    var hosts = calculateAllHost();
-    var subnets = calculateAllSubnets();
-
-    if (gui == null) {
-        gui = createGui(allComps.getSelectedComponent().getComponentName()).setPosition(1200,400);
+    compPropertiesGUI.show();
+    if (typeof compPropertiesGUI.getGuiParams() == 'undefined') {
         guiParams = {
             'Name': allComps.getSelectedComponent().getComponentName(),
             'Width': allComps.getSelectedComponent().getWidth(),
@@ -307,28 +344,20 @@ function applyCompValuesToGUI() {
             'HideComponent': allComps.getSelectedComponent().getHideComponent(),
             'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
-            'TotalHosts': hosts.toString(),
-            'TotalSubnets': subnets.toString(),
-            'SubnetMask': calculateSubnetMask(),
-            'SupernetMask': calculateSupernetMask(subnets),
             'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
         };
-        gui.addObject(guiParams);
+        compPropertiesGUI.addObject(guiParams);
     } else {
-        gui.setValue('Name', allComps.getSelectedComponent().getComponentName());
-        gui.setValue('Width', allComps.getSelectedComponent().getWidth());
-        gui.setValue('HideComponent', allComps.getSelectedComponent().getHideComponent());
-        gui.setValue('TextSize', allComps.getSelectedComponent().getTextSize());
-        gui.setValue('HideConnections', allComps.getSelectedComponent().getHideConnections());
-        gui.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
-        gui.setValue('TotalSubnets', subnets.toString());
-        gui.setValue('TotalHosts', hosts.toString());
-        gui.setValue('SubnetMask', calculateSubnetMask());
-        gui.setValue('SupernetMask', calculateSupernetMask(subnets));
+        compPropertiesGUI.setValue('Name', allComps.getSelectedComponent().getComponentName());
+        compPropertiesGUI.setValue('Width', allComps.getSelectedComponent().getWidth());
+        compPropertiesGUI.setValue('HideComponent', allComps.getSelectedComponent().getHideComponent());
+        compPropertiesGUI.setValue('TextSize', allComps.getSelectedComponent().getTextSize());
+        compPropertiesGUI.setValue('HideConnections', allComps.getSelectedComponent().getHideConnections());
+        compPropertiesGUI.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
+        
     }
-    gui.setTitle(allComps.getSelectedComponent().getComponentName());
-    gui.show();
+    compPropertiesGUI.setTitle(allComps.getSelectedComponent().getComponentName());
 }
 
 
@@ -399,12 +428,15 @@ function loadComponents(array) {
                         newconnection.addComponent(newcomp);
                     }
                 }
+                print("Loaded File Components");
             });
+            
         });
         allCons.add(newconnection);
+        window.setTimeout(() => {
+            networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent)
+        }, 500);
     });
-
-
 }
 var pasted;
 var copied;
@@ -445,6 +477,9 @@ function checkForCopyAndPastEvent() {
             }
             pasted = true;
             console.log("paste"); 
+
+            // Triggering networkChangeEvent
+            networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
         }
     }
 }
@@ -462,7 +497,7 @@ function checkComponentDeleteEvent() {
         
         var comp = allComps.getComponent();
         allComps.removeComponent(comp);
-        gui.hide();
+        compPropertiesGUI.hide();
 
         // get connection
         var connectionsToDel = allCons.getConnectionsRelatedToComp(comp);
@@ -472,6 +507,9 @@ function checkComponentDeleteEvent() {
 
 
         allComps.setSelectCompForDelete(false);
+
+        // Triggering networkChangeEvent
+        networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
     }
 }
 
@@ -724,8 +762,8 @@ function travelSubnetTree(currentComp, rootComp) {
     print("numberOfEndDevices: "+numberOfEndDevices)
 
     connections.forEach((c) => {
-        print("----");
-        print("checking connection: "+c.getComponent(0).getComponentName() + " - " +c.getComponent(1).getComponentName());
+        //print("----");
+        //print("checking connection: "+c.getComponent(0).getComponentName() + " - " +c.getComponent(1).getComponentName());
         print(hasBeenTraveled(c), isPreviousRoute(c));
         if (! hasBeenTraveled(c) && !isPreviousRoute(c)) {
             print("valid")
@@ -808,7 +846,7 @@ function hasBeenTraveled(connection) {
 
 function isPreviousRoute(connection) {
     var isPreviousRoute = false;
-    print("previous route check: "+connection.getComponent(0).getID(), connection.getComponent(1).getID(), previousComp.getID());
+    //print("previous route check: "+connection.getComponent(0).getID(), connection.getComponent(1).getID(), previousComp.getID());
     if (connection.getComponent(0).getID() === previousComp.getID() || connection.getComponent(1).getID() === previousComp.getID()) {
         previousConnection = connection;
         isPreviousRoute = true;

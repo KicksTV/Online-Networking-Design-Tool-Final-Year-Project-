@@ -24,6 +24,24 @@ function Button(imgPath, imgAlt, compType) {
             );
         }
     });
+    
+    const buttonGetterSetter = (state) => ({
+        getComponentType: () => {
+            return state.componentType;
+        },
+        setComponentType: (type) => {
+            state.componentType = type;
+        },
+        getImgPath: () => {
+            return state.imgPath;
+        },
+        getLI: () => {
+            return state.li;
+        },
+        getIMG: () => {
+            return state.img;
+        }
+    });
 
     Object.assign(state);
 

@@ -113,8 +113,7 @@
         _panel: null,
         _titleBar: null,
         _content: null,
-        _pinButton: null,
-        _pinIcon: null,
+        
 
         _startX: 0,
         _startY: 0,
@@ -125,7 +124,12 @@
         _draggable: true,
         _collapsible: true,
         _globalChangeHandler: null,
+        _locked: false,
+
+        _pinButton: null,
+        _pinIcon: null,
         _pinned: false,
+        _disablePin: true,
 
         ////////////////////////////////////////////////////////////////////////////////
         // region GENERAL INIT FUNCTIONS
@@ -277,17 +281,18 @@
             this._panel.style.zIndex = ++QuickSettings._topZ;
             this.setPosition(x || 0, y || 0);
             this._controls = {};
+
+
+            this._panel.id = "GUI_"+getNextID();
         },
 
         _createTitleBar: function (text) {
             this._titleBar = createElement("div", null, "qs_title_bar", this._panel);
             this._titleBar.textContent = text;
 
-            this._pinButton = createElement("div", null, "qs_pin_container", this._titleBar);
-            this._pinIcon = createElement("i", null, "fas fa-thumbtack", this._pinButton);
-            this._pinIcon.style.transform = "rotate(30deg)";
-            this._pinIcon.addEventListener("click", this._pin);
-
+            if (! this._disablePin) {
+                this._createPin();
+            }
             
             this._titleBar.addEventListener("mousedown", this._startDrag);
             this._titleBar.addEventListener("dblclick", this._doubleClickTitle);
@@ -296,7 +301,12 @@
         
         _updateTitleBar: function (title) {
             this._titleBar.textContent = title;
-            this._titleBar.appendChild(this._pinButton);
+            if (! this._disablePin) {
+                if (! this._pinButton) {
+                    this._createPin();
+                }
+                this._titleBar.appendChild(this._pinButton);
+            }
         },
 
         _createContent: function () {
@@ -318,6 +328,13 @@
             return container;
         },
 
+        _createPin: function () {
+            this._pinButton = createElement("div", null, "qs_pin_container", this._titleBar);
+            this._pinIcon = createElement("i", null, "fas fa-thumbtack", this._pinButton);
+            this._pinIcon.style.transform = "rotate(30deg)";
+            this._pinIcon.addEventListener("click", this._pin);
+        },
+
         // endregion
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -336,6 +353,24 @@
             return this;
         },
 
+        setPositionRight: function(value) {
+            this._panel.style.right = Math.max(value, 0);
+            this._panel.style.left = "initial";
+            return this;
+        },
+
+        setPositionTop: function(value) {
+            this._panel.style.top = Math.max(value, 0);
+            this._panel.style.bottom = "initial";
+            return this;
+        },
+
+        setPositionBottom: function(value) {
+            this._panel.style.bottom = Math.max(value, 0);
+            this._panel.style.top = "initial";
+            return this;
+        },
+
         /**
          * Sets the size of the panel.
          * @param w    {Number} The width of the panel.
@@ -347,6 +382,13 @@
             this._content.style.width = w + "px";
             this._content.style.height = (h - this._titleBar.offsetHeight) + "px";
             return this;
+        },
+
+        getWidth: function() {
+            return this._panel.style.width;
+        },
+        getheight: function() {
+            return this._panel.style.height;
         },
 
         /**
@@ -370,6 +412,13 @@
             return this;
         },
         // endregion
+
+
+        disablePin: function(value) {
+            this._disablePin = value;
+            return this;
+        },
+
 
         ////////////////////////////////////////////////////////////////////////////////
         // region DRAG AND DROP FUNCTIONS
@@ -403,16 +452,14 @@
         },
 
         _drag: function (event) {
-            if (! this._pinned) {
-                var x = parseInt(this._panel.style.left),
-                    y = parseInt(this._panel.style.top),
-                    mouseX = event.clientX,
-                    mouseY = event.clientY;
+            var x = parseInt(this._panel.style.left),
+                y = parseInt(this._panel.style.top),
+                mouseX = event.clientX,
+                mouseY = event.clientY;
 
-                this.setPosition(x + mouseX - this._startX, y + mouseY - this._startY);
-                this._startX = mouseX;
-                this._startY = mouseY;
-            }
+            this.setPosition(x + mouseX - this._startX, y + mouseY - this._startY);
+            this._startX = mouseX;
+            this._startY = mouseY;
             event.preventDefault();
         },
 
@@ -428,7 +475,8 @@
                 this._pinIcon.style.transform = "rotate(30deg)";
                 
                 var mouseX = event.clientX;
-                this._panel.style.left = mouseX - 300;
+                this._panel.style.left = mouseX - 500;
+                this._panel.style.top = mouseY + 200;
                 this._pinned = false;
             }else {
                 this._pinIcon.style.transform = "rotate(0deg)";
@@ -437,7 +485,7 @@
                 this._panel.style.left = "initial";
 
                 // Starting top position of canvas
-                this._panel.style.top = 189;
+                this._panel.style.top = 188;
                 this._pinned = true;
             }
             event.preventDefault();

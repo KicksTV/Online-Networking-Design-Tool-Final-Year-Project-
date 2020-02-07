@@ -162,9 +162,36 @@
     this.setTitle = function(title) { qs.setTitle(title); };
     this.getTitle = function() { return qs.getTitle(); };
 
+    this.lock = function(lock) { 
+      qs.setDraggable(!lock); 
+      return this;
+    };
+    this.setPositionRight = function(value) { 
+      qs.setPositionRight(value);
+      return this;
+    };
+    this.setPositionTop = function(value) { 
+      qs.setPositionTop(value); 
+      return this;
+    };
+    this.setPositionBottom = function(value) { 
+      qs.setPositionBottom(value);
+      return this; 
+    };
+    this.disablePin = function(value) { 
+      qs.disablePin(value); 
+      return this;
+    };
+
     // pass through ...
-    this.show = function() { qs.show(); };
-    this.hide = function() { qs.hide(); };
+    this.show = function() { 
+      qs.show(); 
+      return this;
+    };
+    this.hide = function() { 
+      qs.hide(); 
+      return this;
+    };
     this.toggleVisibility = function() { qs.toggleVisibility(); };
     this.setValue = function(title, value) { qs.setValue(title, value); };
     this.setPosition  = function(x, y) {

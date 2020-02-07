@@ -97,6 +97,10 @@ var allConnections = (function() {
                 selectedConnection = null;
                 compAddConnectionCounter=0;
                 updateMouseCursor();
+
+                // Triggering networkChangeEvent
+                networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
             } 
             else if (compAddConnectionCounter == 1) {
                 if (checkValidConnection(false, comp, null)) {
@@ -108,7 +112,11 @@ var allConnections = (function() {
                     selectedConnection.addComponent(comp);
                     
                     // adding connection to list of allCons
-                    allCons.add(c);
+                    allCons.add(selectedConnection);
+
+                    // Triggering networkChangeEvent
+                    networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                    compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
                 } else {
                     // End selection process
                     drawConnection = false;
