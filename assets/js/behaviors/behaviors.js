@@ -61,6 +61,8 @@ const prepareForJson = (state) => ({
             "hideConnections": state.hideConnections,
             "componentName": state.componentName,
             "textSize": state.textSize,
+            "validLinkingComponents": state.validLinkingComponents,
+            "interfaces": JSON.stringify(state.interfaces),
         }
         return parms;
     }

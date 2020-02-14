@@ -107,6 +107,21 @@ class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
                     if (newcomp.getType() == "Smartphone") {
                         newcomp.setValidLinkningComponents([]);
                     }
+                    else if (newcomp.getType() == "Router") {
+                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 4));
+                        newcomp.addInterface(new Interface("Serial", null, null, 2));
+                    }
+                    else if (newcomp.getType() == "Switch") {
+                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 12));
+                    }
+                    else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
+                            newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
+                            newcomp.getType() == "Access Point") {
+                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 1));
+                    }
+                    
+                    
+
                     
                     
                     allComps.setNewlyCreatedComp(newcomp);
@@ -156,7 +171,10 @@ class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
                     allCons.setDrawConnection(true);
                     allCons.setSelectedConnection(c);
                 }
-                alert("Please select two components!");
+                $('#startConnectionToastAlert').toast('show');
+                $('#startConnectionToastAlert .toast-body').text(
+                    "Please select two commonents!"
+                );
                 
             });
         }

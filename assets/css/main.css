@@ -82,3 +82,37 @@ a>.card:hover {
 .bg-dark {
     background-color: #191919!important;
 }
+
+
+/* Added visability hidden to hide html when toast is hidden */
+.toast.hide {
+    display: none;
+    visibility: hidden;
+}
+
+#interfaceContainer {
+    background-color: #dddddd;
+    text-align: left;
+    position: absolute;
+    width: 150px;
+    font: 12px sans-serif;
+    box-shadow: 5px 5px 8px rgba(0,0,0,0.35);
+    color: #000000;
+}
+
+.portButton {
+    width: 100%;
+    background-color: #aefda3;
+}
+.disabledPortButton {
+    background-color: rgb(255, 144, 144);
+}
+#portContainer {
+    width: 100%;
+    display: block;
+    position: relative;
+}
+#interfaceTitleContainer {
+    width: 100%;
+    text-align: center;
+}

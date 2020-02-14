@@ -18,6 +18,7 @@ function Component(type, path, image) {
         "textSize": 10,
         "guiParams": null,
         "validLinkingComponents": ["Twisted Pair"],
+        "interfaces": [],
     }
 
     const componentInitiator = (state) => ({
@@ -168,6 +169,37 @@ function Component(type, path, image) {
                 }
             });
             return isValid;
+        },
+        addInterface: (interface) => {
+            state.interfaces.push(interface);
+        },
+        getInterfaces: () => {
+            return state.interfaces;
+        },
+        getInterface: (index) => {
+            return state.interfaces[index];
+        },
+        hasAvailablePort: () => {
+            var hasAvailablePort = false;
+            state.interfaces.forEach((i) => {
+                if (i.availablePorts > 0) {
+                    hasAvailablePort = true;
+                }
+            });
+            return hasAvailablePort;
+        },
+        getInterfaceFromString: (string) => {
+            var interface = null;
+            var index = 0;
+            state.interfaces.forEach(i => {
+                i.ports.forEach(p => {
+                    if (p == string) {
+                        interface = i;
+                        index = i.ports.indexOf(p);
+                    }
+                });
+            });
+            return [interface,index];
         },
     });
 

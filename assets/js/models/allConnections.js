@@ -68,70 +68,69 @@ var allConnections = (function() {
             return selectingSecondConnection;
         }
         function selectConnectionForComp(comp) {
+
+            if (compAddConnectionCounter > 2) {
+                return;
+            }
+
             console.log("adding comp to selected connection");
             // getting second connection
             var preComp = selectedConnection.getComponents()[0];
             //comp.setHasConnection(true);
             compAddConnectionCounter++;
 
+            //print("ConCounter" + compAddConnectionCounter);
+
+            
+
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
                 //print(checkValidConnection(true, comp, preComp));
                 if (checkValidConnection(true, comp, preComp)) {
-                    // Adding component to connection object
-                    selectedConnection.addComponent(comp);
+                    
+                    if (comp.hasAvailablePort()) {
+                        waitForSelectedPort(comp.getInterfaces(), comp, preComp);
+                    }
+                    comp.setHasConnection(true);
+                    preComp.setHasConnection(true);
                 } else {
                     // Deleting connection object
                     removeConnection(selectedConnection);
 
+                    // End selection process
+                    endConnection();
+
                     // display error message
-                    alert("Connection type not possible!");
-                }
-
-                // End selection process
-
-                comp.setHasConnection(true);
-                preComp.setHasConnection(true);
-                drawConnection = false;
-                selectingSecondConnection = false;
-                selectedConnection = null;
-                compAddConnectionCounter=0;
-                updateMouseCursor();
-
-                // Triggering networkChangeEvent
-                networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
-                compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                    $('#warningConnectionToastAlert').toast('show');
+                    $('#warningConnectionToastAlert .toast-body').text(
+                        "Connection not possible!"
+                    );
+                }               
             } 
             else if (compAddConnectionCounter == 1) {
                 if (checkValidConnection(false, comp, null)) {
-                    print("connecting first component");
-                    // Second component should now be selected
-                    selectingSecondConnection = true;
-                    // Adding component to connection object
-                    print(comp);
-                    selectedConnection.addComponent(comp);
-                    
-                    // adding connection to list of allCons
-                    allCons.add(selectedConnection);
-
-                    // Triggering networkChangeEvent
-                    networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
-                    compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                    //print("connecting first component");
+                    if (comp.hasAvailablePort()) {
+                        waitForSelectedPort(comp.getInterfaces(), comp, null);
+                    }
                 } else {
-                    // End selection process
-                    drawConnection = false;
-                    selectingSecondConnection = false;
-                    selectedConnection = null;
-                    compAddConnectionCounter=0;
-                    updateMouseCursor();
-
+                    endConnection();
                     // Deleting connection object
                     removeConnection(selectedConnection);
 
-                    alert("Connection type not possible!");
+                    $('#warningConnectionToastAlert').toast('show');
+                    $('#warningConnectionToastAlert .toast-body').text(
+                        "Connection not possible!"
+                    );
                 }
             }
-            print(get());
+            //print(get());
+        }
+
+        function addComponentToConnection(comp) {
+            //print(comp);
+            // Adding component to connection object
+            selectedConnection.addComponent(comp);
         }
         function drawConnetions(xmouse, ymouse) {
             if (selectingSecondConnection == true) {
@@ -158,14 +157,77 @@ var allConnections = (function() {
                 if (allVRules.isValidConnection(comp.getType(), preComp.getType()) && isValidConnectionType1 && isValidConnectionType2) {
                     isValidConnection = true;
                 }
-                print(isValidConnectionType2);
+                //print(isValidConnectionType2);
             } else {
                 if (isValidConnectionType1) {
                     isValidConnection = true;
                 }
             }
-            print(isValidConnectionType1);
+            //print(isValidConnectionType1);
             return isValidConnection;
+        }
+        function waitForSelectedPort(interfaces, comp, preComp) {
+            var interfaceView = new InterfaceView(interfaces);
+            interfaceView.create();
+            interfaceView.show(winMouseX, winMouseY);
+
+            selectingSecondConnection = false;
+
+            $('#connectionCancel').on('click', function(event) {
+                // Deleting connection object
+                removeConnection(selectedConnection);
+                endConnection();
+                interfaceView.hide();
+                interfaceView.clear();
+            });
+                
+            $('.portButton').on('click', function(event){
+                //print(this.value);
+                var interfaceValues = comp.getInterfaceFromString(this.value);
+                
+                addComponentToConnection(comp);
+
+                if(compAddConnectionCounter == 1) {
+                    // Second component should now be selected
+                    selectingSecondConnection = true;
+
+                    // adding connection to list of allCons
+                    allCons.add(selectedConnection);
+                } else {
+                    endConnection();
+                }
+
+                interfaceView.hide();
+
+                // get the interface.
+                var interface = interfaceValues[0];
+                // get the port of that interface.
+                var port = interfaceValues[1];
+                // port is now in use and cannot be selected.
+                interface.portInUse(port);
+
+                interfaceView.clear();
+
+
+                // Triggering networkChangeEvent
+                networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+
+                if (preComp != null) {
+                    $('#finishedConnectionToastAlert').toast('show');
+                    $('#finishedConnectionToastAlert .toast-body').text(
+                        "Now linked " + preComp.getComponentName() + "  ---->  " + comp.getComponentName() + "."
+                    );
+                }
+            });
+        }
+        function endConnection() {
+            // End selection process
+            drawConnection = false;
+            selectingSecondConnection = false;
+            selectedConnection = null;
+            compAddConnectionCounter=0;
+            updateMouseCursor();
         }
 
         return {add:add,
@@ -182,6 +244,7 @@ var allConnections = (function() {
                 setDrawConnection: setDrawConnection,
                 drawConnetions:drawConnetions,
                 getConnectionsRelatedToComp:getConnectionsRelatedToComp,
+                endConnection:endConnection,
                 };   
     }
 

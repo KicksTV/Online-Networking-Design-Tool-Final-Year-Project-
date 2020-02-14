@@ -14,6 +14,7 @@
     "nodemon": "^1.19.2"
   },
   "dependencies": {
+    "bootstrap-icons": "^1.0.0-alpha2",
     "ejs": "^2.7.2",
     "express": "^4.17.1",
     "implement-js": "0.0.27"
