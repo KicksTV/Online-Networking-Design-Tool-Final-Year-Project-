@@ -51,9 +51,15 @@ a>.card:hover {
 .qs_pin_button {
 
 }
+.qs_connections_container {
+    overflow-y: auto;
+}
 .qs_connection {
     display: inline-block;
     margin: 0 5px 0 5px;
+}
+.qs_connection_table_value {
+    text-align: center;
 }
 .qs_arrow {
     display: inline-block;

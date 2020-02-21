@@ -4,6 +4,7 @@ function Connection(type) {
         "type": type,
         "mousePos": [0, 0],
         components: [],
+        interfacePorts: [],
     }
 
     const connectionBehavior = (state) => ({
@@ -30,6 +31,12 @@ function Connection(type) {
         },
         setComponent: (index, val) => {
             state.components[index] = val;
+        },
+        addInterfacePort: (values) => {
+            state.interfacePorts.push(values);
+        },
+        getInterfacePort: (index) => {
+            return state.interfacePorts[index];
         },
         compSelectDisplay: () => {
             centerPos = state.components[0].getCenterPos();

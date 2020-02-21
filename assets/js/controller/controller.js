@@ -111,6 +111,8 @@ window.onload = function() {
                 //print(c.getComponent(1).prepareForJson());
                 newcon.addComponent(c.getComponent(0).prepareForJson());
                 newcon.addComponent(c.getComponent(1).prepareForJson());
+                newcon.addInterfacePort(c.getInterfacePort(0));
+                newcon.addInterfacePort(c.getInterfacePort(1));
                 json.connections.push(newcon.getJSON());
             });
 
@@ -394,6 +396,10 @@ function loadComponents(array) {
         var newconnection = Connection();
         newconnection.setType(con.type);
         newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
+
+        con.interfacePorts.forEach((ip) => {
+            newconnection.addInterfacePort(ip);
+        });
         
         // looping through all the components in the connection
         con.components.forEach((c) => {
@@ -428,7 +434,9 @@ function loadComponents(array) {
             });
             
         });
+
         allCons.add(newconnection);
+
         window.setTimeout(() => {
             networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent)
         }, 500);
@@ -551,7 +559,7 @@ function createNewComponent(img, c) {
     newcomp.setComponentName(c.componentName);
     newcomp.setType(c.type);
     newcomp.setTextSize(c.textSize);
-    JSON.parse(c.interfaces).forEach((i) => {
+    c.interfaces.forEach((i) => {
         let int = new Interface();
         Object.assign(int, i);
         print(int);

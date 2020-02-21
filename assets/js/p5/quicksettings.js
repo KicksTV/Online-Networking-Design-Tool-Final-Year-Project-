@@ -1317,7 +1317,7 @@
 
             var label = createLabel("", container);
 
-            var className = type === "range" ? "qs_range" : "qs_text_input qs_number";
+            var className = type === "range" ? "custom-range" : "qs_text_input qs_number";
             var input = createInput(type, getNextID(), className, container);
             input.min = min || 0;
             input.max = max || 100;
@@ -1561,7 +1561,7 @@
                 textInput.rows = 5;
             }
             else {
-                textInput = createInput(type, getNextID(), "qs_text_input", container);
+                textInput = createInput(type, getNextID(), "form-control form-control-sm", container);
             }
             textInput.value = text || "";
 
@@ -1754,25 +1754,76 @@
             var div = createElement("div", null, "qs_connections_container", container);
             var conContainer = createElement("div", null, null, div);
 
+            var table = createElement("table", null, "table table-sm", conContainer);
+            var thead = createElement("thead", null, null, table);
+            var tr = createElement("tr", null, null, thead);
+            var th1 = createCustomElement("th", "#", null, null, tr);
+            var th2 = createCustomElement("th", "Device_1", null, null, tr);
+            var th3 = createCustomElement("th", "", null, null, tr);
+            var th4 = createCustomElement("th", "Device_2", null, null, tr);
+            var th5 = createCustomElement("th", "Medium_Type", null, null, tr);
+            var th6 = createCustomElement("th", "IP_address", null, null, tr);
+            var th7 = createCustomElement("th", "", null, null, tr);
+
+            var tbody = createElement("tbody", null, null, table);
+
+            th1.setAttribute("scope", "col");
+            th2.setAttribute("scope", "col");
+            th3.setAttribute("scope", "col");
+            th4.setAttribute("scope", "col");
+            th5.setAttribute("scope", "col");
+            th6.setAttribute("scope", "col");
+            th7.setAttribute("scope", "col");
+
             if (connections.length == 0) {
                 // display no conncetions
-                createCustomElement("p", "None", null, "qs_connection", conContainer);
+                var rowtr = createElement("tr", "", "", tbody);
+                var rowth = createCustomElement("th", "1", null, null, rowtr);
+                rowth.setAttribute("scope", "row");
+                createCustomElement("td", "none", "", "", rowtr);
             } else {
                 
                 // removes old comp values
-                while (div.hasChildNodes()) {
-                    div.removeChild(div.lastChild);
+                while (tbody.hasChildNodes()) {
+                    tbody.removeChild(tbody.lastChild);
                 }
+                var rowIndex = 1;
                 connections.forEach((i) => {
+                    var comp1 = i.getComponent(0);
+                    var comp2 = i.getComponent(1);
+                    var interfaceValues;
+                    if (comp1 == allComps.getSelectedComponent()) {
+                        interfaceValues = i.getInterfacePort(0);
+                    }
+                    else if (comp2 == allComps.getSelectedComponent()) {
+                        interfaceValues = i.getInterfacePort(1);
+                    }
+                    var interface = interfaceValues[0];
+                    var port = interfaceValues[1];
+                    
                     var conContainer = createElement("div", null, null, div);
-                    createCustomElement("p", "- " + i.getComponents()[0].getComponentName(), null, "qs_connection", conContainer);
-                    createCustomElement("p", "&#8594;", null, "qs_arrow", conContainer);
-                    createCustomElement("p", "(" + i.getType() + ")", null, "qs_connection", conContainer);
-                    var trashButton = createCustomElement("button", "", null, "qs_connection", conContainer);
-                    createCustomElement("span", "", null, "fas fa-trash-alt", trashButton);
+                    var rowtr = createElement("tr", null, null, tbody);
+                    createCustomElement("th", rowIndex, null, null, rowtr);
+                    createCustomElement("td", comp1.getComponentName(), null, "qs_connection_table_value", rowtr);
+                    createCustomElement("td", "&#8594;", null, "qs_connection_table_value", rowtr);
+                    createCustomElement("td", comp2.getComponentName(), null, "qs_connection_table_value", rowtr);
+                    createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
+                    var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
+                    ipfield.setAttribute("contenteditable", "true");
 
-                    trashButton.addEventListener("click", function () {
-                        allCons.removeConnection(value);
+                    rowIndex++;
+
+                    ipfield.addEventListener('keypress', function(e) {
+                        var regex = new RegExp("^[a-zA-Z]+$");
+                        if (regex.test(e.key)) {
+                            if (e.key.toString().length == 1) {
+                                e.preventDefault();
+                            }
+                        }
+                        if (e.key == "Enter") {
+                            e.preventDefault();
+                        }
+                        interface.portIPaddress[port] = e.srcElement.innerText + e.key;
                     });
                 });
             }
@@ -1787,40 +1838,60 @@
                 },
                 setValue: function (value) {
                     if (value.length > 0) {
-                        //conContainer.removeChild(conContainer.lastChild);
-                        while (div.hasChildNodes()) {
-                            div.removeChild(div.lastChild);
+                        while (tbody.hasChildNodes()) {
+                            tbody.removeChild(tbody.lastChild);
                         }
+                        var rowIndex = 1;
                         value.forEach((i) => {
                             
-                            // Creates all the HTML display of all connections for a given component
+                            var comp1 = i.getComponent(0);
+                            var comp2 = i.getComponent(1);
+                            var interfaceValues;
+                            if (comp1 == allComps.getSelectedComponent()) {
+                                interfaceValues = i.getInterfacePort(0);
+                            }
+                            else if (comp2 == allComps.getSelectedComponent()) {
+                                interfaceValues = i.getInterfacePort(1);
+                            }
+                            var interface = interfaceValues[0];
+                            var port = interfaceValues[1];
+                            
                             var conContainer = createElement("div", null, null, div);
-                            createCustomElement("p", "- " + i.getComponents()[0].getComponentName(), null, "qs_connection", conContainer);
-                            createCustomElement("p", "&#8594;", null, "qs_arrow", conContainer);
-                            createCustomElement("p", i.getComponents()[1].getComponentName(), null, "qs_connection", conContainer);
-                            createCustomElement("p", "(" + i.getType() + ")", null, "qs_connection", conContainer);
-                            var trashButton = createCustomElement("button", "", null, "qs_connection", conContainer);
-                            createCustomElement("span", "", null, "fas fa-trash-alt", trashButton);
+                            var rowtr = createElement("tr", null, null, tbody);
+                            createCustomElement("th", rowIndex, null, "qs_connection_table_value", rowtr);
+                            createCustomElement("td", comp1.getComponentName(), null, "qs_connection_table_value", rowtr);
+                            createCustomElement("td", "&#8594;", null, "qs_connection_table_value", rowtr);
+                            createCustomElement("td", comp2.getComponentName(), null, "qs_connection_table_value", rowtr);
+                            createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
+                            var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
+                            ipfield.setAttribute("contenteditable", "true");
 
-                            trashButton.addEventListener("click", function () {
-                                // removes connection and returns updated list without the removed connection
-                                var connections = allCons.removeConnection(i);
-                                // When delete button is pressed, call function again to refresh properties bar
-                                if (callback) {
-                                    callback(connections);
+                            rowIndex++;
+                            
+
+                            ipfield.addEventListener('keypress', function(e) {
+                                var regex = new RegExp("^[a-zA-Z]+$");
+                                if (regex.test(e.key)) {
+                                    if (e.key.toString().length == 1) {
+                                        e.preventDefault();
+                                    }
                                 }
-                                self._callGCH(title);
+                                if (e.key == "Enter") {
+                                    e.preventDefault();
+                                }
+                                interface.portIPaddress[port] = e.srcElement.innerText + e.key;
                             });
                         });
                         
                         
                     }else {
-                        while (div.hasChildNodes()) {
-                            div.removeChild(div.lastChild);
+                        while (tbody.hasChildNodes()) {
+                            tbody.removeChild(tbody.lastChild);
                         }
-                        //conContainer.removeChild(conContainer.lastChild);
-                        conContainer = createElement("div", null, null, div);
-                        createCustomElement("p", "None", null, "qs_connection", conContainer);
+                        var rowtr = createElement("tr", null, null, tbody);
+                        var rowth = createCustomElement("th", "1", null, null, rowtr);
+                        rowth.setAttribute("scope", "row");
+                        createCustomElement("td", "none", null, null, rowtr);
                     }
                 },
             };

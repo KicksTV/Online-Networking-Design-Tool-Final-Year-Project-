@@ -33,6 +33,7 @@ class Interface extends componentMixin(Comp) {
         this.availablePorts = numPorts;
         this.ports = [];
         this.portAvailability = [];
+        this.portIPaddress = [];
 
         for (var i=0;i<=this.numberOfPorts;i++) {
             var port = this.portType + " " + i;
@@ -40,7 +41,6 @@ class Interface extends componentMixin(Comp) {
             this.ports.push(port);
         }
     }
-
     portInUse(portNumber) {
         this.portAvailability[portNumber] = false;
     }

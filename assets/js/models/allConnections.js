@@ -81,7 +81,7 @@ var allConnections = (function() {
 
             //print("ConCounter" + compAddConnectionCounter);
 
-            
+            print("argar " +compAddConnectionCounter);
 
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
@@ -127,10 +127,11 @@ var allConnections = (function() {
             //print(get());
         }
 
-        function addComponentToConnection(comp) {
+        function addComponentToConnection(comp, interfaceValues) {
             //print(comp);
             // Adding component to connection object
             selectedConnection.addComponent(comp);
+            selectedConnection.addInterfacePort(interfaceValues);
         }
         function drawConnetions(xmouse, ymouse) {
             if (selectingSecondConnection == true) {
@@ -185,7 +186,7 @@ var allConnections = (function() {
                 //print(this.value);
                 var interfaceValues = comp.getInterfaceFromString(this.value);
                 
-                addComponentToConnection(comp);
+                addComponentToConnection(comp, interfaceValues);
 
                 if(compAddConnectionCounter == 1) {
                     // Second component should now be selected
