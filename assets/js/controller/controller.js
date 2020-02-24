@@ -398,7 +398,9 @@ function loadComponents(array) {
         newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
 
         con.interfacePorts.forEach((ip) => {
-            newconnection.addInterfacePort(ip);
+            var index = con.interfacePorts.indexOf(ip);
+            newconnection.addInterfacePort([new Interface(), ip[1]]);
+            Object.assign(newconnection.getInterface(index), ip[0]);
         });
         
         // looping through all the components in the connection
@@ -410,6 +412,9 @@ function loadComponents(array) {
                 // comp has a connection
                 newcomp.setHasConnection(true);
 
+                // add comps interfaces
+                newcomp.addInterface(newconnection.getInterface(con.components.indexOf(c)));
+                print(newcomp.getInterface(0));
                 var exists = false;
                 var existingComp;
                 if (allComps.get().length > 0) {
@@ -559,13 +564,6 @@ function createNewComponent(img, c) {
     newcomp.setComponentName(c.componentName);
     newcomp.setType(c.type);
     newcomp.setTextSize(c.textSize);
-    c.interfaces.forEach((i) => {
-        let int = new Interface();
-        Object.assign(int, i);
-        print(int);
-        newcomp.addInterface(int);
-    });
-    
     return newcomp;
 }
 

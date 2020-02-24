@@ -93,6 +93,8 @@ var allConnections = (function() {
                     }
                     comp.setHasConnection(true);
                     preComp.setHasConnection(true);
+
+                    
                 } else {
                     // Deleting connection object
                     removeConnection(selectedConnection);
@@ -109,8 +111,10 @@ var allConnections = (function() {
             } 
             else if (compAddConnectionCounter == 1) {
                 if (checkValidConnection(false, comp, null)) {
-                    //print("connecting first component");
+                    print("connecting first component");
+                    print(comp.hasAvailablePort());
                     if (comp.hasAvailablePort()) {
+                        print("waiting for selection of components");
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                     }
                 } else {
@@ -195,6 +199,8 @@ var allConnections = (function() {
                     // adding connection to list of allCons
                     allCons.add(selectedConnection);
                 } else {
+                    selectedConnection.getInterface(0).subtractPossibleAvailablePort();
+                    selectedConnection.getInterface(1).subtractPossibleAvailablePort();
                     endConnection();
                 }
 

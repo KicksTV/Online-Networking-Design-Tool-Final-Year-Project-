@@ -44,4 +44,7 @@ class Interface extends componentMixin(Comp) {
     portInUse(portNumber) {
         this.portAvailability[portNumber] = false;
     }
+    subtractPossibleAvailablePort() {
+        this.availablePorts-1;
+    }
 }

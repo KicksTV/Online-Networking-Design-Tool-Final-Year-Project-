@@ -62,7 +62,6 @@ const prepareForJson = (state) => ({
             "componentName": state.componentName,
             "textSize": state.textSize,
             "validLinkingComponents": state.validLinkingComponents,
-            "interfaces": state.interfaces,
         }
         return parms;
     }

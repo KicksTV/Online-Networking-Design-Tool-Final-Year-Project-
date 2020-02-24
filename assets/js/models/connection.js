@@ -35,6 +35,9 @@ function Connection(type) {
         addInterfacePort: (values) => {
             state.interfacePorts.push(values);
         },
+        getInterface: (index) => {
+            return state.interfacePorts[index][0];
+        },
         getInterfacePort: (index) => {
             return state.interfacePorts[index];
         },

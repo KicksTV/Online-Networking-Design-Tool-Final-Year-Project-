@@ -182,6 +182,7 @@ function Component(type, path, image) {
         hasAvailablePort: () => {
             var hasAvailablePort = false;
             state.interfaces.forEach((i) => {
+                print(i);
                 if (i.availablePorts > 0) {
                     hasAvailablePort = true;
                 }
