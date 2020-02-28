@@ -9,6 +9,9 @@ var allSubnets = (function () {
         function get(index) {
             return _subnets[index];
         }
+        function getAll() {
+            return _subnets;
+        }
         function set(index, obj) {
             _subnets[index] = obj;
         }
@@ -21,6 +24,7 @@ var allSubnets = (function () {
 
         return {
             get:get,
+            getAll:getAll,
             set:set,
             add:add,
             length:length,

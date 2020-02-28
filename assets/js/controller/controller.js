@@ -99,6 +99,7 @@ window.onload = function() {
         var json = {
             "connections": [],
             "components": [],
+            "subnets": [],
         };
         // Checking if anything exists on canvas
         if (!allComps.isEmpty()) {
@@ -123,6 +124,12 @@ window.onload = function() {
                     json.components.push(c.prepareForJson());
                 }
             });
+
+            // Saving all subnets
+            allSubnets.getInstance().getAll().forEach(s => {
+                json.subnets.push(s);
+            });
+
             // Saves json to file
             console.log(json);
             saveJSON(json, 'network_design_project.json');
@@ -378,6 +385,12 @@ function updateMouseCursor() {
 
 // PROJECT LOADING FUNCTION
 function loadComponents(array) {
+
+    // LOADING SAVED SUBNETS
+    array.subnets.forEach(s => {
+        allSubnets.getInstance().add(s);
+    });
+    print(allSubnets.getInstance().getAll());
     // LOADING COMPONENTS WITHOUT A CONNECTION
     array.components.forEach((c) => {
         loadImage(c.imgPath, img => {
@@ -566,8 +579,6 @@ function createNewComponent(img, c) {
 // network functions
 
 var hostBits = 0;
-
-
 function calculateSupernetMask(subnets) {
     // Calculates the Supernet Mask for network,
     // Must have already calculated Subnet Mask to get hostbits.
@@ -679,7 +690,6 @@ function calculateDecimalFromSlashValue(slashValue) {
     return decimalNotation;
 }
 
-
 // Calculates all the host devices currently displayed on canvas
 function calculateAllHost() {
     var totalNumberOfHosts = 0;
@@ -764,11 +774,17 @@ function getLargestSubnet() {
                 //print("name: " + comp.getComponentName());
 
                 // Check if subnet already exists
-                if (! allSubnets.getInstance().toList().find(x => x.gatewayRouterID == r.getID() && x.connection == c)) {
+                var foundSubnet = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == r.getID() || x.connection == c);
+                if (foundSubnet == null) {
                     currSubnet = new Subnet();
                     currSubnet.gatewayRouterID = r.getID();
                     currSubnet.connection = c;
                     allSubnets.getInstance().add(currSubnet);
+                }
+                else {
+                    currSubnet = foundSubnet;
+                    currSubnet.gatewayRouterID = r.getID();
+                    currSubnet.connection = c;
                 }
 
 

@@ -1792,6 +1792,10 @@
                     var comp1 = i.getComponent(0);
                     var comp2 = i.getComponent(1);
                     var interfaceValues;
+
+                    var currentSelectedComp = allComps.getSelectedComponent();
+
+
                     if (comp1 == allComps.getSelectedComponent()) {
                         interfaceValues = i.getInterfacePort(0);
                     }
@@ -1808,23 +1812,92 @@
                     createCustomElement("td", "&#8594;", null, "qs_connection_table_value", rowtr);
                     createCustomElement("td", comp2.getComponentName(), null, "qs_connection_table_value", rowtr);
                     createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
-                    var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
-                    ipfield.setAttribute("contenteditable", "true");
+                    
+                    
+                    if (allComps.isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
+                        var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
+                        ipfield.setAttribute("contenteditable", "true");
 
-                    rowIndex++;
+                        rowIndex++;
+                        
+                        var routerComp = null;
+                        // Setting of subnetID
+                        if (currentSelectedComp.getType() == "Router") {
+                            routerComp = currentSelectedComp;
+                        }
 
-                    ipfield.addEventListener('keypress', function(e) {
-                        var regex = new RegExp("^[a-zA-Z]+$");
-                        if (regex.test(e.key)) {
-                            if (e.key.toString().length == 1) {
+                        ipfield.addEventListener('keypress', function(e) {
+                            var regex = new RegExp("^[a-zA-Z]+$");
+                            if (regex.test(e.key)) {
+                                if (e.key.toString().length == 1) {
+                                    e.preventDefault();
+                                }
+                            }
+                            if (e.key == "Enter") {
                                 e.preventDefault();
                             }
-                        }
-                        if (e.key == "Enter") {
-                            e.preventDefault();
-                        }
-                        interface.portIPaddress[port] = e.srcElement.innerText + e.key;
-                    });
+                            print("Address entered");
+                            var IPaddressField = e.srcElement.innerText + e.key;
+                            var numberOfOctets = IPaddressField.split(".").length;
+                            var octets = IPaddressField.split(".");
+
+
+                            if (routerComp != null) {
+                                if (numberOfOctets == 4 && octets[3] != "") {
+                                    
+                                    // Calculate subnet ID gateway IP
+                                    
+                                    interface.portIPaddress[port] = IPaddressField;
+                                    
+                                    const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
+                                    found.gatewayRouterIP = IPaddressField;
+
+                                    // Setting Subnet ID
+
+                                    found.subnetID = calculateSubnetID(found.gatewayRouterIP, SubnetMask);
+
+                                }
+                            } else {
+                                var foundSubnetforComp = null;
+                                allSubnets.getInstance().toList().forEach(s => {
+                                    var found = s.endDevices.find(x => x == currentSelectedComp.getID());
+                                    if (found != null) {
+                                        foundSubnetforComp = s;
+                                    }
+                                });
+
+
+                                if (foundSubnetforComp) {
+                                    if (foundSubnetforComp.gatewayRouterIP == null) {
+                                        e.preventDefault();
+                                        alert("Please assign an IP address to Default Gateway (Router) first.");
+                                    } else {
+                                        
+                                        if (numberOfOctets == 4 && octets[3] != "") {
+                                            // Checking for valid assignment of IP address.
+
+                                            var subnetID = calculateSubnetID(IPaddressField, SubnetMask);
+
+                                            if (subnetID == foundSubnetforComp.subnetID) {
+                                                // Valid IP address for subnet
+
+                                                ipfield.className = "qs_valid_ip_address";
+
+                                                interface.portIPaddress[port] = IPaddressField;
+
+                                            } else {
+                                                // Not valid IP address for subnet
+
+                                                ipfield.className = "qs_invalid_ip_address";
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    alert("Device is not part of any subnet!");
+                                }
+                            }
+                        });
+                    }
                 });
             }
             var self = this;
@@ -1848,6 +1921,7 @@
                             var comp2 = i.getComponent(1);
                             var interfaceValues;
                             var currentSelectedComp = allComps.getSelectedComponent();
+
                             if (comp1 == allComps.getSelectedComponent()) {
                                 interfaceValues = i.getInterfacePort(0);
                             }
@@ -1864,87 +1938,91 @@
                             createCustomElement("td", "&#8594;", null, "qs_connection_table_value", rowtr);
                             createCustomElement("td", comp2.getComponentName(), null, "qs_connection_table_value", rowtr);
                             createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
-                            var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
-                            ipfield.setAttribute("contenteditable", "true");
-
-                            rowIndex++;
                             
-                            var routerComp = null;
-                            // Setting of subnetID
-                            if (currentSelectedComp.getType() == "Router") {
-                                routerComp = currentSelectedComp;
-                            }
+                            if (allComps.isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
+                                var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
+                                ipfield.setAttribute("contenteditable", "true");
 
-                            ipfield.addEventListener('keypress', function(e) {
-                                var regex = new RegExp("^[a-zA-Z]+$");
-                                if (regex.test(e.key)) {
-                                    if (e.key.toString().length == 1) {
+                                rowIndex++;
+                                
+                                var routerComp = null;
+                                // Setting of subnetID
+                                if (currentSelectedComp.getType() == "Router") {
+                                    routerComp = currentSelectedComp;
+                                }
+
+                                ipfield.addEventListener('keypress', function(e) {
+                                    var regex = new RegExp("^[a-zA-Z]+$");
+                                    if (regex.test(e.key)) {
+                                        if (e.key.toString().length == 1) {
+                                            e.preventDefault();
+                                        }
+                                    }
+                                    if (e.key == "Enter") {
                                         e.preventDefault();
                                     }
-                                }
-                                if (e.key == "Enter") {
-                                    e.preventDefault();
-                                }
-                                print("Address entered");
-                                var IPaddressField = e.srcElement.innerText + e.key;
-                                var numberOfOctets = IPaddressField.split(".").length;
-                                var octets = IPaddressField.split(".");
+                                    print("Address entered");
+                                    var IPaddressField = e.srcElement.innerText + e.key;
+                                    var numberOfOctets = IPaddressField.split(".").length;
+                                    var octets = IPaddressField.split(".");
 
 
-                                if (routerComp != null) {
-                                    if (numberOfOctets == 4 && octets[3] != "") {
-                                        
-                                        // Calculate subnet ID gateway IP
-                                        
-                                        interface.portIPaddress[port] = IPaddressField;
-                                        
-                                        const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
-                                        found.gatewayRouterIP = IPaddressField;
-
-                                        // Setting Subnet ID
-
-                                        found.subnetID = calculateSubnetID(found.gatewayRouterIP, SubnetMask);
-
-                                    }
-                                } else {
-                                    var foundSubnetforComp = null;
-                                    allSubnets.getInstance().toList().forEach(s => {
-                                        var found = s.endDevices.find(x => x == currentSelectedComp.getID());
-                                        if (found != null) {
-                                            foundSubnetforComp = s;
-                                        }
-                                    });
-
-
-                                    if (foundSubnetforComp) {
-                                        if (foundSubnetforComp.gatewayRouterIP == null) {
-                                            alert("Please assign an IP address to Default Gateway (Router) first.");
-                                        } else {
+                                    if (routerComp != null) {
+                                        if (numberOfOctets == 4 && octets[3] != "") {
                                             
-                                            if (numberOfOctets == 4 && octets[3] != "") {
-                                                // Checking for valid assignment of IP address.
+                                            // Calculate subnet ID gateway IP
+                                            
+                                            interface.portIPaddress[port] = IPaddressField;
+                                            
+                                            const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
+                                            found.gatewayRouterIP = IPaddressField;
 
-                                                var subnetID = calculateSubnetID(IPaddressField, SubnetMask);
+                                            // Setting Subnet ID
 
-                                                if (subnetID == foundSubnetforComp.subnetID) {
-                                                    // Valid IP address for subnet
+                                            found.subnetID = calculateSubnetID(found.gatewayRouterIP, SubnetMask);
 
-                                                    ipfield.className = "qs_valid_ip_address";
-
-                                                    interface.portIPaddress[port] = IPaddressField;
-
-                                                } else {
-                                                    // Not valid IP address for subnet
-
-                                                    ipfield.className = "qs_invalid_ip_address";
-                                                }
-                                            }
                                         }
                                     } else {
-                                        alert("Device is not part of any subnet!");
+                                        var foundSubnetforComp = null;
+                                        allSubnets.getInstance().toList().forEach(s => {
+                                            var found = s.endDevices.find(x => x == currentSelectedComp.getID());
+                                            if (found != null) {
+                                                foundSubnetforComp = s;
+                                            }
+                                        });
+
+
+                                        if (foundSubnetforComp) {
+                                            if (foundSubnetforComp.gatewayRouterIP == null) {
+                                                e.preventDefault();
+                                                alert("Please assign an IP address to Default Gateway (Router) first.");
+                                            } else {
+                                                
+                                                if (numberOfOctets == 4 && octets[3] != "") {
+                                                    // Checking for valid assignment of IP address.
+
+                                                    var subnetID = calculateSubnetID(IPaddressField, SubnetMask);
+
+                                                    if (subnetID == foundSubnetforComp.subnetID) {
+                                                        // Valid IP address for subnet
+
+                                                        ipfield.className = "qs_valid_ip_address";
+
+                                                        interface.portIPaddress[port] = IPaddressField;
+
+                                                    } else {
+                                                        // Not valid IP address for subnet
+
+                                                        ipfield.className = "qs_invalid_ip_address";
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            alert("Device is not part of any subnet!");
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         });
                         
                         
