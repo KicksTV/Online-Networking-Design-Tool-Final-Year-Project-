@@ -162,14 +162,14 @@ class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
     
             this.buttons[i].getIMG().mouseClicked(() => {
                 let c;
-                if (allCons.getDrawConnection()) {
-                    c = allCons.getSelectedConnection();
+                if (connectionController.getInstance().getDrawConnection()) {
+                    c = allConnections.getInstance().getSelectedConnection();
                     c.setType(this.buttons[i].getComponentType());
                 }else {
                     c = Connection();
                     c.setType(this.buttons[i].getComponentType());
-                    allCons.setDrawConnection(true);
-                    allCons.setSelectedConnection(c);
+                    connectionController.getInstance().setDrawConnection(true);
+                    allConnections.getInstance().setSelectedConnection(c);
                 }
                 $('#startConnectionToastAlert').toast('show');
                 $('#startConnectionToastAlert .toast-body').text(

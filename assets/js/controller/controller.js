@@ -2,7 +2,6 @@ let xml;
 let json;
 
 var allTabs = allComponentBarTabs.getInstance();
-var allCons = allConnections.getInstance();
 
 var allComps = allComponents.getInstance();
 var allVRules = allValidationRules.getInstance();
@@ -28,6 +27,9 @@ var canvasLoadProject;
 var canvasSaveProject;
 var canvasDeleteButton;
 
+// Network Values
+var SubnetMask;
+var SupernetMask;
 
 //EVENTS
 var networkChangeEvent = new CustomEvent('networkChangeEvent');
@@ -93,17 +95,15 @@ window.onload = function() {
 
     // SAVE
     canvasSaveProject.addEventListener("click", () => {
-        
         // Setup of json format
         var json = {
             "connections": [],
             "components": [],
         };
-
         // Checking if anything exists on canvas
         if (!allComps.isEmpty()) {
             // looping through all connections
-            allCons.get().forEach((c) => {
+            allConnections.getInstance().get().forEach((c) => {
                 var newcon = Connection();
                 newcon.setType(c.getType());
                 newcon.setMousePos(c.getMousePos()[0], c.getMousePos()[1]);
@@ -115,7 +115,6 @@ window.onload = function() {
                 newcon.addInterfacePort(c.getInterfacePort(1));
                 json.connections.push(newcon.getJSON());
             });
-
             // looping through all components to get any that haven't got a connection
             allComps.get().forEach((c) => {
                 //print("pushing non-connection object");
@@ -212,7 +211,7 @@ function setup() {
 
 function draw() {
     clear();
-    allCons.drawAllConnections();
+    connectionController.getInstance().drawAllConnections();
     allComps.displayAllComponents();
     updateMouseCursor();
 
@@ -243,8 +242,8 @@ function mousePressed() {
         checkComponentDeleteEvent();
 
         // Checks if users is selecting two components to make a connection
-        if (allCons.getDrawConnection()) {
-            allCons.selectConnectionForComp(allComps.getComponent());
+        if (connectionController.getInstance().getDrawConnection()) {
+            connectionController.getInstance().selectConnectionForComp(allComps.getComponent());
         }
 
     }else {
@@ -260,8 +259,8 @@ function mouseMoved() {
         allComps.setComponentHover(false);
     }
     
-    if (allCons.getDrawConnection()) {
-        allCons.drawConnetions(mouseX, mouseY);
+    if (connectionController.getInstance().getDrawConnection()) {
+        connectionController.getInstance().drawConnetions(mouseX, mouseY);
     }
 }
 
@@ -298,19 +297,21 @@ function mouseReleased() {
 function applyNetworkPropertiesToGUI() {
     var hosts = calculateAllHost();
     var subnets = calculateAllSubnets();
+    SubnetMask = calculateSubnetMask();
+    SupernetMask = calculateSupernetMask(subnets);
     if (typeof networkPropertiesGUI.getGuiParams() == 'undefined') {
         let guiParams = {
             'TotalHosts': hosts.toString(),
             'TotalSubnets': subnets.toString(),
-            'SubnetMask': calculateSubnetMask(),
-            'SupernetMask': calculateSupernetMask(subnets),
+            'SubnetMask': SubnetMask,
+            'SupernetMask': SupernetMask,
         }
         networkPropertiesGUI.addObject(guiParams);
     } else {
         networkPropertiesGUI.setValue('TotalSubnets', subnets.toString());
         networkPropertiesGUI.setValue('TotalHosts', hosts.toString());
-        networkPropertiesGUI.setValue('SubnetMask', calculateSubnetMask());
-        networkPropertiesGUI.setValue('SupernetMask', calculateSupernetMask(subnets));
+        networkPropertiesGUI.setValue('SubnetMask', SubnetMask);
+        networkPropertiesGUI.setValue('SupernetMask', SupernetMask);
     }
 }
 
@@ -342,7 +343,7 @@ function applyCompValuesToGUI() {
             'HideComponent': allComps.getSelectedComponent().getHideComponent(),
             'HideConnections': allComps.getSelectedComponent().getHideConnections(),
             'Lock': false,
-            'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
+            'Connections': allConnections.getInstance().getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             
         };
         compPropertiesGUI.addObject(guiParams);
@@ -352,7 +353,7 @@ function applyCompValuesToGUI() {
         compPropertiesGUI.setValue('HideComponent', allComps.getSelectedComponent().getHideComponent());
         compPropertiesGUI.setValue('TextSize', allComps.getSelectedComponent().getTextSize());
         compPropertiesGUI.setValue('HideConnections', allComps.getSelectedComponent().getHideConnections());
-        compPropertiesGUI.setValue('Connections',  allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()));
+        compPropertiesGUI.setValue('Connections',  allConnections.getInstance().getConnectionsRelatedToComp(allComps.getSelectedComponent()));
         
     }
     compPropertiesGUI.setTitle(allComps.getSelectedComponent().getComponentName());
@@ -364,7 +365,7 @@ function updateMouseCursor() {
     if (allComps.getComponentDrag()) {
         document.body.style.cursor = "grabbing";
     }
-    else if (allCons.getDrawConnection() || allComps.getSelectCompForDelete()) {
+    else if (connectionController.getInstance().getDrawConnection() || allComps.getSelectCompForDelete()) {
         document.body.style.cursor = "crosshair";
     }
     else if (allComps.getComponentHover()) {
@@ -376,12 +377,7 @@ function updateMouseCursor() {
 }
 
 // PROJECT LOADING FUNCTION
-
 function loadComponents(array) {
-    
-    console.log("loading components");
-    console.log(array);
-
     // LOADING COMPONENTS WITHOUT A CONNECTION
     array.components.forEach((c) => {
         loadImage(c.imgPath, img => {
@@ -389,7 +385,6 @@ function loadComponents(array) {
             allComps.add(newcomp);
         });
     });
-
     // LOADING CONNECTIONS
     array.connections.forEach((con) => {
         // new connection
@@ -440,7 +435,7 @@ function loadComponents(array) {
             
         });
 
-        allCons.add(newconnection);
+        allConnections.getInstance().add(newconnection);
 
         window.setTimeout(() => {
             networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent)
@@ -520,9 +515,9 @@ function checkComponentDeleteEvent() {
         compPropertiesGUI.hide();
 
         // get connection
-        var connectionsToDel = allCons.getConnectionsRelatedToComp(comp);
+        var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(comp);
         connectionsToDel.forEach((c) => {
-            allCons.removeConnection(c);
+            allConnections.getInstance().removeConnection(c);
         });
 
 
@@ -703,10 +698,10 @@ function calculateAllSubnets() {
     
     allComps.get().forEach((comp) => {
         //print(comp.getComponentName());
-        //print(allCons.getConnectionsRelatedToComp(comp));
+        //print(allConnections.getInstance().getConnectionsRelatedToComp(comp));
         if (comp.getType() == "Router") {
             //print("found router");
-            allCons.getConnectionsRelatedToComp(comp).forEach((con) => {
+            allConnections.getInstance().getConnectionsRelatedToComp(comp).forEach((con) => {
                 connections.push(con);
             });
         }
@@ -733,6 +728,8 @@ var numberOfConnections = 0;
 var traveledConnections = [];
 var previousConnection = null;
 
+var currSubnet;
+
 function getLargestSubnet() {
     var allRouters = [];
     traveledConnections = [];
@@ -745,7 +742,7 @@ function getLargestSubnet() {
     });
 
     allRouters.forEach((r) => {
-        var routerConnections = allCons.getConnectionsRelatedToComp(r);
+        var routerConnections = allConnections.getInstance().getConnectionsRelatedToComp(r);
 
         currentRouter = r;
         previousComp = r;
@@ -765,6 +762,16 @@ function getLargestSubnet() {
             
             if (comp != null) {
                 //print("name: " + comp.getComponentName());
+
+                // Check if subnet already exists
+                if (! allSubnets.getInstance().toList().find(x => x.gatewayRouterID == r.getID() && x.connection == c)) {
+                    currSubnet = new Subnet();
+                    currSubnet.gatewayRouterID = r.getID();
+                    currSubnet.connection = c;
+                    allSubnets.getInstance().add(currSubnet);
+                }
+
+
                 travelSubnetTree(comp, comp);
             }
         });
@@ -779,14 +786,14 @@ function getLargestSubnet() {
 function travelSubnetTree(currentComp, rootComp) {
     
     // check if all connections have been iterated through
-    var connections = allCons.getConnectionsRelatedToComp(currentComp);
+    var connections = allConnections.getInstance().getConnectionsRelatedToComp(currentComp);
     numberOfConnections = connections.length;
     var currentConnection = null;
 
     //print("current comp: "+currentComp.getComponentName());
-    traveledConnections.forEach((c) => {
+    //traveledConnections.forEach((c) => {
         //print("Traveled connections: "+c.getComponent(0).getComponentName() + " - " + c.getComponent(1).getComponentName());
-    });
+    //});
     //print("numberOfEndDevices: "+numberOfEndDevices)
 
     connections.forEach((c) => {
@@ -816,7 +823,7 @@ function travelSubnetTree(currentComp, rootComp) {
 }
 
 function findAllEndDevices(currentComp, rootComp) {
-    var connections = allCons.getConnectionsRelatedToComp(currentComp);
+    var connections = allConnections.getInstance().getConnectionsRelatedToComp(currentComp);
     var numberOfConnections = connections.length;
 
     var currentConnection = null;
@@ -850,6 +857,17 @@ function findAllEndDevices(currentComp, rootComp) {
             numberOfEndDevices++;
             traveledConnections.push(currentConnection);
             previousComp = currentRouter;
+
+            // ADDING END DEVICE TO SUBNET
+
+            // CHECK IF DEVICE ALREADY EXISTS IN SUBNET
+            allSubnets.getInstance().toList().forEach(s => {
+                if (! s.endDevices.find(d => d == nextComp.getID())) {
+                    currSubnet.add(nextComp.getID());
+                }
+            });
+            
+
             travelSubnetTree(rootComp, rootComp);
         
         } else {
@@ -882,16 +900,20 @@ function isPreviousRoute(connection) {
 }
 
 
+
+
+
+
 function calculateSubnets(comp) {
     if (allComps.getComponent().getType() == "Router" && comp == null) {
-        var routerConnections = allCons.getConnectionsRelatedToComp(subnetRouter);
+        var routerConnections = allConnections.getInstance().getConnectionsRelatedToComp(subnetRouter);
 
         numberOfSubnetsForComponent = routerConnections.length;
     } else {
         if (comp == null) {
-            var connections = allCons.getConnectionsRelatedToComp(allComps.getComponent());
+            var connections = allConnections.getInstance().getConnectionsRelatedToComp(allComps.getComponent());
         } else {
-            var connections = allCons.getConnectionsRelatedToComp(comp);
+            var connections = allConnections.getInstance().getConnectionsRelatedToComp(comp);
         }   
         // check for router or switch connection
         var check = searchForConnectionToRouter(connections);
@@ -900,7 +922,7 @@ function calculateSubnets(comp) {
         var Switch = check[1];
 
         if (subnetRouter != null) {
-            var routerConnections = allCons.getConnectionsRelatedToComp(subnetRouter);
+            var routerConnections = allConnections.getInstance().getConnectionsRelatedToComp(subnetRouter);
             numberOfSubnetsForComponent = routerConnections.length;
         } else {
             numberOfSubnetsForComponent = 0;
@@ -912,6 +934,74 @@ function calculateSubnets(comp) {
 
 }
 
+
+function binaryToDecimal(IPaddress) {
+    var decimalRepresentation = "";
+    IPaddress.split(".").forEach(octet => {
+        decimalRepresentation += parseInt(octet, 2)+".";
+    });
+    decimalRepresentation = decimalRepresentation.slice(0, -1);
+    return decimalRepresentation;
+}
+
+function decimalToBinary(IPaddress) {
+    // converting to binary representation
+    
+    var binary = "";
+
+    IPaddress.split(".").forEach(octet => {
+        var conversionToBinary = (parseInt(octet) >>> 0).toString(2);
+        while (conversionToBinary.length < 8) {
+            conversionToBinary = "0" + conversionToBinary;
+        }
+        binary += conversionToBinary + ".";
+    });
+
+    // Remove trailing "."
+    binary = binary.slice(0, -1);
+    return binary;
+}
+
+function calculateSubnetID(IPaddress, SubnetMask) {
+    var IPBinary = decimalToBinary(IPaddress);
+    var SubnetMaskBinary = decimalToBinary(SubnetMask);
+
+    print(IPBinary);
+    print(SubnetMaskBinary);
+    print("---------------------------");
+    
+    var ANDresult = "";
+    for (var i=0; i<4; i++) {
+        var IPoctect = IPBinary.split(".")[i];
+        var SubnetMaskoctect = SubnetMaskBinary.split(".")[i];
+
+        for (var l=0;l<8;l++) {
+            ANDresult += (parseInt(IPoctect.charAt(l), 2) & parseInt(SubnetMaskoctect.charAt(l), 2)).toString();
+        }
+    }
+
+    print(ANDresult);
+
+    var subnetIDBinary = "";
+
+    for (var i=0; i<ANDresult.length;i+=8) {
+        var octet = ANDresult.substring(i,i+8);
+        subnetIDBinary += octet+".";
+    }
+    subnetIDBinary = subnetIDBinary.slice(0, -1);
+    print(subnetIDBinary);
+
+    var subnetIDDecimal = binaryToDecimal(subnetIDBinary);
+    return subnetIDDecimal;
+}
+
+
+
+
+
+
+
+// OLD NOT USED!!!!
 function searchForConnectionToRouter(connections) {
     var subnetRouter = null;
     var Switch = null;

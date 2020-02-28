@@ -1,9 +1,3 @@
-class View {
-    constructor() {
-
-    }
-}
-
 class InterfaceView {
     constructor(interfaces) {
         this.container = createDiv();

@@ -61,6 +61,21 @@ a>.card:hover {
 .qs_connection_table_value {
     text-align: center;
 }
+
+.qs_invalid_ip_address {
+    border: 2px;
+    border-color: red;
+    border-style: solid;
+    color: red;
+}
+
+.qs_valid_ip_address {
+    border: 2px;
+    border-color: green;
+    border-style: solid;
+    color: green;
+}
+
 .qs_arrow {
     display: inline-block;
     margin: 0 5px 0 5px;

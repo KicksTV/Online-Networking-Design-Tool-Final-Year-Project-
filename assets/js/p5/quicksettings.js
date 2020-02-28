@@ -1847,6 +1847,7 @@
                             var comp1 = i.getComponent(0);
                             var comp2 = i.getComponent(1);
                             var interfaceValues;
+                            var currentSelectedComp = allComps.getSelectedComponent();
                             if (comp1 == allComps.getSelectedComponent()) {
                                 interfaceValues = i.getInterfacePort(0);
                             }
@@ -1868,6 +1869,11 @@
 
                             rowIndex++;
                             
+                            var routerComp = null;
+                            // Setting of subnetID
+                            if (currentSelectedComp.getType() == "Router") {
+                                routerComp = currentSelectedComp;
+                            }
 
                             ipfield.addEventListener('keypress', function(e) {
                                 var regex = new RegExp("^[a-zA-Z]+$");
@@ -1879,7 +1885,65 @@
                                 if (e.key == "Enter") {
                                     e.preventDefault();
                                 }
-                                interface.portIPaddress[port] = e.srcElement.innerText + e.key;
+                                print("Address entered");
+                                var IPaddressField = e.srcElement.innerText + e.key;
+                                var numberOfOctets = IPaddressField.split(".").length;
+                                var octets = IPaddressField.split(".");
+
+
+                                if (routerComp != null) {
+                                    if (numberOfOctets == 4 && octets[3] != "") {
+                                        
+                                        // Calculate subnet ID gateway IP
+                                        
+                                        interface.portIPaddress[port] = IPaddressField;
+                                        
+                                        const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
+                                        found.gatewayRouterIP = IPaddressField;
+
+                                        // Setting Subnet ID
+
+                                        found.subnetID = calculateSubnetID(found.gatewayRouterIP, SubnetMask);
+
+                                    }
+                                } else {
+                                    var foundSubnetforComp = null;
+                                    allSubnets.getInstance().toList().forEach(s => {
+                                        var found = s.endDevices.find(x => x == currentSelectedComp.getID());
+                                        if (found != null) {
+                                            foundSubnetforComp = s;
+                                        }
+                                    });
+
+
+                                    if (foundSubnetforComp) {
+                                        if (foundSubnetforComp.gatewayRouterIP == null) {
+                                            alert("Please assign an IP address to Default Gateway (Router) first.");
+                                        } else {
+                                            
+                                            if (numberOfOctets == 4 && octets[3] != "") {
+                                                // Checking for valid assignment of IP address.
+
+                                                var subnetID = calculateSubnetID(IPaddressField, SubnetMask);
+
+                                                if (subnetID == foundSubnetforComp.subnetID) {
+                                                    // Valid IP address for subnet
+
+                                                    ipfield.className = "qs_valid_ip_address";
+
+                                                    interface.portIPaddress[port] = IPaddressField;
+
+                                                } else {
+                                                    // Not valid IP address for subnet
+
+                                                    ipfield.className = "qs_invalid_ip_address";
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        alert("Device is not part of any subnet!");
+                                    }
+                                }
                             });
                         });
                         
