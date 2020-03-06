@@ -6,6 +6,12 @@ var allTabs = allComponentBarTabs.getInstance();
 var allComps = allComponents.getInstance();
 var allVRules = allValidationRules.getInstance();
 
+// Copy, cut and paste booleans
+var pasted;
+var copied;
+var cut;
+
+
 var numberOfSubnetsForComponent = 0;
 
 var guiParams;
@@ -254,7 +260,9 @@ function mousePressed() {
         }
 
     }else {
-        allComps.clearSelectList();
+        if (copied == false) {
+            allComps.clearSelectList();
+        }
     }
 }
 
@@ -455,12 +463,11 @@ function loadComponents(array) {
         }, 500);
     });
 }
-var pasted;
-var copied;
-var cut;
+
 function checkForCopyAndPastEvent() {
     if (keyIsDown(17) && keyIsDown(67)) {
         // get the selected component
+        
         if (allComps.getSelectedComponent()) {
             $('#copyToastAlert').toast('show');
             $('#copyToastAlert .toast-body').text(
@@ -484,6 +491,61 @@ function checkForCopyAndPastEvent() {
         }
     }
     if (keyIsDown(17) && keyIsDown(86) && pasted == false) {
+        console.log(allComps.isSelectListEmpty());
+        if (! allComps.isSelectListEmpty()) {
+            console.log("multi select paste");
+            var list = allComps.getSelectList();
+            for (var i=0; i<list.length;i++) {
+                
+                var firstCX;
+                var firstCY;
+
+                var nextCX;
+                var nextCY;
+
+                var xDifference;
+                var yDifference;
+
+                firstCX = list[0].getXpos();
+                firstCY = list[0].getYpos();
+
+                if (i == 0) {
+                    print("First item");
+                    xDifference = 0;
+                    yDifference = 0;
+                }
+                else {
+                    print("Middle item");
+                    nextCX = list[i].getXpos();
+                    nextCY = list[i].getYpos();
+
+                    print("xDifference = ",firstCX-nextCX, firstCX, nextCX);
+                    print("yDifference = ",firstCY-nextCY, firstCY, nextCY);
+
+                    xDifference = firstCX - nextCX;
+                    yDifference = firstCY - nextCY;
+                }
+
+                if (copied) {
+                    var clonedComponent = clone(list[i]);
+                    clonedComponent.setXpos(mouseX + xDifference);
+                    clonedComponent.setYpos(mouseY + yDifference);
+                    allComps.add(clonedComponent);
+                }
+            }
+            copied = false;
+            pasted = true;
+            console.log("paste"); 
+
+            $('#pasteToastAlert').toast('show');
+            $('#pasteToastAlert .toast-body').text(
+                allComps.getSelectedComponent().getComponentName() + " has been pasted."
+            );
+
+            // Triggering networkChangeEvent
+            networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+        }
+        
         if (allComps.getSelectedComponent()) {
             if (copied) {
                 var clonedComponent = clone(allComps.getSelectedComponent());
@@ -509,6 +571,7 @@ function checkForCopyAndPastEvent() {
             // Triggering networkChangeEvent
             networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
         }
+        allComps.clearSelectList();
     }
 }
 function checkForMultiSelect() {
@@ -547,7 +610,7 @@ function checkComponentDeleteEvent() {
 }
 
 function clone(obj) {
-    var newcomp = Component(obj.getType(), obj.getImgPath(), obj.getImage()).init();
+    let newcomp = Component(obj.getType(), obj.getImgPath(), obj.getImage()).init();
     newcomp.setXpos(obj.getXpos());
     newcomp.setYpos(obj.getYpos());
     newcomp.setWidth(obj.getWidth());
@@ -556,6 +619,9 @@ function clone(obj) {
     newcomp.setHideConnections(obj.getHideConnections());
     newcomp.setComponentName(obj.getComponentName());
     newcomp.setTextSize(obj.getTextSize());
+
+    newcomp.setComponentName(newcomp.getComponentName() + " - copy");
+
     return newcomp;
 }
 

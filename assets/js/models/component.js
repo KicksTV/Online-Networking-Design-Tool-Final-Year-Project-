@@ -157,7 +157,7 @@ function Component(type, path, image) {
                 'HideComponent': state.hideComponent,
                 'HideConnections': state.hideConnections,
                 'Lock': false,
-                'Connections': allCons.getConnectionsRelatedToComp(allComps.getSelectedComponent()),
+                'Connections': allConnections.getInstance().getConnectionsRelatedToComp(allComps.getSelectedComponent()),
             };
             return state.guiParams;
         },

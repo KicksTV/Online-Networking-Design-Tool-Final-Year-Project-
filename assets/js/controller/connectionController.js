@@ -115,6 +115,12 @@ var connectionController = (function() {
         function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
             var isValidConnection = false;
             var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
+            
+            // NEEDS TO BE PROPERLY FIXED
+            if (preComp == null) {
+                hasSelectedBothComponents = false;
+            }
+            
             if (hasSelectedBothComponents) {
                 var isValidConnectionType2 = preComp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
                 if (allVRules.isValidConnection(comp.getType(), preComp.getType()) && isValidConnectionType1 && isValidConnectionType2) {
