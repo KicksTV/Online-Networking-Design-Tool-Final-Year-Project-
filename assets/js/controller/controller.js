@@ -229,6 +229,7 @@ function draw() {
     updateMouseCursor();
 
     checkForCopyAndPastEvent();
+    checkComponentDeleteEvent();
 }
 
 
@@ -586,26 +587,50 @@ function checkComponentDeleteEvent() {
     // Checks if user has pressed the delete canvas button
     if (allComps.getSelectCompForDelete()) {
         
-        var comp = allComps.getComponent();
-        allComps.removeComponent(comp);
-        compPropertiesGUI.hide();
 
-        // get connection
-        var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(comp);
-        connectionsToDel.forEach((c) => {
-            allConnections.getInstance().removeConnection(c);
-        });
+        if (! allComps.isSelectListEmpty()) {
+            console.log("multi select paste");
+            var list = allComps.getSelectList();
+
+            list.forEach((c) => {
+
+                allComps.removeComponent(c);
 
 
+                // get connection
+                var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(c);
+                connectionsToDel.forEach((con) => {
+                allConnections.getInstance().removeConnection(con);
+                
+                });
+
+            });
+            compPropertiesGUI.hide();
+        } 
+        else if (allComps.getComponent() != null) {
+            var comp = allComps.getComponent();
+            allComps.removeComponent(comp);
+
+
+            // get connection
+            var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(comp);
+            connectionsToDel.forEach((c) => {
+                allConnections.getInstance().removeConnection(c);
+            });
+
+
+            $('#deleteToastAlert').toast('show');
+            $('#deleteToastAlert .toast-body').text(
+                allComps.getSelectedComponent().getComponentName() + " has been deleted."
+            );
+
+            compPropertiesGUI.hide();
+
+
+            // Triggering networkChangeEvent
+            networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+        }
         allComps.setSelectCompForDelete(false);
-
-        $('#deleteToastAlert').toast('show');
-        $('#deleteToastAlert .toast-body').text(
-            allComps.getSelectedComponent().getComponentName() + " has been deleted."
-        );
-
-        // Triggering networkChangeEvent
-        networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
     }
 }
 
