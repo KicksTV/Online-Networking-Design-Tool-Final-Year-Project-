@@ -6,6 +6,7 @@ var connectionController = (function() {
         var drawConnection = false;
         var compAddConnectionCounter = 0;
         var selectingSecondConnection = false;
+        var selectingInterface = false;
 
         
         function drawAllConnections() {
@@ -37,6 +38,9 @@ var connectionController = (function() {
         function getSelectingSecondConnection() {
             return selectingSecondConnection;
         }
+        function isSelectingInterfacePort() {
+            return selectingInterface;
+        }
         function selectConnectionForComp(comp) {
 
             if (compAddConnectionCounter > 2) {
@@ -51,7 +55,7 @@ var connectionController = (function() {
 
             //print("ConCounter" + compAddConnectionCounter);
 
-            print("argar " +compAddConnectionCounter);
+            
 
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
@@ -60,10 +64,13 @@ var connectionController = (function() {
                     
                     if (comp.hasAvailablePort()) {
                         waitForSelectedPort(comp.getInterfaces(), comp, preComp);
+                        selectingInterface = true;
                     }
                     comp.setHasConnection(true);
-                    preComp.setHasConnection(true);
-
+                    
+                    if (typeof preComp !== 'undefined') {
+                        preComp.setHasConnection(true);
+                    }
                     
                 } else {
                     // Deleting connection object
@@ -86,6 +93,7 @@ var connectionController = (function() {
                     if (comp.hasAvailablePort()) {
                         print("waiting for selection of components");
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
+                        selectingInterface = true;
                     }
                 } else {
                     endConnection();
@@ -98,6 +106,7 @@ var connectionController = (function() {
                     );
                 }
             }
+            
             //print(get());
         }
 
@@ -148,6 +157,8 @@ var connectionController = (function() {
                 endConnection();
                 interfaceView.hide();
                 interfaceView.clear();
+
+                selectingInterface = false;
             });
                 
             $('.portButton').on('click', function(event){
@@ -167,6 +178,8 @@ var connectionController = (function() {
                     allConnections.getInstance().getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
                     endConnection();
                 }
+
+                selectingInterface = false;
 
                 interfaceView.hide();
 
@@ -204,6 +217,7 @@ var connectionController = (function() {
         return {
                 drawAllConnections:drawAllConnections,
                 getSelectingSecondConnection:getSelectingSecondConnection,
+                isSelectingInterfacePort:isSelectingInterfacePort,
                 selectConnectionForComp:selectConnectionForComp,
                 getDrawConnection: getDrawConnection,
                 setDrawConnection: setDrawConnection,

@@ -250,15 +250,23 @@ function mousePressed() {
                 allComps.addSelectList(allComps.getComponent());
             }
         }
-        allComps.setSelectedComponent(allComps.getComponent());
 
-        applyCompValuesToGUI();
-        checkComponentDeleteEvent();
+        // NEED TO CHANGE HOW THIS WORKS
+        print(connectionController.getInstance().isSelectingInterfacePort());
+        if (! connectionController.getInstance().isSelectingInterfacePort()) {
+            allComps.setSelectedComponent(allComps.getComponent());
 
-        // Checks if users is selecting two components to make a connection
-        if (connectionController.getInstance().getDrawConnection()) {
-            connectionController.getInstance().selectConnectionForComp(allComps.getComponent());
+            print(allComps.getComponent().getID());
+
+            applyCompValuesToGUI();
+            checkComponentDeleteEvent();
+
+            // Checks if users is selecting two components to make a connection
+            if (connectionController.getInstance().getDrawConnection()) {
+                connectionController.getInstance().selectConnectionForComp(allComps.getComponent());
+            }
         }
+
 
     }else {
         if (copied == false) {
@@ -404,6 +412,26 @@ function loadComponents(array) {
     array.components.forEach((c) => {
         loadImage(c.imgPath, img => {
             var newcomp = createNewComponent(img, c);
+
+
+            //      TEMP needs to be removed!!!!!!!!!!!!!!!!
+            if (newcomp.getType() == "Smartphone") {
+                newcomp.setValidLinkningComponents([]);
+            }
+            else if (newcomp.getType() == "Router") {
+                newcomp.addInterface(new Interface("Fast Ethernet", null, null, 4));
+                newcomp.addInterface(new Interface("Serial", null, null, 2));
+            }
+            else if (newcomp.getType() == "Switch") {
+                newcomp.addInterface(new Interface("Fast Ethernet", null, null, 12));
+            }
+            else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
+                    newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
+                    newcomp.getType() == "Access Point") {
+                newcomp.addInterface(new Interface("Fast Ethernet", null, null, 1));
+            }
+            ///////////////////////////////////////
+
             allComps.add(newcomp);
         });
     });
@@ -413,6 +441,8 @@ function loadComponents(array) {
         var newconnection = Connection();
         newconnection.setType(con.type);
         newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
+
+
 
         con.interfacePorts.forEach((ip) => {
             var index = con.interfacePorts.indexOf(ip);
@@ -647,6 +677,25 @@ function clone(obj) {
 
     newcomp.setComponentName(newcomp.getComponentName() + " - copy");
 
+    //      TEMP needs to be removed!!!!!!!!!!!!!!!!
+    if (newcomp.getType() == "Smartphone") {
+        newcomp.setValidLinkningComponents([]);
+    }
+    else if (newcomp.getType() == "Router") {
+        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 4));
+        newcomp.addInterface(new Interface("Serial", null, null, 2));
+    }
+    else if (newcomp.getType() == "Switch") {
+        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 12));
+    }
+    else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
+            newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
+            newcomp.getType() == "Access Point") {
+        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 1));
+    }
+    ///////////////////////////////////////
+
+
     return newcomp;
 }
 
@@ -865,14 +914,18 @@ function getLargestSubnet() {
                 //print("name: " + comp.getComponentName());
 
                 // Check if subnet already exists
-                var foundSubnet = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == r.getID() || x.connection == c);
+                var foundSubnet = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == r.getID() && x.connection == c);
                 if (foundSubnet == null) {
                     currSubnet = new Subnet();
                     currSubnet.gatewayRouterID = r.getID();
                     currSubnet.connection = c;
                     allSubnets.getInstance().add(currSubnet);
+                    //print("---new subnet created---");
+                    //print("new subnet ", currSubnet);
                 }
                 else {
+                    //print("---found previous subnet created---");
+
                     currSubnet = foundSubnet;
                     currSubnet.gatewayRouterID = r.getID();
                     currSubnet.connection = c;
@@ -970,7 +1023,11 @@ function findAllEndDevices(currentComp, rootComp) {
             // CHECK IF DEVICE ALREADY EXISTS IN SUBNET
             allSubnets.getInstance().toList().forEach(s => {
                 if (! s.endDevices.find(d => d == nextComp.getID())) {
-                    currSubnet.add(nextComp.getID());
+                    if (currSubnet != null) {
+                        //print(currSubnet);
+                        //print(nextComp.getID());
+                        currSubnet.add(nextComp.getID());
+                    }
                 }
             });
             
