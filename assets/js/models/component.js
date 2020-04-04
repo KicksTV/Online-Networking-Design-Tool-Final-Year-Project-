@@ -189,6 +189,16 @@ function Component(type, path, image) {
             });
             return hasAvailablePort;
         },
+        hasInterface: (int) => {
+            var hasInterface = false;
+            state.interfaces.forEach(interface => {
+                if (interface.portType.includes(int)) {
+                    hasInterface = true;
+                }
+            });
+
+            return hasInterface;
+        },
         getInterfaceFromString: (string) => {
             var interface = null;
             var index = 0;

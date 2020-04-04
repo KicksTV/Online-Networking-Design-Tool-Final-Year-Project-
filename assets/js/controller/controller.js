@@ -461,6 +461,20 @@ function loadComponents(array) {
 
                 // add comps interfaces
                 newcomp.addInterface(newconnection.getInterface(con.components.indexOf(c)));
+
+
+                //      TEMP needs to be removed!!!!!!!!!!!!!!!!
+                if (newcomp.getType() == "Router") {
+                    if (! newcomp.hasInterface("Fast Ethernet")) {
+                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 4));
+                    }
+                    if (! newcomp.hasInterface("Serial")) {
+                        newcomp.addInterface(new Interface("Serial", null, null, 2));
+                    }
+                }
+                ///////////////////////////////////////
+
+
                 print(newcomp.getInterface(0));
                 var exists = false;
                 var existingComp;
@@ -488,11 +502,11 @@ function loadComponents(array) {
         });
 
         allConnections.getInstance().add(newconnection);
-
-        window.setTimeout(() => {
-            networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent)
-        }, 500);
+        
     });
+    window.setTimeout(() => {
+        networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent)
+    }, 500);
 }
 
 function checkForCopyAndPastEvent() {
