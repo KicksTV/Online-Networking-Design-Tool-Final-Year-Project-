@@ -22,6 +22,8 @@ class Comp {
         
         //this.aspectRatio[0] = this.image.width;
         //this.aspectRatio[1] = this.image.heigt;
+
+        
     }
 }
 class Interface extends componentMixin(Comp) {
