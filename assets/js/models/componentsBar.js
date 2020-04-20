@@ -89,7 +89,7 @@ class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
             // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS CLICKED
             this.buttons[i].getIMG().mousePressed(() => {
     
-                allComps.setDraggingNewComponent(true);
+                compContrInstance.setDraggingNewComponent(true);
 
                 // CREATES NEW COMPONENT
 
@@ -99,32 +99,9 @@ class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
                 loadImage(path, img => {
                     img.width = img.width/2;
                     img.height = img.height/2;
-                    let newcomp = Component(type, path, img).init();
+                    let newcomp = componentController.getInstance().createNewComponent(type, path, img);
                     
-                    // NEED FUCNTION TO LOAD COMP PROPORTIES
-                    
-                    //TEMP needs to be removed!!!!!!!!!!!!!!!!
-                    if (newcomp.getType() == "Smartphone") {
-                        newcomp.setValidLinkningComponents([]);
-                    }
-                    else if (newcomp.getType() == "Router") {
-                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 4));
-                        newcomp.addInterface(new Interface("Serial", null, null, 2));
-                    }
-                    else if (newcomp.getType() == "Switch") {
-                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 12));
-                    }
-                    else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
-                            newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
-                            newcomp.getType() == "Access Point") {
-                        newcomp.addInterface(new Interface("Fast Ethernet", null, null, 1));
-                    }
-                    
-                    
-
-                    
-                    
-                    allComps.setNewlyCreatedComp(newcomp);
+                    compContrInstance.setNewlyCreatedComp(newcomp);
                     // ADDS IT TO ARRAY OF ALL components
                     allComps.add(newcomp);
 
@@ -166,7 +143,7 @@ class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
                     c = allConnections.getInstance().getSelectedConnection();
                     c.setType(this.buttons[i].getComponentType());
                 }else {
-                    c = Connection();
+                    c = new Con();
                     c.setType(this.buttons[i].getComponentType());
                     connectionController.getInstance().setDrawConnection(true);
                     allConnections.getInstance().setSelectedConnection(c);

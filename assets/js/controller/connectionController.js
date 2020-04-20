@@ -8,7 +8,10 @@ var connectionController = (function() {
         var selectingSecondConnection = false;
         var selectingInterface = false;
 
-        
+        function createNewConnection(type) {
+            var newcon = new Con(type);
+            return newcon;
+        }
         function drawAllConnections() {
             if (getSelectingSecondConnection()) {
                 allConnections.getInstance().get().forEach((i) => {
@@ -22,7 +25,10 @@ var connectionController = (function() {
                             
                             // Checks if linking component wishs to hide its connection
                             if (!(i.isHidden())) {
+                                push(); // Start a new drawing state
+                                strokeWeight(2);
                                 i.defaultDisplay();
+                                pop(); // Restore original state
                             }
                         }
                     }
@@ -46,19 +52,16 @@ var connectionController = (function() {
             if (compAddConnectionCounter > 2) {
                 return;
             }
-
             console.log("adding comp to selected connection");
+
             // getting second connection
-            var preComp = allConnections.getInstance().getSelectedConnection().getComponent(0);
-            //comp.setHasConnection(true);
             compAddConnectionCounter++;
-
-            //print("ConCounter" + compAddConnectionCounter);
-
-            
+            print("ConCounter" + compAddConnectionCounter);
 
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
+            var preComp = allConnections.getInstance().getSelectedConnection().getComponent(0);
+
                 //print(checkValidConnection(true, comp, preComp));
                 if (checkValidConnection(true, comp, preComp)) {
                     
@@ -89,7 +92,9 @@ var connectionController = (function() {
             else if (compAddConnectionCounter == 1) {
                 if (checkValidConnection(false, comp, null)) {
                     print("connecting first component");
-                    print(comp.hasAvailablePort());
+                    //print(comp.hasAvailablePort());
+
+                    // NEED TO CHANGE THIS!!!
                     if (comp.hasAvailablePort()) {
                         print("waiting for selection of components");
                         waitForSelectedPort(comp.getInterfaces(), comp, null);

@@ -1,5 +1,4 @@
 function validationRule(type1, type2, allowed, msg) {
-    counter++
     let state = {
         "id": null,
         "ruleTypes": [type1, type2],

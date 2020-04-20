@@ -1,40 +1,16 @@
-class Comp {
-    constructor(type, path, image) {
-        this.id = null;
-        this.imgPath = path;
-        this.image = image;
-        this.type = type;
-        this.Xpos = 100;
-        this.Ypos = 100;
-        this.aspectRatio = [];
-        this.centerPos = [];
-        this.hideComponent = false;
-        this.hideConnections = false;
-        this.hasCon = false;
-        this.isClicked = false;
-        this.componentName = `${type}_${counter}`;
-        this.textSize = 10;
-        this.guiParams = null;
-        this.validLinkingComponents = ["Twisted Pair"];
-
-        var val = Math.floor(1000 + Math.random() * 900000);
-        this.id = `${this.componentName}${val}`;
-        
-        //this.aspectRatio[0] = this.image.width;
-        //this.aspectRatio[1] = this.image.heigt;
-
-        
-    }
-}
-class Interface extends componentMixin(Comp) {
-    constructor(type, path, image, numPorts) {
-        super(type, path, image);
+class Interface extends componentMixin(Device) {
+    constructor(type, numPorts) {
+        super(type);
         this.portType = type;
         this.bandwidth;
         this.numberOfPorts = numPorts;
         this.availablePorts = numPorts;
+
+        // port name - which maps to availability and ip address below
         this.ports = [];
+        // port availability i.e. if port currently has cable plugged in
         this.portAvailability = [];
+        // port IP address i.e. if port currently has ip address
         this.portIPaddress = [];
 
         for (var i=0;i<=this.numberOfPorts;i++) {

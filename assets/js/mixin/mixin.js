@@ -1,4 +1,3 @@
-
 // Components Bar Component and Connection Mixin 
 const compBarGetSetMixin = superclass => class extends superclass {
     init() {
@@ -78,6 +77,53 @@ const componentMixin = superclass => class extends superclass {
             "hideConnections": this.hideConnections,
             "componentName": this.componentName,
             "textSize": this.textSize,
+        }
+        return parms;
+    }
+};
+
+const connectionMixin = superclass => class extends superclass {
+    compSelectDisplay()  {
+        let centerPos = this._components[0].getCenterPos();
+        let x = centerPos[0];
+        let y = centerPos[1];
+        push();
+        stroke('black');
+        strokeWeight(2);
+        line(x, y, this.mousePos[0], this.mousePos[1]);
+        pop();
+    }
+    defaultDisplay()  {
+        let centerPos1 = this._components[0].getCenterPos();
+        let centerPos2 = this._components[1].getCenterPos();
+        let x1 = centerPos1[0];
+        let y1 = centerPos1[1];
+        let x2 = centerPos2[0];
+        let y2 = centerPos2[1];
+
+        push();
+        stroke('black');
+        line(x1, y1, x2, y2);
+        pop();
+    }
+    isHidden()  {
+        if (this._components[0].getHideConnections() || this._components[1].getHideConnections()) {
+            return true;
+        }
+        return false;
+    }
+    prepareForJson()  {
+        let complist = [];
+        this._components.forEach(c => complist.push(c.prepareForJson()));
+
+        
+
+        let parms = {
+            "id": this.id,
+            "type": this.type,
+            "mousePos": this.mousePos,
+            "_components": complist,
+            "_interfacePorts": this._interfacePorts,
         }
         return parms;
     }

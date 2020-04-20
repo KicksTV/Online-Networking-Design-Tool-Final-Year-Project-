@@ -1793,13 +1793,13 @@
                     var comp2 = i.getComponent(1);
                     var interfaceValues;
 
-                    var currentSelectedComp = allComps.getSelectedComponent();
+                    var currentSelectedComp = componentController.getInstance().getSelectedComponent();
 
 
-                    if (comp1 == allComps.getSelectedComponent()) {
+                    if (comp1 == componentController.getInstance().getSelectedComponent()) {
                         interfaceValues = i.getInterfacePort(0);
                     }
-                    else if (comp2 == allComps.getSelectedComponent()) {
+                    else if (comp2 == componentController.getInstance().getSelectedComponent()) {
                         interfaceValues = i.getInterfacePort(1);
                     }
                     var interface = interfaceValues[0];
@@ -1814,7 +1814,7 @@
                     createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
                     
                     
-                    if (allComps.isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
+                    if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
                         var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
                         ipfield.setAttribute("contenteditable", "true");
 
@@ -1840,6 +1840,8 @@
                             var IPaddressField = e.srcElement.innerText + e.key;
                             var numberOfOctets = IPaddressField.split(".").length;
                             var octets = IPaddressField.split(".");
+
+                            //console.table(allSubnets.getInstance().toList());
 
 
                             if (routerComp != null) {
@@ -1876,7 +1878,9 @@
                                         if (numberOfOctets == 4 && octets[3] != "") {
                                             // Checking for valid assignment of IP address.
 
-                                            var subnetID = calculateSubnetID(IPaddressField, SubnetMask);
+                                            let subnetmask = networkController.getInstance().getSubnetMask();
+
+                                            var subnetID = networkController.getInstance().calculateSubnetID(IPaddressField, subnetmask);
 
                                             if (subnetID == foundSubnetforComp.subnetID) {
                                                 // Valid IP address for subnet
@@ -1920,12 +1924,12 @@
                             var comp1 = i.getComponent(0);
                             var comp2 = i.getComponent(1);
                             var interfaceValues;
-                            var currentSelectedComp = allComps.getSelectedComponent();
+                            var currentSelectedComp = componentController.getInstance().getSelectedComponent();
 
-                            if (comp1 == allComps.getSelectedComponent()) {
+                            if (comp1 == componentController.getInstance().getSelectedComponent()) {
                                 interfaceValues = i.getInterfacePort(0);
                             }
-                            else if (comp2 == allComps.getSelectedComponent()) {
+                            else if (comp2 == componentController.getInstance().getSelectedComponent()) {
                                 interfaceValues = i.getInterfacePort(1);
                             }
                             var interface = interfaceValues[0];
@@ -1939,7 +1943,7 @@
                             createCustomElement("td", comp2.getComponentName(), null, "qs_connection_table_value", rowtr);
                             createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
                             
-                            if (allComps.isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
+                            if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
                                 var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
                                 ipfield.setAttribute("contenteditable", "true");
 
@@ -1979,7 +1983,7 @@
 
                                             // Setting Subnet ID
 
-                                            found.subnetID = calculateSubnetID(found.gatewayRouterIP, SubnetMask);
+                                            found.subnetID = networkController.getInstance().calculateSubnetID(found.gatewayRouterIP, SubnetMask);
 
                                         }
                                     } else {
@@ -2001,7 +2005,9 @@
                                                 if (numberOfOctets == 4 && octets[3] != "") {
                                                     // Checking for valid assignment of IP address.
 
-                                                    var subnetID = calculateSubnetID(IPaddressField, SubnetMask);
+                                                    let subnetmask = networkController.getInstance().getSubnetMask();
+
+                                                    var subnetID = networkController.getInstance().calculateSubnetID(IPaddressField, subnetmask);
 
                                                     if (subnetID == foundSubnetforComp.subnetID) {
                                                         // Valid IP address for subnet
