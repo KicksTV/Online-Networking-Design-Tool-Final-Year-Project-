@@ -13,27 +13,22 @@ var connectionController = (function() {
             return newcon;
         }
         function drawAllConnections() {
-            if (getSelectingSecondConnection()) {
-                allConnections.getInstance().get().forEach((i) => {
+            allConnections.getInstance().get().forEach((i) => {
+                if (getSelectingSecondConnection() && i == allConnections.getInstance().getSelectedConnection()) {
                     i.compSelectDisplay();
-                });
-            }else {
-                allConnections.getInstance().get().forEach((i) => {
+                }else {
+                    // Prevents displaying incomplete set connections
                     if (i.getComponents()[0] && i.getComponents()[1]) {
-                        // Prevents displaying incomplete set connections
-                        if (i != allConnections.getInstance()) {
-                            
-                            // Checks if linking component wishs to hide its connection
-                            if (!(i.isHidden())) {
-                                push(); // Start a new drawing state
-                                strokeWeight(2);
-                                i.defaultDisplay();
-                                pop(); // Restore original state
-                            }
+                        // Checks if linking component wishs to hide its connection
+                        if (!(i.isHidden())) {
+                            push(); // Start a new drawing state
+                            strokeWeight(2);
+                            i.defaultDisplay();
+                            pop(); // Restore original state
                         }
                     }
-                });
-            }
+                }
+            });
         }
         function getDrawConnection() {
             return drawConnection;

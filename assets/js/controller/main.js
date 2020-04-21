@@ -263,7 +263,6 @@ function mousePressed() {
 
 function mouseMoved() {
     
-    
     if (compContrInstance.isCurrentlyClickingComp() != null) {
         compContrInstance.setComponentHover(true);
     }else {
@@ -487,7 +486,7 @@ function checkForCopyAndPastEvent() {
 
         $('#copyToastAlert').toast('show');
         $('#copyToastAlert .toast-body').text(
-            compContrInstance.getSelectedComponent().getComponentName() + " has been copied."
+            "Successfully copied."
         );
     }
     // CUT 
@@ -496,13 +495,17 @@ function checkForCopyAndPastEvent() {
 
         $('#cutToastAlert').toast('show');
         $('#cutToastAlert .toast-body').text(
-            compContrInstance.getSelectedComponent().getComponentName() + " has been cut."
+            "Successfully cut."
         );
     }
     // PASTE
-    if (keyIsDown(17) && keyIsDown(86) && pasted == false) {
+    if (keyIsDown(17) && keyIsDown(86) && compContrInstance.hasPastedComponent() == false) {
         compContrInstance.pasteSelectedComponents()
 
+        $('#pasteToastAlert').toast('show');
+        $('#pasteToastAlert .toast-body').text(
+            "Successfully pasted."
+        );
 
         // Triggering networkChangeEvent
         networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);

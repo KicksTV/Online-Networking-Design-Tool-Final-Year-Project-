@@ -315,29 +315,22 @@ var componentController = (function() {
                         nextCX = list[i].getXpos();
                         nextCY = list[i].getYpos();
     
-                        //print("xDifference = ",firstCX-nextCX, firstCX, nextCX);
-                        //print("yDifference = ",firstCY-nextCY, firstCY, nextCY);
-    
-                        xDifference = firstCX - nextCX;
-                        yDifference = firstCY - nextCY;
+                        xDifference = nextCX - firstCX;
+                        yDifference = nextCY - firstCY;
                     }
-    
+
                     if (copied) {
                         var clonedComponent = cloneComponent(list[i]);
     
                         clonedComponent.setXpos(mouseX + xDifference);
                         clonedComponent.setYpos(mouseY + yDifference);
+
                         allComps.add(clonedComponent);
                     }
                 }
                 copied = false;
                 pasted = true;
                 print("paste"); 
-    
-                $('#pasteToastAlert').toast('show');
-                $('#pasteToastAlert .toast-body').text(
-                    selectedComponent.getComponentName() + " has been pasted."
-                );
             }
             
             if (compContrInstance.getSelectedComponent()) {
@@ -356,16 +349,14 @@ var componentController = (function() {
                 }
                 pasted = true;
                 print("paste"); 
-    
-                $('#pasteToastAlert').toast('show');
-                $('#pasteToastAlert .toast-body').text(
-                    selectedComponent.getComponentName() + " has been pasted."
-                );
             }
             clearSelectList();
         }
         function hasCopiedComponent() {
             return copied;
+        }
+        function hasPastedComponent() {
+            return pasted;
         }
 
         return {
@@ -405,6 +396,7 @@ var componentController = (function() {
             cutSelectedComponents:cutSelectedComponents,
             pasteSelectedComponents:pasteSelectedComponents,
             hasCopiedComponent:hasCopiedComponent,
+            hasPastedComponent:hasPastedComponent,
         };   
     }
 
@@ -418,7 +410,3 @@ var componentController = (function() {
         }
     }
 })();
-
-
-
-
