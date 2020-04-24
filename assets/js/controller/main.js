@@ -9,16 +9,20 @@ var compContrInstance = componentController.getInstance();
 
 var guiParams;
 
+// Panels or Bars
 let compBar;
 let compConnectionBar;
 let button1, button2, button3, button4;
 
+// Canvas Panels
 var compPropertiesGUIContainer;
 let compPropertiesGUI;
+var bottomPanel
 
 var networkPropertiesGUIContainer;
 let networkPropertiesGUI;
 
+// Canvas Buttons
 var canvas;
 var canvasLoadProject;
 var canvasSaveProject;
@@ -126,8 +130,6 @@ window.onload = function() {
         compContrInstance.setSelectCompForDelete(true);
     });
 };
-
-
 function preload() {
 
     compBar = componentsBarTab("Components", 500, 50, new ComponentBarComponents("Components"));
@@ -184,7 +186,6 @@ function preload() {
     allVRules.add(validationRules5);
     allVRules.add(validationRules6);
 }
-
 function setup() {
     frameRate(60);
 
@@ -193,11 +194,13 @@ function setup() {
 
     compBar.getBar().displayAllButtons();
 
-    networkPropertiesGUI = createGui("Network Properties").setPositionRight(320).setPositionTop(188).lock(true);
+    networkPropertiesGUI = createGui("Network Properties").setPositionLeft(1120).setPositionTop(188).lock(true);
     compPropertiesGUI = createGui("NA").disablePin(false).setPosition(1250,500).hide();
 
-}
+    var gui = new dat.GUI();
+    print(gui);
 
+}
 function draw() {
     clear();
     connectionController.getInstance().drawAllConnections();
@@ -208,8 +211,6 @@ function draw() {
     checkComponentDeleteEvent();
 
 }
-
-
 function mousePressed() {
     let multiSelect = compContrInstance.checkForMultiSelect();
     compContrInstance.checkForSelectedComponent(mouseX, mouseY);

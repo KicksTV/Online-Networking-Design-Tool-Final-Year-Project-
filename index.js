@@ -1,6 +1,5 @@
 var express = require('express');
 var defaultProjects = require('./assets/js/defaultProjects.js');
-
 var app = express();
 
 app.set('view engine', 'ejs');

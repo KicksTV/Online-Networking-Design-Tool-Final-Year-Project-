@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "bootstrap-icons": "^1.0.0-alpha2",
+    "dat.gui": "^0.7.7",
     "ejs": "^2.7.2",
     "express": "^4.17.1",
     "implement-js": "0.0.27"

@@ -80,6 +80,19 @@ const componentMixin = superclass => class extends superclass {
         }
         return parms;
     }
+    getGUIProperties() {
+        let parms = {
+            "Name": this.componentName,
+            "X": this.Xpos,
+            "Y": this.Ypos,
+            "Width": this.image.width,
+            "Text Size": this.textSize,
+            "Hide": this.hideComponent,
+            "Hide Connections": this.hideConnections,
+            "Lock": this.lock,
+
+        }
+    }
 };
 
 const connectionMixin = superclass => class extends superclass {

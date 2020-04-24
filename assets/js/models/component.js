@@ -9,6 +9,7 @@ class Component extends componentMixin(Device) {
         this.centerPos = [];
         this.hideComponent = false;
         this.hideConnections = false;
+        this.lock = false;
         this.hasCon = false;
         this.isClicked = false;
         this.componentName = `${type}`;

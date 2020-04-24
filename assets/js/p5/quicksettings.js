@@ -114,7 +114,8 @@
         _titleBar: null,
         _content: null,
         
-
+        _Xpos: 0,
+        _Ypos: 0,
         _startX: 0,
         _startY: 0,
         _hidden: false,
@@ -348,24 +349,51 @@
          * @returns {module:QuickSettings}
          */
         setPosition: function (x, y) {
+
+            this._Xpos = x;
+            this._Ypos = y;
+
+
             this._panel.style.left = x + "px";
             this._panel.style.top = Math.max(y, 0) + "px";
             return this;
         },
 
+        getPosition: function () {
+            return [this._Xpos, this._Ypos]
+        },
+
         setPositionRight: function(value) {
+
+            //this._Xpos = value;
+
             this._panel.style.right = Math.max(value, 0);
             this._panel.style.left = "initial";
             return this;
         },
 
+        setPositionLeft: function(value) {
+
+            this._Xpos = value;
+
+            this._panel.style.left = Math.max(value, 0);
+            this._panel.style.right = "initial";
+            return this;
+        },
+
         setPositionTop: function(value) {
+
+            this._Ypos = value;
+
             this._panel.style.top = Math.max(value, 0);
             this._panel.style.bottom = "initial";
             return this;
         },
 
         setPositionBottom: function(value) {
+
+            //this._Ypos = value;
+
             this._panel.style.bottom = Math.max(value, 0);
             this._panel.style.top = "initial";
             return this;
@@ -385,10 +413,12 @@
         },
 
         getWidth: function() {
-            return this._panel.style.width;
+            print(this._panel.clientWidth);
+            return this._panel.clientWidth;
         },
-        getheight: function() {
-            return this._panel.style.height;
+        getHeight: function() {
+            print(this._panel.clientHeight);
+            return this._panel.clientHeight;
         },
 
         /**
@@ -1069,7 +1099,6 @@
                 }
                 select.add(option);
             }
-            ;
 
             var self = this;
             select.addEventListener("change", function () {
@@ -1741,7 +1770,7 @@
         ////////////////////////////////////////////////////////////////////////////////
 
         /**
-         * Adds a dropdown (select) control. Dropdown items can be strings ("one", "two", "three"), any other values that can be converted to strings (1, 2, 3), or an object that contains label and value properties ({label: "one", value: 77}).
+         * Adds a connections table control. Dropdown items can be strings ("one", "two", "three"), any other values that can be converted to strings (1, 2, 3), or an object that contains label and value properties ({label: "one", value: 77}).
          * @param title {String} The title of the control.
          * @param connections {Array} An array of items.
          * @param [callback] {Function} Callback function that will be called when a new option is chosen. Callback will be passed an object containing "index", "label", and "value" properties. If the selected item is a simple value, then label and value will be the same.
@@ -1775,149 +1804,30 @@
             th6.setAttribute("scope", "col");
             th7.setAttribute("scope", "col");
 
-            if (connections.length == 0) {
-                // display no conncetions
-                var rowtr = createElement("tr", "", "", tbody);
-                var rowth = createCustomElement("th", "1", null, null, rowtr);
-                rowth.setAttribute("scope", "row");
-                createCustomElement("td", "none", "", "", rowtr);
-            } else {
-                
-                // removes old comp values
-                while (tbody.hasChildNodes()) {
-                    tbody.removeChild(tbody.lastChild);
-                }
-                var rowIndex = 1;
-                connections.forEach((i) => {
-                    var comp1 = i.getComponent(0);
-                    var comp2 = i.getComponent(1);
-                    var interfaceValues;
-
-                    var currentSelectedComp = componentController.getInstance().getSelectedComponent();
-
-
-                    if (comp1 == componentController.getInstance().getSelectedComponent()) {
-                        interfaceValues = i.getInterfacePort(0);
-                    }
-                    else if (comp2 == componentController.getInstance().getSelectedComponent()) {
-                        interfaceValues = i.getInterfacePort(1);
-                    }
-                    var interface = interfaceValues[0];
-                    var port = interfaceValues[1];
-                    
-                    var conContainer = createElement("div", null, null, div);
-                    var rowtr = createElement("tr", null, null, tbody);
-                    createCustomElement("th", rowIndex, null, null, rowtr);
-                    createCustomElement("td", comp1.getComponentName(), null, "qs_connection_table_value", rowtr);
-                    createCustomElement("td", "&#8594;", null, "qs_connection_table_value", rowtr);
-                    createCustomElement("td", comp2.getComponentName(), null, "qs_connection_table_value", rowtr);
-                    createCustomElement("td", i.getType(), null, "qs_connection_table_value", rowtr);
-                    
-                    
-                    if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
-                        var ipfield = createCustomElement("td", interface.portIPaddress[port], null, "qs_connection_table_value", rowtr);
-                        ipfield.setAttribute("contenteditable", "true");
-
-                        rowIndex++;
-                        
-                        var routerComp = null;
-                        // Setting of subnetID
-                        if (currentSelectedComp.getType() == "Router") {
-                            routerComp = currentSelectedComp;
-                        }
-
-                        ipfield.addEventListener('keypress', function(e) {
-                            var regex = new RegExp("^[a-zA-Z]+$");
-                            if (regex.test(e.key)) {
-                                if (e.key.toString().length == 1) {
-                                    e.preventDefault();
-                                }
-                            }
-                            if (e.key == "Enter") {
-                                e.preventDefault();
-                            }
-                            print("Address entered");
-                            var IPaddressField = e.srcElement.innerText + e.key;
-                            var numberOfOctets = IPaddressField.split(".").length;
-                            var octets = IPaddressField.split(".");
-
-                            //console.table(allSubnets.getInstance().toList());
-
-
-                            if (routerComp != null) {
-                                if (numberOfOctets == 4 && octets[3] != "") {
-                                    
-                                    // Calculate subnet ID gateway IP
-                                    
-                                    interface.portIPaddress[port] = IPaddressField;
-                                    
-                                    const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
-                                    found.gatewayRouterIP = IPaddressField;
-
-                                    // Setting Subnet ID
-
-                                    found.subnetID = calculateSubnetID(found.gatewayRouterIP, SubnetMask);
-
-                                }
-                            } else {
-                                var foundSubnetforComp = null;
-                                allSubnets.getInstance().toList().forEach(s => {
-                                    var found = s.endDevices.find(x => x == currentSelectedComp.getID());
-                                    if (found != null) {
-                                        foundSubnetforComp = s;
-                                    }
-                                });
-
-
-                                if (foundSubnetforComp) {
-                                    if (foundSubnetforComp.gatewayRouterIP == null) {
-                                        e.preventDefault();
-                                        alert("Please assign an IP address to Default Gateway (Router) first.");
-                                    } else {
-                                        
-                                        if (numberOfOctets == 4 && octets[3] != "") {
-                                            // Checking for valid assignment of IP address.
-
-                                            let subnetmask = networkController.getInstance().getSubnetMask();
-
-                                            var subnetID = networkController.getInstance().calculateSubnetID(IPaddressField, subnetmask);
-
-                                            if (subnetID == foundSubnetforComp.subnetID) {
-                                                // Valid IP address for subnet
-
-                                                ipfield.className = "qs_valid_ip_address";
-
-                                                interface.portIPaddress[port] = IPaddressField;
-
-                                            } else {
-                                                // Not valid IP address for subnet
-
-                                                ipfield.className = "qs_invalid_ip_address";
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    alert("Device is not part of any subnet!");
-                                }
-                            }
-                        });
-                    }
-                });
-            }
             var self = this;
             this._controls[title] = {
                 container: container,
                 label: label,
-                div: div,
+                control: table,
+                tableContent: tbody,
                 getValue: function () {
                     console.log("getValue");
                     return this.control.connections;
                 },
                 setValue: function (value) {
+
+                    // Removing existing table data
                     if (value.length > 0) {
-                        while (tbody.hasChildNodes()) {
-                            tbody.removeChild(tbody.lastChild);
+                        while (this.tableContent.hasChildNodes()) {
+                            this.tableContent.removeChild(this.tableContent.lastChild);
                         }
+                    }
+                    if (value.length == 0) {
+                        var rowtr = createElement("tr", null, null, this.tableContent);
+                        var rowth = createCustomElement("th", "1", null, null, rowtr);
+                        rowth.setAttribute("scope", "row");
+                        createCustomElement("td", "none", null, null, rowtr);
+                    } else {
                         var rowIndex = 1;
                         value.forEach((i) => {
                             
@@ -1935,8 +1845,7 @@
                             var interface = interfaceValues[0];
                             var port = interfaceValues[1];
                             
-                            var conContainer = createElement("div", null, null, div);
-                            var rowtr = createElement("tr", null, null, tbody);
+                            var rowtr = createElement("tr", null, null, this.tableContent);
                             createCustomElement("th", rowIndex, null, "qs_connection_table_value", rowtr);
                             createCustomElement("td", comp1.getComponentName(), null, "qs_connection_table_value", rowtr);
                             createCustomElement("td", "&#8594;", null, "qs_connection_table_value", rowtr);
@@ -1956,6 +1865,8 @@
                                 }
 
                                 ipfield.addEventListener('keypress', function(e) {
+                                    
+                                    // Preventing characters otherthan numbers from being entered
                                     var regex = new RegExp("^[a-zA-Z]+$");
                                     if (regex.test(e.key)) {
                                         if (e.key.toString().length == 1) {
@@ -1966,15 +1877,23 @@
                                         e.preventDefault();
                                     }
                                     print("Address entered");
+
+                                    // Get all field content and last key pressed
                                     var IPaddressField = e.srcElement.innerText + e.key;
+
+                                    // Get the number of octets currently IP address field
                                     var numberOfOctets = IPaddressField.split(".").length;
+
+                                    // Array of octets
                                     var octets = IPaddressField.split(".");
 
 
                                     if (routerComp != null) {
+
+                                        // Checks if whole address has been entered
                                         if (numberOfOctets == 4 && octets[3] != "") {
                                             
-                                            // Calculate subnet ID gateway IP
+                                            // Calculate subnet ID & gateway IP
                                             
                                             interface.portIPaddress[port] = IPaddressField;
                                             
@@ -1983,10 +1902,14 @@
 
                                             // Setting Subnet ID
 
-                                            found.subnetID = networkController.getInstance().calculateSubnetID(found.gatewayRouterIP, SubnetMask);
+                                            let subnetmask = networkController.getInstance().getSubnetMask();
+
+                                            found.subnetID = networkController.getInstance().calculateSubnetID(found.gatewayRouterIP, subnetmask);
 
                                         }
                                     } else {
+
+                                        // Finding subnet related to selected component
                                         var foundSubnetforComp = null;
                                         allSubnets.getInstance().toList().forEach(s => {
                                             var found = s.endDevices.find(x => x == currentSelectedComp.getID());
@@ -1997,6 +1920,8 @@
 
 
                                         if (foundSubnetforComp) {
+
+                                            // Checks if router has been assigned an IP address first
                                             if (foundSubnetforComp.gatewayRouterIP == null) {
                                                 e.preventDefault();
                                                 alert("Please assign an IP address to Default Gateway (Router) first.");
@@ -2030,19 +1955,13 @@
                                 });
                             }
                         });
-                        
-                        
-                    }else {
-                        while (tbody.hasChildNodes()) {
-                            tbody.removeChild(tbody.lastChild);
-                        }
-                        var rowtr = createElement("tr", null, null, tbody);
-                        var rowth = createCustomElement("th", "1", null, null, rowtr);
-                        rowth.setAttribute("scope", "row");
-                        createCustomElement("td", "none", null, null, rowtr);
                     }
+                               
                 },
             };
+
+            this._controls[title].setValue(connections);
+
             return this;
         },
 

@@ -62,6 +62,22 @@
       gui = new DummyGui(label, parent, sketch);
     }
 
+
+
+    // Add listener for when guis are dragged over each other.
+    print(gui);
+    // gui.prototype._controls.forEach(c => {
+    //   // c.addEventListener("change", applyGUIValuesToComp);
+    // });
+
+    gui.prototype._titleBar.addEventListener("mousedown", () => {
+      print("panel clicked");
+      if (gui.prototype._draggable) {
+        document.addEventListener("mousemove", checkPanelCombine);
+        document.addEventListener("mouseup", endDrag);
+      }
+    });
+
     // add it to the list of guis
     guis.push(gui);
 
@@ -166,6 +182,10 @@
       qs.setDraggable(!lock); 
       return this;
     };
+    this.setPositionLeft = function(value) { 
+      qs.setPositionLeft(value);
+      return this;
+    };
     this.setPositionRight = function(value) { 
       qs.setPositionRight(value);
       return this;
@@ -198,6 +218,10 @@
       qs.setPosition(x, y);
       return this;
     };
+    this.getPosition = function() { return qs.getPosition(); };
+    this.getHeight = function () { return qs.getHeight(); };
+    this.getWidth = function () { return qs.getWidth(); };
+
 
     // Extend Quicksettings
     // so it can magically create a GUI for parameters passed by name
@@ -296,6 +320,46 @@
     this.noLoop = f;
     this.addObject = f;
     this.show = f;
+  }
+
+
+  function checkPanelCombine(e) {
+    let sourceGUI;  
+    print("panel dragged");
+
+    // Retrieving GUI being dragged
+    guis.forEach((g) => {
+      if (g.prototype._panel == e.path[1]) {
+        sourceGUI = g;
+      }
+    });
+
+    guis.forEach((g) => {
+      if (sourceGUI && sourceGUI != g) {
+        let sourceXY = sourceGUI.getPosition();
+        let targetXY = g.getPosition();
+        let targetHeight = g.getHeight();
+        let targetWidth = g.getWidth();
+
+        print("-------");
+        print("sourceXY: " + sourceXY, "targetXY: " + targetXY, "height: " + targetHeight, "width: " + targetWidth);
+
+
+        if (sourceXY[0] > targetXY[0] && 
+            sourceXY[1] > targetXY[1] && 
+            sourceXY[0] < (targetXY[0] + targetWidth) &&
+            sourceXY[1] < (targetXY[1] + targetHeight)) {
+
+              print("Combine Panels");
+        }
+      }
+    });
+
+  }
+  function endDrag(e) {
+    document.removeEventListener("mousemove", checkPanelCombine);
+    document.removeEventListener("mouseup", endDrag);
+    e.preventDefault();
   }
 
 
