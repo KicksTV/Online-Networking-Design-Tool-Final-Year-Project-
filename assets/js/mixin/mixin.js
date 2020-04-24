@@ -82,15 +82,14 @@ const componentMixin = superclass => class extends superclass {
     }
     getGUIProperties() {
         let parms = {
-            "Name": this.componentName,
-            "X": this.Xpos,
-            "Y": this.Ypos,
-            "Width": this.image.width,
-            "Text Size": this.textSize,
-            "Hide": this.hideComponent,
-            "Hide Connections": this.hideConnections,
-            "Lock": this.lock,
-
+            "Xpos": this.Xpos,
+            "Ypos": this.Ypos,
+            "width": this.image.width,
+            "height": this.image.height,
+            "hideComponent": this.hideComponent,
+            "hideConnections": this.hideConnections,
+            "componentName": this.componentName,
+            "textSize": this.textSize,
         }
     }
 };
