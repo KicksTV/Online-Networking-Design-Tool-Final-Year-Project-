@@ -137,3 +137,42 @@ a>.card:hover {
     width: 100%;
     text-align: center;
 }
+
+/* Component Panel */
+.dg.a {
+    margin-right: 0px;
+}
+#rightSidePanel {
+    position: absolute;
+    top: 188px;
+    right: 0px;
+}
+#bottomPanel {
+    position: absolute;
+    top: initial;
+    bottom: 0px;
+    position: fixed;
+    height: 30px;
+    background-color: #cccccc;
+}
+#bottomPanelTitleContainer {
+    background-color: #eeeeee;
+}
+.panel-title-container {
+    height: 100%;
+    width: fit-content;
+    padding: 5px;
+    display: inline-block;
+}
+.panel-title-container:hover {
+
+}
+#bottomPanelContentContainer {
+    width: 100%;
+    height: 100%;
+    margin: 7px;
+    background-color: #eeeeee;
+}
+#connections-table {
+    height: 100%;
+}

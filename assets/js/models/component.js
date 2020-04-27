@@ -1,19 +1,21 @@
 class Component extends componentMixin(Device) {
     constructor(type, path, image) {
         super(type);
+        this.name = `${type}`;
         this.imgPath = path;
         this.image = image;
-        this.Xpos = 100;
-        this.Ypos = 100;
+        this.x = 100;
+        this.y = 100;
+        this.width = this.image.width;
+        this.height = this.image.height;
         this.aspectRatio = [];
         this.centerPos = [];
-        this.hideComponent = false;
+        this.textSize = 10;
+        this.hide = false;
         this.hideConnections = false;
         this.lock = false;
         this.hasCon = false;
         this.isClicked = false;
-        this.componentName = `${type}`;
-        this.textSize = 10;
         this.guiParams = null;
         this.validLinkingComponents = ["Twisted Pair"];
 
@@ -34,16 +36,16 @@ class Component extends componentMixin(Device) {
         return this.image;
     }
     getXpos() {
-        return this.Xpos;
+        return this.x;
     }
     setXpos(val) {
-        this.Xpos = val;
+        this.x = val;
     }
     getYpos() {
-        return this.Ypos;
+        return this.y;
     }
     setYpos(val) {
-        this.Ypos = val;
+        this.y = val;
     }
     getWidth() {
         return this.image.width;
@@ -58,13 +60,13 @@ class Component extends componentMixin(Device) {
         this.image.height = val;
     }
     getCenterPos() {
-        return this.centerPos = [this.Xpos+(this.image.width/2), this.Ypos+(this.image.height/2)];
+        return this.centerPos = [this.x+(this.image.width/2), this.y+(this.image.height/2)];
     }
     getHideComponent() {
-        return this.hideComponent;
+        return this.hide;
     }
     setHideComponent(val) {
-        this.hideComponent = val;
+        this.hide = val;
     }
     getHideConnections() {
         return this.hideConnections;
@@ -85,10 +87,10 @@ class Component extends componentMixin(Device) {
         this.hasCon = val;
     }
     getComponentName() {
-        return this.componentName;
+        return this.name;
     }
     setComponentName(val) {
-        this.componentName = val;
+        this.name = val;
     }
     getTextSize() {
         return this.textSize;
