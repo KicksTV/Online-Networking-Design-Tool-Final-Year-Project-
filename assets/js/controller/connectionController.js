@@ -194,8 +194,8 @@ var connectionController = (function() {
 
 
                 // Triggering networkChangeEvent
-                networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
-                compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                gui.domElement.dispatchEvent(networkChangeEvent);
+                //compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
 
                 if (preComp != null) {
                     $('#finishedConnectionToastAlert').toast('show');

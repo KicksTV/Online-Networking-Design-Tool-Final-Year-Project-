@@ -1,26 +1,22 @@
 // Collections
 var allTabs = allComponentBarTabs.getInstance();
-
 var allComps = allComponents.getInstance();
 var allVRules = allValidationRules.getInstance();
+var allPanels = allPanels.getInstance();
 
 // Controllers
 var compContrInstance = componentController.getInstance();
 
-var guiParams;
+// dat.GUI
+var gui = null;
 
 // Panels or Bars
+let bottomPanel;
 let compBar;
 let compConnectionBar;
-let button1, button2, button3, button4;
-
-// Canvas Panels
-var compPropertiesGUIContainer;
-let compPropertiesGUI;
-var bottomPanel
-
-var networkPropertiesGUIContainer;
-let networkPropertiesGUI;
+let button1, button2, button3, button4, button5, 
+    button6, button7, button8, button9, button10, 
+    button11, button12;
 
 // Canvas Buttons
 var canvas;
@@ -30,18 +26,9 @@ var canvasDeleteButton;
 
 //EVENTS
 var networkChangeEvent = new CustomEvent('networkChangeEvent');
-var componentClickEvent = new CustomEvent('componentClickEvent');
+var componentCslickEvent = new CustomEvent('componentClickEvent');
 
 window.onload = function() {
-
-    networkPropertiesGUIContainer = document.getElementById("GUI_qs_1");
-    compPropertiesGUIContainer = document.getElementById("GUI_qs_2");
-   
-    // Adding Event Listeners to Properties bars
-    networkPropertiesGUIContainer.addEventListener('networkChangeEvent', applyNetworkPropertiesToGUI);
-    compPropertiesGUIContainer.addEventListener('networkChangeEvent', applyCompValuesToGUI);
-    compPropertiesGUIContainer.addEventListener('change', applyGUIValuesToComp, true);    
-
 
     canvasDeleteButton = document.getElementById("canvasDeleteButton");
     canvasLoadProject = document.getElementById("canvasLoadProject");
@@ -185,6 +172,19 @@ function preload() {
     allVRules.add(validationRules4);
     allVRules.add(validationRules5);
     allVRules.add(validationRules6);
+
+
+    gui = new dat.GUI({ autoPlace: false });
+    var con = document.getElementById("rightSidePanel");
+    con.appendChild(gui.domElement);
+    gui.width = 400;
+
+    networkController.getInstance().initGUI(gui);
+    compContrInstance.initGUI(gui);
+
+    gui.domElement.addEventListener('networkChangeEvent', networkController.getInstance().calculateAllNetworkProperties);
+
+    panelController.getInstance();
 }
 function setup() {
     frameRate(60);
@@ -193,12 +193,6 @@ function setup() {
     canvas.parent("canvasDiv");
 
     compBar.getBar().displayAllButtons();
-
-    networkPropertiesGUI = createGui("Network Properties").setPositionLeft(1120).setPositionTop(188).lock(true);
-    compPropertiesGUI = createGui("NA").disablePin(false).setPosition(1250,500).hide();
-
-    // var gui = new dat.GUI();
-    // print(gui);
 
 }
 function draw() {
@@ -236,9 +230,11 @@ function mousePressed() {
         if (! connectionController.getInstance().isSelectingInterfacePort()) {
             compContrInstance.setSelectedComponent(compContrInstance.getSelectedComponent());
 
-            print(compContrInstance.getSelectedComponent());
+            // apply seleceted comp values to gui
+            compContrInstance.applyGUIValues();
 
-            applyCompValuesToGUI();
+            panelController.getInstance().updatePanelWithData(compContrInstance.getSelectedComponent());
+            
             checkComponentDeleteEvent();
 
             // Checks if users is selecting two components to make a connection
@@ -304,73 +300,6 @@ function mouseReleased() {
     compContrInstance.setNewlyCreatedComp(null);
     compContrInstance.setComponentDrag(false);
 }
-
-function applyNetworkPropertiesToGUI() {
-    let hosts = networkController.getInstance().calculateAllHost();
-    let subnets = networkController.getInstance().calculateAllSubnets();
-    let SubnetMask = networkController.getInstance().calculateSubnetMask();
-    let SupernetMask = networkController.getInstance().calculateSupernetMask(subnets);
-    if (typeof networkPropertiesGUI.getGuiParams() == 'undefined') {
-        let guiParams = {
-            'TotalHosts': hosts.toString(),
-            'TotalSubnets': subnets.toString(),
-            'SubnetMask': SubnetMask,
-            'SupernetMask': SupernetMask,
-        }
-        networkPropertiesGUI.addObject(guiParams);
-    } else {
-        networkPropertiesGUI.setValue('TotalSubnets', subnets.toString());
-        networkPropertiesGUI.setValue('TotalHosts', hosts.toString());
-        networkPropertiesGUI.setValue('SubnetMask', SubnetMask);
-        networkPropertiesGUI.setValue('SupernetMask', SupernetMask);
-    }
-}
-
-function applyGUIValuesToComp() {
-    console.log("applying gui params");
-    print(compContrInstance.getSelectedComponent());
-    if (guiParams) {
-        if (guiParams.HideComponent) {
-            compContrInstance.getSelectedComponent().setHideComponent(true);
-        } else {
-            compContrInstance.getSelectedComponent().setHideComponent(false);
-        }
-        compContrInstance.getSelectedComponent().setComponentName(guiParams.Name);
-        compContrInstance.getSelectedComponent().reSize(guiParams.Width);
-        compContrInstance.getSelectedComponent().setTextSize(guiParams.TextSize);
-        compContrInstance.getSelectedComponent().setHideConnections(guiParams.HideConnections);
-    }
-}
-
-function applyCompValuesToGUI() {
-    compPropertiesGUI.show();
-    if (typeof compPropertiesGUI.getGuiParams() == 'undefined') {
-        guiParams = {
-            'Name': compContrInstance.getSelectedComponent().getComponentName(),
-            'Width': compContrInstance.getSelectedComponent().getWidth(),
-            'WidthMin': 65,
-            'WidthMax': 200,
-            'TextSize': compContrInstance.getSelectedComponent().getTextSize(),
-            'TextSizeMax': 32,
-            'HideComponent': compContrInstance.getSelectedComponent().getHideComponent(),
-            'HideConnections': compContrInstance.getSelectedComponent().getHideConnections(),
-            'Lock': false,
-            'Connections': allConnections.getInstance().getConnectionsRelatedToComp(compContrInstance.getSelectedComponent()),
-            
-        };
-        compPropertiesGUI.addObject(guiParams);
-    } else {
-        compPropertiesGUI.setValue('Name', compContrInstance.getSelectedComponent().getComponentName());
-        compPropertiesGUI.setValue('Width', compContrInstance.getSelectedComponent().getWidth());
-        compPropertiesGUI.setValue('HideComponent', compContrInstance.getSelectedComponent().getHideComponent());
-        compPropertiesGUI.setValue('TextSize', compContrInstance.getSelectedComponent().getTextSize());
-        compPropertiesGUI.setValue('HideConnections', compContrInstance.getSelectedComponent().getHideConnections());
-        compPropertiesGUI.setValue('Connections',  allConnections.getInstance().getConnectionsRelatedToComp(compContrInstance.getSelectedComponent()));
-        
-    }
-    compPropertiesGUI.setTitle(compContrInstance.getSelectedComponent().getComponentName());
-}
-
 function updateMouseCursor() {
     if (compContrInstance.getComponentDrag()) {
         document.body.style.cursor = "grabbing";
@@ -475,7 +404,7 @@ function loadComponents(array) {
         
     });
     window.setTimeout(() => {
-        networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent)
+        gui.domElement.dispatchEvent(networkChangeEvent)
     }, 500);
 }
 
@@ -509,7 +438,7 @@ function checkForCopyAndPastEvent() {
         );
 
         // Triggering networkChangeEvent
-        networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+        gui.domElement.dispatchEvent(networkChangeEvent);
     }
 }
 
@@ -539,7 +468,7 @@ function checkComponentDeleteEvent() {
                 });
 
             });
-            compPropertiesGUI.hide();
+            gui.removeFolder(compContrInstance.getPropertiesPanel());
         } 
         else if (compContrInstance.getSelectedComponent() != null) {
             var comp = compContrInstance.getSelectedComponent();
@@ -561,11 +490,12 @@ function checkComponentDeleteEvent() {
                 compContrInstance.getSelectedComponent().getComponentName() + " has been deleted."
             );
 
-            compPropertiesGUI.hide();
+            gui.removeFolder(compContrInstance.getPropertiesPanel());
+
 
 
             // Triggering networkChangeEvent
-            networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+            gui.domElement.dispatchEvent(networkChangeEvent);
         }
         compContrInstance.setSelectCompForDelete(false);
     }

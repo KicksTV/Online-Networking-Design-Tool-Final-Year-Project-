@@ -3,8 +3,14 @@ var networkController = (function() {
     
     function init() {
      
-        var subnetmask;
-        var supernetmask;
+        var networkObject = function () {
+            this.numberOfHosts = calculateAllHost();
+            this.numberOfSubnets = calculateAllSubnets();
+            this.subnetmask = calculateSubnetMask();
+            this.supernetmask = calculateSupernetMask(this.numberOfSubnets);
+        };
+        var network = new networkObject();
+
 
         var largestSubnet = 0;
         var numberOfEndDevices = 0;
@@ -18,6 +24,22 @@ var networkController = (function() {
         var hostBits = 0;
         var currSubnet;
 
+        // dat.GUI
+        var networkPropertiesPanel = null;
+
+
+        function initGUI() {
+
+            networkPropertiesPanel = gui.addFolder("Network Properties");
+
+            networkPropertiesPanel.add(network, 'numberOfHosts').listen();
+            networkPropertiesPanel.add(network, 'numberOfSubnets').listen();
+            networkPropertiesPanel.add(network, 'subnetmask').listen();
+            networkPropertiesPanel.add(network, 'supernetmask').listen();
+
+            networkPropertiesPanel.open();
+        }
+
         function getSubnetMask() {
             return subnetmask;
         }
@@ -27,11 +49,19 @@ var networkController = (function() {
 
         // network functions
         
+        function calculateAllNetworkProperties() {
+            network.numberOfHosts = calculateAllHost();
+            network.numberOfSubnets = calculateAllSubnets();
+            network.subnetmask = calculateSubnetMask();
+            network.supernetmask = calculateSupernetMask();
+            print("network change event");
+        }
+
         function calculateSupernetMask(subnets) {
             // Calculates the Supernet Mask for network,
             // Must have already calculated Subnet Mask to get hostbits.
             
-            //var subnets = 16;
+            // var subnets = 16;
             //var x = 2;
             var subnetBits = 1;
 
@@ -54,8 +84,6 @@ var networkController = (function() {
 
             // calculates the decimal representation of slash value.
             var decimalNotationOfSupernetmask = calculateDecimalFromSlashValue(slashValue);
-
-            supernetmask = decimalNotationOfSupernetmask;
 
             return decimalNotationOfSupernetmask;
         }
@@ -93,8 +121,6 @@ var networkController = (function() {
 
             // Calculate the subnet mask representation in decimal notation.
             var decimalNotationOfSubnetmask = calculateDecimalFromSlashValue(slashValue);
-
-            subnetmask = decimalNotationOfSubnetmask;
 
             return decimalNotationOfSubnetmask;
         }
@@ -178,6 +204,7 @@ var networkController = (function() {
                 );
                 totalNumberOfSubnets += connections.length;
             }
+
             return totalNumberOfSubnets;
         }
 
@@ -413,6 +440,8 @@ var networkController = (function() {
         }
         
         return {
+            initGUI:initGUI,
+            calculateAllNetworkProperties:calculateAllNetworkProperties,
             calculateAllHost:calculateAllHost,
             calculateAllSubnets:calculateAllSubnets,
             calculateSupernetMask:calculateSupernetMask,

@@ -105,7 +105,7 @@ class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
                     // ADDS IT TO ARRAY OF ALL components
                     allComps.add(newcomp);
 
-                    networkPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+                    gui.domElement.dispatchEvent(networkChangeEvent);
                 });
             });
             // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS DRAGGED

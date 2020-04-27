@@ -24,15 +24,15 @@ const compBarGetSetMixin = superclass => class extends superclass {
 };
 const componentMixin = superclass => class extends superclass {
     display() {
-        image(this.image, this.Xpos, this.Ypos);
+        image(this.image, this.x, this.y);
         noStroke();
         textSize(this.textSize);
-        text(this.componentName, this.Xpos, this.Ypos + this.image.height, this.image.width, 30);
+        text(this.name, this.x, this.y + this.image.height, this.image.width, 30);
         textAlign(CENTER, CENTER);
     }
-    reSize(newWidth) {
-        this.image.height = newWidth * (this.image.height / this.image.width);
-        this.image.width = newWidth;
+    correctAspectRatio() {
+        this.image.height = this.image.width * (this.image.height / this.width);
+        this.width = this.image.width;
     }
     
     move(x, y) {
@@ -40,23 +40,23 @@ const componentMixin = superclass => class extends superclass {
         y = y - (this.image.height/2);
         
         if ((windowWidth) > (x + this.image.width) && 0 < x) {
-            this.Xpos = x;
+            this.x = x;
         }
         if (windowHeight > (y + this.image.height) && 0 < y) {
-            this.Ypos = y;
+            this.y = y;
         }
     }
     multiMove(x, y) {
-        if ((windowWidth) > (x + this.image.width) && 0 < (x + this.Xpos)) {
-            this.Xpos += x;
+        if ((windowWidth) > (x + this.image.width) && 0 < (x + this.x)) {
+            this.x += x;
         }
-        if (windowHeight > (y + this.image.height) && 0 < (y + this.Ypos)) {
-            this.Ypos += y;
+        if (windowHeight > (y + this.image.height) && 0 < (y + this.y)) {
+            this.y += y;
         }
     }
     
     clicked() {
-        var d = dist(this.Xpos + (this.image.width/2), this.Ypos + (this.image.height/2), mouseX, mouseY);
+        var d = dist(this.x + (this.image.width/2), this.y + (this.image.height/2), mouseX, mouseY);
         if (d < (this.image.width/2)) {
             this.isClicked = true;
         }else {
@@ -67,30 +67,18 @@ const componentMixin = superclass => class extends superclass {
     prepareForJson() {
         let parms = {
             "id": this.id,
+            "name": this.name,
             "imgPath": this.imgPath,
             "type": this.type,
-            "Xpos": this.Xpos,
-            "Ypos": this.Ypos,
+            "x": this.x,
+            "y": this.y,
             "width": this.image.width,
             "height": this.image.height,
-            "hideComponent": this.hideComponent,
+            "hide": this.hide,
             "hideConnections": this.hideConnections,
-            "componentName": this.componentName,
             "textSize": this.textSize,
         }
         return parms;
-    }
-    getGUIProperties() {
-        let parms = {
-            "Xpos": this.Xpos,
-            "Ypos": this.Ypos,
-            "width": this.image.width,
-            "height": this.image.height,
-            "hideComponent": this.hideComponent,
-            "hideConnections": this.hideConnections,
-            "componentName": this.componentName,
-            "textSize": this.textSize,
-        }
     }
 };
 
@@ -128,8 +116,6 @@ const connectionMixin = superclass => class extends superclass {
         let complist = [];
         this._components.forEach(c => complist.push(c.prepareForJson()));
 
-        
-
         let parms = {
             "id": this.id,
             "type": this.type,
@@ -140,3 +126,7 @@ const connectionMixin = superclass => class extends superclass {
         return parms;
     }
 };
+const panelMixin = superclass => class extends superclass {
+    
+};
+

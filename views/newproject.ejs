@@ -26,6 +26,54 @@
             </div>
         </div>
 
+        <div id="rightSidePanel"></div>
+
+        <div id="bottomPanel" class="container-fluid">
+            <div class="row">
+                <div id="bottomPanelTitleContainer" class="container-fluid">
+                    <div class="row">
+
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">Connections</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Console</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Link</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="bottomPanelContentContainer">
+                    <table id="connections-table" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">1st_Device</th>
+                                <th scope="col">→</th>
+                                <th scope="col">2nd_Device</th>
+                                <th scope="col">Media_Type</th>
+                                <th scope="col">IP_Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>No Connections</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
         <% include partials/p5-scripts %>
         <% include partials/scripts %>
     </body>

@@ -22,6 +22,10 @@ var componentController = (function() {
         var copied;
         var cut;
 
+        // dat.GUI 
+        var compPropertiesPanel = null;
+
+
         function createNewComponent(type, imgPath, img) {
             var newcomp = new Component(type, imgPath, img);
             let num = getNumberOfExistingCompType(type);
@@ -73,6 +77,14 @@ var componentController = (function() {
             const found = allComps.get().filter(comp => comp.getType() == type);
             return found.length;
         }
+
+        function initGUI(gui) {
+            compPropertiesPanel = gui.addFolder("Component Properties");
+        }
+        function getPropertiesPanel() {
+            return compPropertiesPanel;
+        }
+
         function isCurrentlyClickingComp() {
             return currentClick;
         }
@@ -166,17 +178,25 @@ var componentController = (function() {
             return;
         }
         function applyGUIValues() {
-            if (guiParams) {
-                if (guiParams.hideComponent) {
-                    selectedComponent.setHideComponent(true);
-                } else {
-                    selectedComponent.setHideComponent(false);
-                }
-                selectedComponent.setWidth(guiParams.width);
-                h = (guiParams.width / 1.2);
-                selectedComponent.setHeight(h);
-                selectedComponent.setTextSize(guiParams.textSize);
+            var att = Object.keys(gui.__folders);
+            if (compPropertiesPanel != null && att.length > 1 || att[1] == "Component Properties") {
+                gui.removeFolder(compPropertiesPanel);
             }
+            compPropertiesPanel = gui.addFolder("Component Properties");
+            let comp = getSelectedComponent();
+
+            compPropertiesPanel.add(comp, 'name').listen();
+            compPropertiesPanel.add(comp, 'x').listen();
+            compPropertiesPanel.add(comp, 'y').listen();
+            compPropertiesPanel.add(comp.image, 'width', 30, 200).listen();
+            compPropertiesPanel.add(comp.image, 'height', 30, 200).listen();
+            compPropertiesPanel.add(comp, 'correctAspectRatio').listen();
+
+            compPropertiesPanel.add(comp, 'hide').listen();
+            compPropertiesPanel.add(comp, 'hideConnections').listen();
+
+            compPropertiesPanel.open();
+
         }
         function displayAllComponents() {
             let _components = allComponents.getInstance().get();
@@ -362,6 +382,8 @@ var componentController = (function() {
         return {
             createNewComponent:createNewComponent,
             cloneComponent:cloneComponent,
+            initGUI:initGUI,
+            getPropertiesPanel:getPropertiesPanel,
             isCurrentlyClickingComp:isCurrentlyClickingComp,
             getSelectedComponent:getSelectedComponent,
             setSelectedComponent:setSelectedComponent,
