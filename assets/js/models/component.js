@@ -1,55 +1,128 @@
-let counter = 0;
+class Component extends componentMixin(Device) {
+    constructor(type, path, image) {
+        super(type);
+        this.name = `${type}`;
+        this.imgPath = path;
+        this.image = image;
+        this.x = 100;
+        this.y = 100;
+        this.width = this.image.width;
+        this.height = this.image.height;
+        this.aspectRatio = [];
+        this.centerPos = [];
+        this.textSize = 10;
+        this.hide = false;
+        this.hideConnections = false;
+        this.lock = false;
+        this.hasCon = false;
+        this.isClicked = false;
+        this.guiParams = null;
+        this.validLinkingComponents = ["Twisted Pair"];
 
-function Component(type, path, image) {
-    counter++
-    let state = {
-        "id": null,
-        "imgPath": path,
-        "image": image,
-        "type": type,
-        "Xpos": 100,
-        "Ypos": 100,
-        "aspectRatio": [],
-        "centerPos": [],
-        "hideComponent": false,
-        "hideConnections": false,
-        "hasConnection": false,
-        "isClicked": false,
-        "componentName": `${type}_${counter}`,
-        "textSize": 10,
-        "guiParams": null,
+        this.aspectRatio[0] = this.image.width;
+        this.aspectRatio[1] = this.image.height;
     }
-
-    const componentInitiator = (state) => ({
-        init: () => {
-            var val = Math.floor(1000 + Math.random() * 900000);
-            state.id = `${state.componentName}${val}`;
-            
-            state.aspectRatio[0] = state.image.width;
-            state.aspectRatio[1] = state.image.heigt;
-            return Object.assign(
-                componentInitiator(state),
-                clicker(state),
-                componentDisplayer(state),
-                mover(state),
-                prepareForJson(state),
-                getterSetter(state),
-            );;
-        }
-    });
-
-    Object.assign(
-        state,
-        getterSetter(state),
-    );
-
-    return Object.assign(
-        componentInitiator(state),
-        clicker(state),
-        componentDisplayer(state),
-        mover(state),
-        prepareForJson(state),
-        getterSetter(state),
-    );
-    
+    getImgPath() {
+        return this.imgPath;
+    }
+    setImgPath(path) {
+        this.imgPath = path;
+    }
+    getImage() {
+        return this.image;
+    }
+    setImage(val) {
+        this.image = val;
+        return this.image;
+    }
+    getXpos() {
+        return this.x;
+    }
+    setXpos(val) {
+        this.x = val;
+    }
+    getYpos() {
+        return this.y;
+    }
+    setYpos(val) {
+        this.y = val;
+    }
+    getWidth() {
+        return this.image.width;
+    }
+    setWidth(val) {
+        this.image.width = val;
+    }
+    getHeight() {
+        return this.image.height;
+    }
+    setHeight(val) {
+        this.image.height = val;
+    }
+    getCenterPos() {
+        return this.centerPos = [this.x+(this.image.width/2), this.y+(this.image.height/2)];
+    }
+    getHideComponent() {
+        return this.hide;
+    }
+    setHideComponent(val) {
+        this.hide = val;
+    }
+    getHideConnections() {
+        return this.hideConnections;
+    }
+    setHideConnections(val) {
+        this.hideConnections = val;
+    }
+    getIsClicked() {
+        return this.isClicked;
+    }
+    setIsClicked(val) {
+        this.isClicked = val;
+    }
+    hasConnection() {
+        return this.hasCon;
+    }
+    setHasConnection(val) {
+        this.hasCon = val;
+    }
+    getComponentName() {
+        return this.name;
+    }
+    setComponentName(val) {
+        this.name = val;
+    }
+    getTextSize() {
+        return this.textSize;
+    }
+    setTextSize(val) {
+        this.textSize = val;
+    }
+    getValidLinkingComponent(index) {
+        return this.validLinkingComponents[index];
+    }
+    setValidLinkningComponents(comps) {
+        this.validLinkingComponents = comps;
+    }
+    addValidLinkningComponent(comp) {
+        this.validLinkingComponents.push(comp);
+    }
+    getValidLinkingComponent(index) {
+        return this.validLinkingComponents[index];
+    }
+    setValidLinkningComponents(comps) {
+        this.validLinkingComponents = comps;
+    }
+    addValidLinkningComponent(comp) {
+        this.validLinkingComponents.push(comp);
+    }
+    checkValidLinkingComponent(comp) {
+        var isValid = false;
+        this.validLinkingComponents.forEach((c)=> {
+            if (comp.getType() == c) {
+                isValid = true;
+            }
+        });
+        return isValid;
+    }
 }

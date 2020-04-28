@@ -1,6 +1,5 @@
 var express = require('express');
 var defaultProjects = require('./assets/js/defaultProjects.js');
-
 var app = express();
 
 app.set('view engine', 'ejs');
@@ -33,4 +32,6 @@ app.get('/projects/newproject', function (req, res) {
 
 
 
-app.listen(5000);
+app.listen(5000, () => {
+    console.log("The server is now running on port 5000!");
+});

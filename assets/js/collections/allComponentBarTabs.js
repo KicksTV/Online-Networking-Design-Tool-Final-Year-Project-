@@ -26,11 +26,17 @@ var allComponentBarTabs = (function() {
         function getCurrent() {
             return currentTab;
         }
-        function getDrawConnection() {
-            return drawConnection;
+        function hideCurrentButtons() {
+            print(currentTab.getTitle());
+            currentTab.getBar().getUL().hide();
         }
-        function setDrawConnection(val) {
-            drawConnection = val;
+        function unsetVisableCurrent() {
+            currentTab.getLI().removeClass('active');
+        }
+
+        function setVisableCurrent(tab) {
+            tab.getLI().addClass('active');
+            allTabs.setCurrent(tab);
         }
 
         return {add:add,
@@ -38,6 +44,9 @@ var allComponentBarTabs = (function() {
                 get:get,
                 setCurrent:setCurrent,
                 getCurrent:getCurrent,
+                hideCurrentButtons:hideCurrentButtons,
+                unsetVisableCurrent:unsetVisableCurrent,
+                setVisableCurrent,setVisableCurrent
                 };   
     }
 

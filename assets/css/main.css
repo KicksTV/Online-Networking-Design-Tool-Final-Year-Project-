@@ -45,11 +45,37 @@ a>.card:hover {
 }
 .qs_pin_container {
     display: inline-block;
+    float: right;
+    margin-right: 5px;
+}
+.qs_pin_button {
+
+}
+.qs_connections_container {
+    overflow-y: auto;
 }
 .qs_connection {
     display: inline-block;
     margin: 0 5px 0 5px;
 }
+.qs_connection_table_value {
+    text-align: center;
+}
+
+.qs_invalid_ip_address {
+    border: 2px;
+    border-color: red;
+    border-style: solid;
+    color: red;
+}
+
+.qs_valid_ip_address {
+    border: 2px;
+    border-color: green;
+    border-style: solid;
+    color: green;
+}
+
 .qs_arrow {
     display: inline-block;
     margin: 0 5px 0 5px;
@@ -71,4 +97,88 @@ a>.card:hover {
 
 .upload_input {
     display: none;
+}
+
+
+.bg-dark {
+    background-color: #191919!important;
+}
+
+
+/* Added visability hidden to hide html when toast is hidden */
+.toast.hide {
+    display: none;
+    visibility: hidden;
+}
+
+#interfaceContainer {
+    background-color: #dddddd;
+    text-align: left;
+    position: absolute;
+    width: 150px;
+    font: 12px sans-serif;
+    box-shadow: 5px 5px 8px rgba(0,0,0,0.35);
+    color: #000000;
+}
+
+.portButton {
+    width: 100%;
+    background-color: #aefda3;
+}
+.disabledPortButton {
+    background-color: rgb(255, 144, 144);
+}
+#portContainer {
+    width: 100%;
+    display: block;
+    position: relative;
+}
+#interfaceTitleContainer {
+    width: 100%;
+    text-align: center;
+}
+
+/* Component Panel */
+.dg.a {
+    margin-right: 0px;
+}
+#rightSidePanel {
+    position: absolute;
+    top: 188px;
+    right: 0px;
+}
+#bottomPanel {
+    position: absolute;
+    top: initial;
+    bottom: 0px;
+    position: fixed;
+    background-color: #cccccc;
+    max-height: 40px;
+    transition: max-height 0.15s ease-out;
+}
+#bottomPanel:hover {
+    max-height: 300px;
+    transition: max-height 0.25s ease-in;
+}
+#bottomPanelTitleContainer {
+    background-color: #eeeeee;
+}
+.panel-title-container {
+    height: 100%;
+    width: fit-content;
+    padding: 5px;
+    display: inline-block;
+}
+.panel-title-container:hover {
+
+}
+#bottomPanelContentContainer {
+    width: 100%;
+    height: 100%;
+    margin: 7px;
+    background-color: #eeeeee;
+    overflow: scroll;
+}
+#connections-table {
+    height: 100%;
 }
