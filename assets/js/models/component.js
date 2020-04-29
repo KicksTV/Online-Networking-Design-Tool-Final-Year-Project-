@@ -1,6 +1,6 @@
 class Component extends componentMixin(Device) {
-    constructor(type, path, image) {
-        super(type);
+    constructor(id, type, path, image) {
+        super(id, type);
         this.name = `${type}`;
         this.imgPath = path;
         this.image = image;

@@ -29,9 +29,7 @@ var networkController = (function() {
 
 
         function initGUI() {
-
             networkPropertiesPanel = gui.addFolder("Network Properties");
-
             networkPropertiesPanel.add(network, 'numberOfHosts').listen();
             networkPropertiesPanel.add(network, 'numberOfSubnets').listen();
             networkPropertiesPanel.add(network, 'subnetmask').listen();
@@ -48,7 +46,6 @@ var networkController = (function() {
         }
 
         // network functions
-        
         function calculateAllNetworkProperties() {
             network.numberOfHosts = calculateAllHost();
             network.numberOfSubnets = calculateAllSubnets();
@@ -56,7 +53,6 @@ var networkController = (function() {
             network.supernetmask = calculateSupernetMask();
             print("network change event");
         }
-
         function calculateSupernetMask(subnets) {
             // Calculates the Supernet Mask for network,
             // Must have already calculated Subnet Mask to get hostbits.
@@ -207,7 +203,6 @@ var networkController = (function() {
 
             return totalNumberOfSubnets;
         }
-
         function getLargestSubnet() {
             var allRouters = [];
 
@@ -438,6 +433,121 @@ var networkController = (function() {
             var subnetIDDecimal = binaryToDecimal(subnetIDBinary);
             return subnetIDDecimal;
         }
+
+        function checkIPAddressInput(event, connection) {
+            var interfaceValues;
+            var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+
+            if (connection.getComponent(0) == currentSelectedComp) {
+                interfaceValues = connection.getInterfacePort(0);
+            }
+            else if (connection.getComponent(1) == currentSelectedComp) {
+                interfaceValues = connection.getInterfacePort(1);
+            }
+
+            var inter = interfaceValues[0];
+            var port = interfaceValues[1];
+
+            var routerComp = null;
+            if (currentSelectedComp.getType() == "Router") {
+                routerComp = currentSelectedComp;
+            }
+
+            // Preventing characters otherthan numbers from being entered
+            var regex = new RegExp("^[a-zA-Z]+$");
+            if (regex.test(event.key)) {
+                if (event.key.toString().length == 1) {
+                    event.preventDefault();
+                }
+            }
+            if (event.key == "Enter") {
+                event.preventDefault();
+            }
+            print("Address entered");
+
+            // Get all field content and last key pressed
+            var IPaddressField = event.srcElement.innerText + event.key;
+
+            // Get the number of octets currently IP address field
+            var numberOfOctets = IPaddressField.split(".").length;
+
+            // Array of octets
+            var octets = IPaddressField.split(".");
+
+            var ipfield = event.target;
+
+            
+            if (routerComp != null) {
+
+                // Checks if whole address has been entered
+                if (numberOfOctets == 4 && octets[3] != "") {
+                    
+                    // Calculate subnet ID & gateway IP
+                    inter.portIPaddress[port] = IPaddressField;
+                    
+                    const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
+                    found.gatewayRouterIP = IPaddressField;
+
+                    // Setting Subnet ID
+                    let subnetmask = networkController.getInstance().getSubnetMask();
+                    found.subnetID = networkController.getInstance().calculateSubnetID(found.gatewayRouterIP, subnetmask);
+
+                }
+            } else {
+
+                // Finding subnet related to selected component
+                var foundSubnetforComp = null;
+                allSubnets.getInstance().toList().forEach(s => {
+                    var found = s.endDevices.find(x => x == currentSelectedComp.getID());
+                    if (found != null) {
+                        foundSubnetforComp = s;
+                    }
+                });
+
+
+                if (foundSubnetforComp) {
+
+                    // Checks if router has been assigned an IP address first
+                    if (foundSubnetforComp.gatewayRouterIP == null) {
+                        e.preventDefault();
+                        alert("Please assign an IP address to Default Gateway (Router) first.");
+                    } else {
+                        
+                        if (numberOfOctets == 4 && octets[3] != "") {
+                            // Checking for valid assignment of IP address.
+
+                            let subnetmask = networkController.getInstance().getSubnetMask();
+
+                            var subnetID = networkController.getInstance().calculateSubnetID(IPaddressField, subnetmask);
+
+                            if (subnetID == foundSubnetforComp.subnetID) {
+                                // Valid IP address for subnet
+
+                                ipfield.className = "qs_valid_ip_address";
+
+                                inter.portIPaddress[port] = IPaddressField;
+
+                            } else {
+                                // Not valid IP address for subnet
+
+                                ipfield.className = "qs_invalid_ip_address";
+                            }
+                        }
+                    }
+                } else {
+                    alert("Device is not part of any subnet!");
+                }
+            }
+        }
+        function toJSON() {
+            var json = [];
+
+            // Saving all subnets
+            allSubnets.getInstance().getAll().forEach(s => {
+                json.push(s);
+            });
+            return json;
+        }
         
         return {
             initGUI:initGUI,
@@ -452,7 +562,8 @@ var networkController = (function() {
             calculateSubnetID:calculateSubnetID,
             getSubnetMask:getSubnetMask,
             getSupernetMask:getSupernetMask,
-
+            checkIPAddressInput:checkIPAddressInput,
+            toJSON:toJSON,
         };   
     }
 

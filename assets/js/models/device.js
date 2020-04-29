@@ -1,11 +1,15 @@
 class Device {
-    constructor(type) {
+    constructor(id, type) {
         this.id = null;
         this.type = type;
         this._interfaces = [];
 
-        var val = Math.floor(1000 + Math.random() * 900000);
-        this.id = `${this.type}${val}`;
+        if (!id) {
+            var val = Math.floor(1000 + Math.random() * 900000);
+            this.id = `${this.type}${val}`;
+        } else {
+            this.id = id;
+        }
     }
     getID() {
         return this.id;

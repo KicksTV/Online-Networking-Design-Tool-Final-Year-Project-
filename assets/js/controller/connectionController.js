@@ -10,6 +10,7 @@ var connectionController = (function() {
 
         function createNewConnection(type) {
             var newcon = new Con(type);
+            
             return newcon;
         }
         function drawAllConnections() {
@@ -111,10 +112,10 @@ var connectionController = (function() {
         }
 
         function addComponentToConnection(comp, interfaceValues) {
-            //print(comp);
             // Adding component to connection object
-            allConnections.getInstance().getSelectedConnection().addComponent(comp);
-            allConnections.getInstance().getSelectedConnection().addInterfacePort(interfaceValues);
+            let connection = allConnections.getInstance().getSelectedConnection();
+            connection.addComponent(comp);
+            connection.addInterfacePort(interfaceValues);
         }
         function drawConnetions(xmouse, ymouse) {
             if (selectingSecondConnection == true) {
@@ -173,6 +174,7 @@ var connectionController = (function() {
 
                     // adding connection to list of allCons
                     allConnections.getInstance().add(allConnections.getInstance().getSelectedConnection());
+
                 } else {
                     allConnections.getInstance().getSelectedConnection().getInterface(0).subtractPossibleAvailablePort();
                     allConnections.getInstance().getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
@@ -207,6 +209,7 @@ var connectionController = (function() {
         }
         function endConnection() {
             // End selection process
+
             drawConnection = false;
             selectingSecondConnection = false;
             allConnections.getInstance().setSelectedConnection(null);
@@ -214,16 +217,30 @@ var connectionController = (function() {
             updateMouseCursor();
         }
 
+        function fromJSON() {
+            
+        }
+
+        function toJSON() {
+            var json = [];
+            allConnections.getInstance().get().forEach((con) => {
+                json.push(con.prepareForJson());
+            });
+            return json;
+        }
+
         return {
-                drawAllConnections:drawAllConnections,
-                getSelectingSecondConnection:getSelectingSecondConnection,
-                isSelectingInterfacePort:isSelectingInterfacePort,
-                selectConnectionForComp:selectConnectionForComp,
-                getDrawConnection: getDrawConnection,
-                setDrawConnection: setDrawConnection,
-                drawConnetions:drawConnetions,
-                endConnection:endConnection,
-                };   
+            createNewConnection:createNewConnection,
+            drawAllConnections:drawAllConnections,
+            getSelectingSecondConnection:getSelectingSecondConnection,
+            isSelectingInterfacePort:isSelectingInterfacePort,
+            selectConnectionForComp:selectConnectionForComp,
+            getDrawConnection: getDrawConnection,
+            setDrawConnection: setDrawConnection,
+            drawConnetions:drawConnetions,
+            endConnection:endConnection,
+            toJSON:toJSON,
+        };   
     }
 
     return {

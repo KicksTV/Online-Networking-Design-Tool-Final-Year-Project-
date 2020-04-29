@@ -8,6 +8,9 @@ var allComponents = (function() {
         function get() {
             return _components;
         }
+        function getAll() {
+            return _components;
+        }
         function set(newlist) {
             _components = newlist;
         }
@@ -26,6 +29,7 @@ var allComponents = (function() {
         }
         return {
             get:get,
+            getAll:getAll,
             set:set,
             add:add,
             length:length,
