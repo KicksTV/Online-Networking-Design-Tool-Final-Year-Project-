@@ -1817,11 +1817,11 @@
                 setValue: function (value) {
 
                     // Removing existing table data
-                    if (value.length > 0) {
-                        while (this.tableContent.hasChildNodes()) {
-                            this.tableContent.removeChild(this.tableContent.lastChild);
-                        }
+                    while (this.tableContent.hasChildNodes()) {
+                        this.tableContent.removeChild(this.tableContent.lastChild);
                     }
+
+                    
                     if (value.length == 0) {
                         var rowtr = createElement("tr", null, null, this.tableContent);
                         var rowth = createCustomElement("th", "1", null, null, rowtr);

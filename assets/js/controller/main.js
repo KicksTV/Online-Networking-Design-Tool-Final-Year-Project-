@@ -197,8 +197,8 @@ function setup() {
     networkPropertiesGUI = createGui("Network Properties").setPositionLeft(1120).setPositionTop(188).lock(true);
     compPropertiesGUI = createGui("NA").disablePin(false).setPosition(1250,500).hide();
 
-    var gui = new dat.GUI();
-    print(gui);
+    // var gui = new dat.GUI();
+    // print(gui);
 
 }
 function draw() {
