@@ -26,33 +26,33 @@ var componentController = (function() {
         var compPropertiesPanel = null;
 
 
-        function createNewComponent(type, imgPath, img) {
-            var newcomp = new Component(type, imgPath, img);
+        function createNewComponent(id, type, imgPath, img) {
+            var newcomp = new Component(id, type, imgPath, img);
             let num = getNumberOfExistingCompType(type);
             num++;
             newcomp.setComponentName(`${type}_${num}`);
 
-
-                    // NEED FUCNTION TO LOAD COMP PROPORTIES
-                    
-                    //TEMP needs to be removed!!!!!!!!!!!!!!!!
-                    if (newcomp.getType() == "Smartphone") {
-                        newcomp.setValidLinkningComponents([]);
-                    }
-                    else if (newcomp.getType() == "Router") {
-                        newcomp.addInterface(new Interface("Fast Ethernet", 4));
-                        newcomp.addInterface(new Interface("Serial", 2));
-                    }
-                    else if (newcomp.getType() == "Switch") {
-                        newcomp.addInterface(new Interface("Fast Ethernet", 12));
-                    }
-                    else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
-                            newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
-                            newcomp.getType() == "Access Point") {
-                        newcomp.addInterface(new Interface("Fast Ethernet", 1));
-                    }
-
+            // NEED FUCNTION TO LOAD COMP PROPORTIES
             
+            //TEMP needs to be removed!!!!!!!!!!!!!!!!
+            if (newcomp.getType() == "Smartphone") {
+                newcomp.setValidLinkningComponents([]);
+            }
+            else if (newcomp.getType() == "Router") {
+                newcomp.addInterface(new Interface("Fast Ethernet", 4));
+                newcomp.addInterface(new Interface("Serial", 2));
+            }
+            else if (newcomp.getType() == "Switch") {
+                newcomp.addInterface(new Interface("Fast Ethernet", 12));
+            }
+            else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
+                    newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
+                    newcomp.getType() == "Access Point") {
+                newcomp.addInterface(new Interface("Fast Ethernet", 1));
+            }
+
+            graphCreator2.getInstance().addNode(newcomp.id);
+
             return newcomp;
         }
         function cloneComponent(obj) {
@@ -378,6 +378,17 @@ var componentController = (function() {
         function hasPastedComponent() {
             return pasted;
         }
+        function toJSON() {
+            var json = [];
+
+            // looping through all components to get any that haven't got a connection
+            allComps.get().forEach((comp) => {
+                if (!comp.hasConnection()) {
+                    json.push(comp.prepareForJson());
+                }
+            });
+            return json;
+        }
 
         return {
             createNewComponent:createNewComponent,
@@ -419,6 +430,7 @@ var componentController = (function() {
             pasteSelectedComponents:pasteSelectedComponents,
             hasCopiedComponent:hasCopiedComponent,
             hasPastedComponent:hasPastedComponent,
+            toJSON:toJSON,
         };   
     }
 

@@ -78,39 +78,48 @@ window.onload = function() {
     }
 
     // SAVE
-    canvasSaveProject.addEventListener("click", () => {
+    canvasSaveProject.addEventListener("click", async () => {
         // Setup of json format
         var json = {
+            "graph": {},
             "connections": [],
             "components": [],
             "subnets": [],
         };
         // Checking if anything exists on canvas
         if (!allComps.isEmpty()) {
-            // looping through all connections
-            allConnections.getInstance().get().forEach((con) => {
-                json.connections.push(con.prepareForJson());
-            });
-            // looping through all components to get any that haven't got a connection
-            allComps.get().forEach((comp) => {
-                if (!comp.hasConnection()) {
-                    json.components.push(comp.prepareForJson());
-                }
-            });
 
-            // Saving all subnets
-            allSubnets.getInstance().getAll().forEach(s => {
-                json.subnets.push(s);
-            });
+            var data = await getAllSaveData();
+
+            json.graph = data[0];
+            json.connections = data[1];
+            json.components = data[2];
+            json.subnets = data[3];
+
+            print(json.graph);
+
+
 
             // Saves json to file
             console.log(json);
-            saveJSON(json, 'network_design_project.json');
+
+            return saveJSON(json, 'network_design_project.json');
+
+
         }else {
             alert("Canvas is empty");
         }
 
     });
+
+    const getAllSaveData = async () => {
+        var graphData = graphCreator2.getInstance().toJSON();
+        var connectionData = connectionController.getInstance().toJSON();
+        var componentData = componentController.getInstance().toJSON();
+        var subnetData = networkController.getInstance().toJSON();
+
+        return Promise.all([graphData, connectionData, componentData, subnetData]);
+    }
 
     // DELETE COMPONENT
     canvasDeleteButton.addEventListener("click", () => {
@@ -316,7 +325,7 @@ function updateMouseCursor() {
 }
 
 // PROJECT LOADING FUNCTION
-function loadComponents(array) {
+async function loadComponents(array) {
 
     // LOADING SAVED SUBNETS
     array.subnets.forEach(s => {
@@ -330,7 +339,7 @@ function loadComponents(array) {
     // LOADING COMPONENTS WITHOUT A CONNECTION
     array.components.forEach((comp) => {
         loadImage(comp.imgPath, img => {
-            var newcomp = compContrInstance.createNewComponent(comp.type, comp.imgPath, img);
+            var newcomp = compContrInstance.createNewComponent(comp.id, comp.type, comp.imgPath, img);
             newcomp = Object.assign(newcomp, comp);
 
             // Setting size of the component
@@ -340,13 +349,15 @@ function loadComponents(array) {
             allComps.add(newcomp);
         });
     });
+
+    
     // LOADING CONNECTIONS
-    array.connections.forEach((con) => {
+    for (let con of array.connections) {
+
         // new connection
-        var newconnection = new Con(con.type);
+        var newconnection = connectionController.getInstance().createNewConnection(con.type);
         newconnection.setID(con.id);
         newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
-
 
         con._interfacePorts.forEach((ip) => {
             var index = con._interfacePorts.indexOf(ip);
@@ -355,10 +366,10 @@ function loadComponents(array) {
         });
         
         // looping through all the components in the connection
-        con._components.forEach((comp) => {
-            
-            loadImage(comp.imgPath, img => {
-                var newcomp = compContrInstance.createNewComponent(comp.type, comp.imgPath, img);
+        for (let comp of con._components) {
+
+            const v = await loadImage(comp.imgPath, img => {
+                var newcomp = compContrInstance.createNewComponent(comp.id, comp.type, comp.imgPath, img);
                 newcomp = Object.assign(newcomp, comp);
 
                 // Setting size of the component
@@ -397,12 +408,11 @@ function loadComponents(array) {
                 }
                 print("Loaded File Components");
             });
-            
-        });
-
+        }
+        print("add connection");
         allConnections.getInstance().add(newconnection);
-        
-    });
+    }
+
     window.setTimeout(() => {
         gui.domElement.dispatchEvent(networkChangeEvent)
     }, 500);

@@ -29,9 +29,7 @@ var networkController = (function() {
 
 
         function initGUI() {
-
             networkPropertiesPanel = gui.addFolder("Network Properties");
-
             networkPropertiesPanel.add(network, 'numberOfHosts').listen();
             networkPropertiesPanel.add(network, 'numberOfSubnets').listen();
             networkPropertiesPanel.add(network, 'subnetmask').listen();
@@ -48,7 +46,6 @@ var networkController = (function() {
         }
 
         // network functions
-        
         function calculateAllNetworkProperties() {
             network.numberOfHosts = calculateAllHost();
             network.numberOfSubnets = calculateAllSubnets();
@@ -56,7 +53,6 @@ var networkController = (function() {
             network.supernetmask = calculateSupernetMask();
             print("network change event");
         }
-
         function calculateSupernetMask(subnets) {
             // Calculates the Supernet Mask for network,
             // Must have already calculated Subnet Mask to get hostbits.
@@ -207,7 +203,6 @@ var networkController = (function() {
 
             return totalNumberOfSubnets;
         }
-
         function getLargestSubnet() {
             var allRouters = [];
 
@@ -544,6 +539,15 @@ var networkController = (function() {
                 }
             }
         }
+        function toJSON() {
+            var json = [];
+
+            // Saving all subnets
+            allSubnets.getInstance().getAll().forEach(s => {
+                json.push(s);
+            });
+            return json;
+        }
         
         return {
             initGUI:initGUI,
@@ -559,6 +563,7 @@ var networkController = (function() {
             getSubnetMask:getSubnetMask,
             getSupernetMask:getSupernetMask,
             checkIPAddressInput:checkIPAddressInput,
+            toJSON:toJSON,
         };   
     }
 

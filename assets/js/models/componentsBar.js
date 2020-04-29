@@ -99,7 +99,7 @@ class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
                 loadImage(path, img => {
                     img.width = img.width/2;
                     img.height = img.height/2;
-                    let newcomp = componentController.getInstance().createNewComponent(type, path, img);
+                    let newcomp = componentController.getInstance().createNewComponent(null, type, path, img);
                     
                     compContrInstance.setNewlyCreatedComp(newcomp);
                     // ADDS IT TO ARRAY OF ALL components
@@ -143,8 +143,8 @@ class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
                     c = allConnections.getInstance().getSelectedConnection();
                     c.setType(this.buttons[i].getComponentType());
                 }else {
-                    c = new Con();
-                    c.setType(this.buttons[i].getComponentType());
+                    c = connectionController.getInstance().createNewConnection(this.buttons[i].getComponentType());
+
                     connectionController.getInstance().setDrawConnection(true);
                     allConnections.getInstance().setSelectedConnection(c);
                 }
