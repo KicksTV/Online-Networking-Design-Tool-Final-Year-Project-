@@ -1,6 +1,6 @@
-class Con extends connectionMixin(Device) {
-    constructor(type) {
-        super(type);
+class Connection extends connectionMixin(Device) {
+    constructor(id, type) {
+        super(id, type);
         this.mousePos = [0, 0];
         this._components = [];
         this._interfacePorts = [];

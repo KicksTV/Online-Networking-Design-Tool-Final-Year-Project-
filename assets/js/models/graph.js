@@ -6,7 +6,6 @@ var graphCreator2 = (function () {
         var _adjacencyList = new Map();
 
         function addNode(component) {
-            print(component);
             _adjacencyList.set(component, []);
         }
         function addEdge(src, target) {
@@ -38,7 +37,7 @@ var graphCreator2 = (function () {
             let json = {};
 
             for (let node of _adjacencyList.keys()) {
-                print(node);
+                //print(node);
                 json[node] = [];
 
                 var newValue = [];

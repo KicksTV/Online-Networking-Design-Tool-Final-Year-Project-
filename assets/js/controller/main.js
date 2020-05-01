@@ -61,7 +61,7 @@ window.onload = function() {
                     reader.onload = (function(theFile) {
                         return function(e) {
                             console.log("running loadJSON");
-                            loadJSON(e.target.result, loadComponents);
+                            loadJSON(e.target.result, loadProject);
                         };
                     })(f);
 
@@ -96,16 +96,9 @@ window.onload = function() {
             json.components = data[2];
             json.subnets = data[3];
 
-            print(json.graph);
-
-
-
             // Saves json to file
             console.log(json);
-
             return saveJSON(json, 'network_design_project.json');
-
-
         }else {
             alert("Canvas is empty");
         }
@@ -203,6 +196,8 @@ function setup() {
 
     compBar.getBar().displayAllButtons();
 
+    
+
 }
 function draw() {
     clear();
@@ -235,7 +230,7 @@ function mousePressed() {
         }
 
         // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
-        print(connectionController.getInstance().isSelectingInterfacePort());
+        //print(connectionController.getInstance().isSelectingInterfacePort());
         if (! connectionController.getInstance().isSelectingInterfacePort()) {
             compContrInstance.setSelectedComponent(compContrInstance.getSelectedComponent());
 
@@ -325,97 +320,104 @@ function updateMouseCursor() {
 }
 
 // PROJECT LOADING FUNCTION
-async function loadComponents(array) {
+async function loadProject(array, loadedComponents) {
 
-    // LOADING SAVED SUBNETS
-    array.subnets.forEach(s => {
-        let newSub = new Subnet()
-        newSub = cloneObject(s, newSub)
-        allSubnets.getInstance().add(newSub);
-    });
+    if (! loadedComponents) {
+        loadComponents(array, loadProject);
+    } 
+    else if (loadedComponents) {
 
-    //print(allSubnets.getInstance().getAll());
-    
-    // LOADING COMPONENTS WITHOUT A CONNECTION
-    array.components.forEach((comp) => {
+        // LOADING SAVED SUBNETS
+        array.subnets.forEach(s => {
+            let newSub = new Subnet()
+            newSub = cloneObject(s, newSub)
+            allSubnets.getInstance().add(newSub);
+        });
+
+        
+        // LOADING CONNECTIONS
+        for (let con of array.connections) {
+
+            // new connection
+            var newconnection = connectionController.getInstance().createNewConnection(con.id, con.type);
+            newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
+
+            con._interfacePorts.forEach((ip) => {
+                var index = con._interfacePorts.indexOf(ip);
+                newconnection.addInterfacePort([new Interface(), ip[1]]);
+                Object.assign(newconnection.getInterface(index), ip[0]);
+            });
+            
+            // looping through all the components in the connection
+                for (let comp of con._components) {
+                    print(allComps.getAll());
+                    for await (let getComp of allComps.getAll()) {
+                    
+                        print("compid" + getComp.id);
+                        print("jsonID" + comp);
+                        if (getComp.id == comp) {
+                            
+                            // comp has a connection
+                            getComp.setHasConnection(true);
+
+                             // add comps interfaces
+                            getComp.injectInterfaceSavedData(newconnection.getInterface(con._components.indexOf(comp)));
+
+
+                            print(getComp);
+
+                            newconnection.addComponent(getComp);
+
+                        }
+                    }
+
+                }
+
+            
+               
+            
+
+            print("add connection");
+            // Creating new Edge on graph
+            // graphCreator2.getInstance().addEdge(
+            //     newconnection.getComponent(0).getID(), 
+            //     newconnection.getComponent(1).getID()
+            // );
+
+            allConnections.getInstance().add(newconnection);
+        }
+
+        
+
+        window.setTimeout(() => {
+            gui.domElement.dispatchEvent(networkChangeEvent)
+        }, 500);
+    }
+}
+
+function loadComponents(array, callback) {
+    // LOADING COMPONENTS
+    for (let comp of array.components) {
         loadImage(comp.imgPath, img => {
-            var newcomp = compContrInstance.createNewComponent(comp.id, comp.type, comp.imgPath, img);
+            var  newcomp = compContrInstance.createNewComponent(comp.id, comp.type, comp.imgPath, img);
             newcomp = Object.assign(newcomp, comp);
-
             // Setting size of the component
-            newcomp.setWidth(comp.width);
-            newcomp.setHeight(comp.height);
+
+            newcomp.image.resize(comp.width, comp.height);
 
             allComps.add(newcomp);
+
+            callback(array, true);
+            
         });
-    });
+    }
+}
+
+async function argr(con) {
+
 
     
-    // LOADING CONNECTIONS
-    for (let con of array.connections) {
 
-        // new connection
-        var newconnection = connectionController.getInstance().createNewConnection(con.type);
-        newconnection.setID(con.id);
-        newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
-
-        con._interfacePorts.forEach((ip) => {
-            var index = con._interfacePorts.indexOf(ip);
-            newconnection.addInterfacePort([new Interface(), ip[1]]);
-            Object.assign(newconnection.getInterface(index), ip[0]);
-        });
-        
-        // looping through all the components in the connection
-        for (let comp of con._components) {
-
-            const v = await loadImage(comp.imgPath, img => {
-                var newcomp = compContrInstance.createNewComponent(comp.id, comp.type, comp.imgPath, img);
-                newcomp = Object.assign(newcomp, comp);
-
-                // Setting size of the component
-                newcomp.setWidth(comp.width);
-                newcomp.setHeight(comp.height);
-                
-                // comp has a connection
-                newcomp.setHasConnection(true);
-
-                // add comps interfaces
-                newcomp.injectInterfaceSavedData(newconnection.getInterface(con._components.indexOf(comp)));
-
-                //print(newcomp.getInterface(0));
-
-
-                // Checks if a component instance already exists.
-                var exists = false;
-                var existingComp;
-                if (allComps.get().length > 0) {
-                    allComps.get().forEach((comp) => {
-                        if (comp.getID() == newcomp.getID()) {
-                            exists = true;
-                            existingComp = comp;
-                        }
-                    });
-                }
-                if (exists == false) {
-                    allComps.add(newcomp);
-                }
-                if (newconnection) {
-                    if (exists == true) {
-                        newconnection.addComponent(existingComp);
-                    }else {
-                        newconnection.addComponent(newcomp);
-                    }
-                }
-                print("Loaded File Components");
-            });
-        }
-        print("add connection");
-        allConnections.getInstance().add(newconnection);
-    }
-
-    window.setTimeout(() => {
-        gui.domElement.dispatchEvent(networkChangeEvent)
-    }, 500);
 }
 
 function checkForCopyAndPastEvent() {

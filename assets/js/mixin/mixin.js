@@ -107,20 +107,23 @@ const connectionMixin = superclass => class extends superclass {
         pop();
     }
     isHidden()  {
-        if (this._components[0].getHideConnections() || this._components[1].getHideConnections()) {
+        let comp1 = this._components[0];
+        let comp2 = this._components[1];
+
+        if (comp1.getHideConnections() || comp2.getHideConnections()) {
             return true;
         }
         return false;
     }
     prepareForJson()  {
-        let complist = [];
-        this._components.forEach(c => complist.push(c.prepareForJson()));
+
+        let _comps = [this.getComponent(0).id, this.getComponent(1).id];
 
         let parms = {
             "id": this.id,
             "type": this.type,
             "mousePos": this.mousePos,
-            "_components": complist,
+            "_components": _comps,
             "_interfacePorts": this._interfacePorts,
         }
         return parms;

@@ -8,8 +8,8 @@ var connectionController = (function() {
         var selectingSecondConnection = false;
         var selectingInterface = false;
 
-        function createNewConnection(type) {
-            var newcon = new Con(type);
+        function createNewConnection(id, type) {
+            var newcon = new Connection(id, type);
             
             return newcon;
         }
@@ -20,12 +20,14 @@ var connectionController = (function() {
                 }else {
                     // Prevents displaying incomplete set connections
                     if (i.getComponents()[0] && i.getComponents()[1]) {
-                        // Checks if linking component wishs to hide its connection
-                        if (!(i.isHidden())) {
-                            push(); // Start a new drawing state
-                            strokeWeight(2);
-                            i.defaultDisplay();
-                            pop(); // Restore original state
+                        if (i.getComponents()[0].image && i.getComponents()[1].image) {
+                            // Checks if linking component wishs to hide its connection
+                            if (!i.isHidden()) {
+                                push(); // Start a new drawing state
+                                strokeWeight(2);
+                                i.defaultDisplay();
+                                pop(); // Restore original state
+                            }
                         }
                     }
                 }
@@ -123,6 +125,8 @@ var connectionController = (function() {
             }
         }
         function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
+            print(allConnections.getInstance().getSelectedConnection());
+            
             var isValidConnection = false;
             var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
             
@@ -142,7 +146,7 @@ var connectionController = (function() {
                     isValidConnection = true;
                 }
             }
-            //print(isValidConnectionType1);
+            print("is valid connection: " + isValidConnectionType1);
             return isValidConnection;
         }
         function waitForSelectedPort(interfaces, comp, preComp) {
@@ -178,6 +182,13 @@ var connectionController = (function() {
                 } else {
                     allConnections.getInstance().getSelectedConnection().getInterface(0).subtractPossibleAvailablePort();
                     allConnections.getInstance().getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
+
+                    // Creating new Edge on graph
+                    graphCreator2.getInstance().addEdge(
+                        allConnections.getInstance().getSelectedConnection().getComponent(0).getID(), 
+                        allConnections.getInstance().getSelectedConnection().getComponent(1).getID()
+                    );
+
                     endConnection();
                 }
 

@@ -143,7 +143,7 @@ class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
                     c = allConnections.getInstance().getSelectedConnection();
                     c.setType(this.buttons[i].getComponentType());
                 }else {
-                    c = connectionController.getInstance().createNewConnection(this.buttons[i].getComponentType());
+                    c = connectionController.getInstance().createNewConnection(null, this.buttons[i].getComponentType());
 
                     connectionController.getInstance().setDrawConnection(true);
                     allConnections.getInstance().setSelectedConnection(c);
