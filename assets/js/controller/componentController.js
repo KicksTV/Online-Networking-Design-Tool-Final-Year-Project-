@@ -205,7 +205,7 @@ var componentController = (function() {
                     // Checks if undefined
                     if (typeof comp !== 'undefined') {
                         // Check if hideComponent is true or false
-                        if (!comp.getHideComponent()) {
+                        if (!comp.getHideComponent() && comp.image) {
                             if (isSelectedComp(comp)) {
                                 push(); // Start a new drawing state
                                 stroke(color(0, 0, 255));
@@ -380,12 +380,9 @@ var componentController = (function() {
         }
         function toJSON() {
             var json = [];
-
             // looping through all components to get any that haven't got a connection
             allComps.get().forEach((comp) => {
-                if (!comp.hasConnection()) {
-                    json.push(comp.prepareForJson());
-                }
+                json.push(comp.prepareForJson());
             });
             return json;
         }

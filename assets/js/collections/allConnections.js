@@ -9,11 +9,7 @@ var allConnections = (function() {
         function add(connection) {
             _connections.push(connection);
 
-            // Creating new Edge on graph
-            graphCreator2.getInstance().addEdge(
-                connection.getComponent(0).id, 
-                connection.getComponent(1).id
-            );
+            
         }
 
         function length() {

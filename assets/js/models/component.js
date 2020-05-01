@@ -2,12 +2,12 @@ class Component extends componentMixin(Device) {
     constructor(id, type, path, image) {
         super(id, type);
         this.name = `${type}`;
+        this.image;
         this.imgPath = path;
-        this.image = image;
         this.x = 100;
         this.y = 100;
-        this.width = this.image.width;
-        this.height = this.image.height;
+        this.width;
+        this.height;
         this.aspectRatio = [];
         this.centerPos = [];
         this.textSize = 10;
@@ -19,8 +19,13 @@ class Component extends componentMixin(Device) {
         this.guiParams = null;
         this.validLinkingComponents = ["Twisted Pair"];
 
-        this.aspectRatio[0] = this.image.width;
-        this.aspectRatio[1] = this.image.height;
+        if (image) {
+            this.image = image;
+            this.width = this.image.width;
+            this.height = this.image.height;
+            this.aspectRatio[0] = this.image.width;
+            this.aspectRatio[1] = this.image.height;
+        }
     }
     getImgPath() {
         return this.imgPath;
@@ -28,11 +33,13 @@ class Component extends componentMixin(Device) {
     setImgPath(path) {
         this.imgPath = path;
     }
-    getImage() {
+    getIMG() {
         return this.image;
     }
-    setImage(val) {
+    setIMG(val) {
         this.image = val;
+        this.aspectRatio[0] = this.image.width;
+        this.aspectRatio[1] = this.image.height;
         return this.image;
     }
     getXpos() {
@@ -118,6 +125,7 @@ class Component extends componentMixin(Device) {
     }
     checkValidLinkingComponent(comp) {
         var isValid = false;
+        print(comp.getType());
         this.validLinkingComponents.forEach((c)=> {
             if (comp.getType() == c) {
                 isValid = true;
