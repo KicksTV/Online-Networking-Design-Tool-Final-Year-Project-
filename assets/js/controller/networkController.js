@@ -11,22 +11,10 @@ var networkController = (function() {
         };
         var network = new networkObject();
 
-
-        var largestSubnet = 0;
-        var numberOfEndDevices = 0;
-        var previousComp = null;
-        var currentRouter = null;
-
-        var numberOfConnections = 0;
-        var traveledConnections = [];
-        var previousConnection = null;
-        
         var hostBits = 0;
-        var currSubnet;
 
         // dat.GUI
         var networkPropertiesPanel = null;
-
 
         function initGUI() {
             networkPropertiesPanel = gui.addFolder("Network Properties");
@@ -194,8 +182,8 @@ var networkController = (function() {
             if (connections != null) {
                 connections = connections.filter((connections, index, self) =>
                     index === self.findIndex((c) => (
-                        c.getComponent(0).getID() === connections.getComponent(0).getID() &&
-                        c.getComponent(1).getID() === connections.getComponent(1).getID()
+                        c.getComponent(0).getID() === connections.getComponent(0).id &&
+                        c.getComponent(1).getID() === connections.getComponent(1).id
                     ))
                 );
                 totalNumberOfSubnets += connections.length;
@@ -204,185 +192,58 @@ var networkController = (function() {
             return totalNumberOfSubnets;
         }
         function getLargestSubnet() {
-            var allRouters = [];
+            var largestSubnet = 0;
+            //Get all routers
+            var allRouters = allComps.get().filter(comp => comp.getType() == "Router");
 
-            // keeps record of which connections have been traveled
-            traveledConnections = [];
+            for (let router of allRouters) {
+                let connections = allConnections.getInstance().getConnectionsRelatedToComp(router);
+                for (let nextConnection of connections) {
+                    var subnetHostSize = 0;
+                    var searchingComp;
 
-            // stores the largest subnet
-            largestSubnet = 0;
+                    var currSubnet;
+                    var foundSubnet = allSubnets.getInstance().toList().find(subnet => subnet.gatewayRouterID == router.getID() && subnet.connectionID == nextConnection.getID());
+                   
+                    // Creating or finding subnet object
+                    if (foundSubnet == null) {
 
-            // getting all routers
-            allComps.get().forEach((comp) => {
-                if (comp.getType() == "Router") {
-                    allRouters.push(comp);
-                }
-            });
+                        currSubnet = new Subnet();
+                        currSubnet.gatewayRouterID = router.getID();
+                        currSubnet.connectionID = nextConnection.getID();
+                        allSubnets.getInstance().add(currSubnet);
 
-            allRouters.forEach((r) => {
-                // get all connections related to a router
-                var routerConnections = allConnections.getInstance().getConnectionsRelatedToComp(r);
-
-                currentRouter = r;
-                previousComp = r;
-                routerConnections.forEach((c) => {
-
-                    // reset counter for hosts per subnet
-                    numberOfEndDevices = 0;
-                    
-                    // comp should not equal a router
-                    var comp = null;
-                    if (c.getComponent(0).getType() != "Router") {
-                        comp = c.getComponent(0);
                     }
-                    else if (c.getComponent(1).getType() != "Router") {
-                        comp = c.getComponent(1);
+                    else {
+                        currSubnet = foundSubnet;
+                        currSubnet.gatewayRouterID = router.getID();
+                        currSubnet.connectionID = nextConnection.getID();
                     }
-                    
-                    if (comp != null) {
-                        // Check if subnet already exists
-                        var foundSubnet = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == r.getID() && x.connection == c.getID());
-                        if (foundSubnet == null) {
-                            currSubnet = new Subnet();
-                            currSubnet.gatewayRouterID = r.getID();
-                            currSubnet.connection = c.getID();
-                            allSubnets.getInstance().add(currSubnet);
-                            //print("---new subnet created---");
-                            //print("new subnet ", currSubnet);
+
+                    // Getting adjacent component to router
+                    if (nextConnection.getComponent(0).type != 'Router') {
+                        searchingComp = nextConnection.getComponent(0);
+                    }
+                    else if (nextConnection.getComponent(1).type != 'Router') {
+                        searchingComp = nextConnection.getComponent(1);
+                    }
+
+                    // if component exists, continue to find end devices.
+                    if (searchingComp) {
+                        let result = Graph.getInstance().depthFirstSearchForHostDevices(searchingComp.id, componentController.getInstance().isEndDevice);
+                        if (result != null) {
+                            subnetHostSize = result.length;
                         }
-                        else {
-                            //print("---found previous subnet created---");
-
-                            currSubnet = foundSubnet;
-                            currSubnet.gatewayRouterID = r.getID();
-                            currSubnet.connection = c.getID();
-                        }
-
-                        // start traveling subnet, passes in comp connected to router e.g. switch
-                        travelSubnetTree(comp, comp);
+                        if (subnetHostSize > largestSubnet) {
+                            largestSubnet = subnetHostSize;
+                        } 
+                        currSubnet.setEndDevices(result);
                     }
-                });
-            });
-
-            //print("largest Subnet: " +largestSubnet);
-
-            return largestSubnet;
-        }
-        function travelSubnetTree(currentComp, rootComp) {
-            
-            // check if all connections have been iterated through
-            var connections = allConnections.getInstance().getConnectionsRelatedToComp(currentComp);
-            numberOfConnections = connections.length;
-            var currentConnection = null;
-
-            //print("current comp: "+currentComp.getComponentName());
-            //traveledConnections.forEach((c) => {
-                //print("Traveled connections: "+c.getComponent(0).getComponentName() + " - " + c.getComponent(1).getComponentName());
-            //});
-            //print("numberOfEndDevices: "+numberOfEndDevices)
-
-            connections.forEach((c) => {
-                //print("----");
-                //print("checking connection: "+c.getComponent(0).getComponentName() + " - " +c.getComponent(1).getComponentName());
-                //print(hasBeenTraveled(c), isPreviousRoute(c));
-                if (! hasBeenTraveled(c) && !isPreviousRoute(c)) {
-                    //print("valid")
-                    currentConnection = c;
                 }
-            });
 
-            //print("ids: ", previousComp.getID(), currentRouter.getID());
-            //print(previousConnection.getComponent(0).getComponentName(),previousConnection.getComponent(1).getComponentName());
-            //print(currentConnection, hasBeenTraveled(previousConnection));
-            if (currentConnection == null && hasBeenTraveled(previousConnection)) {
-                //print("finished");
-                if (largestSubnet < numberOfEndDevices) {
-                    largestSubnet = numberOfEndDevices;
-                }
-                return;
-            } else {
-                // Checking for next connection
-                findAllEndDevices(currentComp, rootComp);
-            }
-            
-        }
-        function findAllEndDevices(currentComp, rootComp) {
-            var connections = allConnections.getInstance().getConnectionsRelatedToComp(currentComp);
-            var numberOfConnections = connections.length;
-
-            var currentConnection = null;
-            //print("--- finding all end devies ---");
-            connections.forEach((c) => {
-                //print("----");
-                //print("checking connection: "+c.getComponent(0).getComponentName() + " - " +c.getComponent(1).getComponentName());
-                if (! hasBeenTraveled(c) && !isPreviousRoute(c)) {
-                    //print("valid");
-                    currentConnection = c;
-                }
-            });
-            // checks if there are any end devices.
-            var nextComp = null;
-            if (currentConnection == null && previousConnection != null) {
-                //print("all end devices found");
-                traveledConnections.push(previousConnection);
-                previousComp = currentRouter;
-                travelSubnetTree(rootComp, rootComp);
-            } else {
-                if (currentConnection.getComponent(0).getID() != currentComp.getID()) {
-                    nextComp = currentConnection.getComponent(0);
-                } else {
-                    nextComp = currentConnection.getComponent(1);
-                }
-            }
-
-            //print("nextComp: "+nextComp.getComponentName());
-            if (nextComp) {
-                if (compContrInstance.isEndDevice(nextComp)) {
-                    numberOfEndDevices++;
-                    traveledConnections.push(currentConnection);
-                    previousComp = currentRouter;
-
-                    // ADDING END DEVICE TO SUBNET
-
-                    // CHECK IF DEVICE ALREADY EXISTS IN SUBNET
-                    allSubnets.getInstance().toList().forEach(s => {
-                        if (! s.endDevices.find(d => d == nextComp.getID())) {
-                            if (currSubnet != null) {
-                                //print(currSubnet);
-                                //print(nextComp.getID());
-                                currSubnet.add(nextComp.getID());
-                            }
-                        }
-                    });
-                    
-
-                    travelSubnetTree(rootComp, rootComp);
-                
-                } else {
-                    previousComp = currentComp;
-                    travelSubnetTree(nextComp, rootComp);
-                }
-            }
-        }   
-        function hasBeenTraveled(connection) {
-            var hasBeenTraveled = false;
-            if (traveledConnections.length != 0) {
-                traveledConnections.forEach((c) => {
-                    if (c === connection) {
-                        hasBeenTraveled = true;
-                    }
-                });
-            }
-            return hasBeenTraveled;
-        }
-        function isPreviousRoute(connection) {
-            var isPreviousRoute = false;
-            //print("previous route check: "+connection.getComponent(0).getID(), connection.getComponent(1).getID(), previousComp.getID());
-            if (connection.getComponent(0).getID() === previousComp.getID() || connection.getComponent(1).getID() === previousComp.getID()) {
-                previousConnection = connection;
-                isPreviousRoute = true;
-            }
-            return isPreviousRoute;
+            }  
+            print("largest Subnet: " + largestSubnet);
+            return largestSubnet;       
         }
         function binaryToDecimal(IPaddress) {
             var decimalRepresentation = "";
@@ -498,7 +359,7 @@ var networkController = (function() {
                 // Finding subnet related to selected component
                 var foundSubnetforComp = null;
                 allSubnets.getInstance().toList().forEach(s => {
-                    var found = s.endDevices.find(x => x == currentSelectedComp.getID());
+                    var found = s.endDevices.find(x => x == currentSelectedComp);
                     if (found != null) {
                         foundSubnetforComp = s;
                     }
@@ -541,9 +402,14 @@ var networkController = (function() {
         }
         function toJSON() {
             var json = [];
-
+            var endDevicesID = [];
             // Saving all subnets
             allSubnets.getInstance().getAll().forEach(s => {
+                for (var endDevice of s.endDevices) {
+                    endDevicesID.push(endDevice.id);
+                }
+
+                s.endDevices = endDevicesID;
                 json.push(s);
             });
             return json;
