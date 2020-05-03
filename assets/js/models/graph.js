@@ -1,9 +1,10 @@
-var graphCreator2 = (function () {
+var Graph = (function () {
     var instance;
     function init() {
 
         // Graph
         var _adjacencyList = new Map();
+        var foundNodesFromSearch = [];
 
         function addNode(component) {
             _adjacencyList.set(component, []);
@@ -13,16 +14,29 @@ var graphCreator2 = (function () {
             _adjacencyList.get(target).push(src);
     
         }
-        function setAllEdgesFor(node, adjNodes) {
-            //print(_adjacencyList.get(node));
-            //print(_adjacencyList);
-            // print(node);
-            // print(adjNodes);
-            _adjacencyList.set(node, adjNodes);
-            //print(_adjacencyList);
-        }
         function getNodes() {
-            return _adjacencyList;
+            return _adjacencyList.entries();
+        }
+        function updateGraph() {
+            for (const [key, value] of _adjacencyList.entries()) {
+                let exists = false;
+                let foundComp = allComps.getAll().find(comp => comp.id == key);
+                if (foundComp) {
+                    exists = true;
+                }
+                if (! exists) {
+                    for (let adjComp of value) {
+                        let adjCompValues = _adjacencyList.get(adjComp);
+                        const index = adjCompValues.indexOf(key);
+                        if (index > -1) {
+                            adjCompValues.splice(index, 1);
+                            _adjacencyList.set(adjComp, adjCompValues);
+                        }
+                    }
+                    _adjacencyList.delete(key);
+                }
+            }
+            print("Updated Graph");
         }
         function set(index, obj) {
             _adjacencyList[index] = obj;
@@ -32,6 +46,41 @@ var graphCreator2 = (function () {
         }
         function toList() {
             return _adjacencyList;
+        }
+        function depthFirstSearchForHostDevices(start, searchCase, visited = new Set()) {
+
+            // Resetting Search
+            if (visited.size == 0) {
+                foundNodesFromSearch = [];
+            }
+            visited.add(start);
+
+            const destinations = _adjacencyList.get(start);
+
+
+
+            for (const destination of destinations) {
+
+                // Prevents from travelling up the graph
+                if (! destination.includes("Router")) {
+                    // Retrieves component object
+                    var adjacentComp = allComps.getAll().find(nextComp => nextComp.id.toString() === destination.toString());
+                    if (adjacentComp) {
+                        if (searchCase(adjacentComp) && ! visited.has(destination)) {
+                            foundNodesFromSearch.push(adjacentComp);
+                        }
+                    }
+                    if (! visited.has(destination)) {
+                        depthFirstSearchForHostDevices(destination, searchCase, visited);
+                    }
+                }
+            }
+
+            if (foundNodesFromSearch) {
+                return foundNodesFromSearch;
+            } else {
+                return null;
+            }
         }
         function toJSON() {
             let json = {};
@@ -54,8 +103,9 @@ var graphCreator2 = (function () {
             getNodes:getNodes,
             set:set,
             addNode:addNode,
-            setAllEdgesFor:setAllEdgesFor,
             addEdge:addEdge,
+            updateGraph:updateGraph,
+            depthFirstSearchForHostDevices:depthFirstSearchForHostDevices,
             length:length,
             toList:toList,
             toJSON:toJSON,
@@ -71,46 +121,3 @@ var graphCreator2 = (function () {
         }
     }
 })();
-
-graphCreator = (uni = false) => {
-    const nodes = []
-    const edges = []
-    return {
-        uni,
-        nodes,
-        edges,
-        addNode(id) {
-            nodes.push(nodeCreator(id))  
-        },
-        searchNode(id) {
-            return nodes.find(n => n.id === id)
-        },
-        addEdge(idOne, idTwo) {
-            const a = this.searchNode(idOne)
-            const b = this.searchNode(idTwo)
-    
-            a.addNeighbors(b)
-            if (!uni) {
-            b.addNeighbors(a)
-            }
-            edges.push(`${idOne}${idTwo}`)
-        },
-        display() {
-            return nodes.map(({neighbors, id}) => {
-                let output = `${id}`
-                if (neighbors.length) {
-                output += ` => ${neighbors.map(node => node.id).join(' ')}`
-                }
-                return output
-            }).joing('\n')
-        },
-        depthFirstSearch(startingNode, neighborVisit) {
-            const firstNode = this.searchNode(startingNode)
-            const visitedNode = nodes.reduce((sum, node) => {
-                sum[node.id] = false
-                return sum
-            }, {})
-            // Write the next code here
-        },
-    }
-}

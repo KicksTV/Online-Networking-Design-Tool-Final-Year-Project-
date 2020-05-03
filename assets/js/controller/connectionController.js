@@ -184,7 +184,7 @@ var connectionController = (function() {
                     allConnections.getInstance().getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
 
                     // Creating new Edge on graph
-                    graphCreator2.getInstance().addEdge(
+                    Graph.getInstance().addEdge(
                         allConnections.getInstance().getSelectedConnection().getComponent(0).getID(), 
                         allConnections.getInstance().getSelectedConnection().getComponent(1).getID()
                     );

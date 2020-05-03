@@ -39,6 +39,8 @@ var componentController = (function() {
                 newcomp.setValidLinkningComponents([]);
             }
             else if (newcomp.getType() == "Router") {
+                newcomp.addValidLinkningComponent("Fibre");
+
                 newcomp.addInterface(new Interface("Fast Ethernet", 4));
                 newcomp.addInterface(new Interface("Serial", 2));
             }
@@ -46,17 +48,17 @@ var componentController = (function() {
                 newcomp.addInterface(new Interface("Fast Ethernet", 12));
             }
             else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
-                    newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
-                    newcomp.getType() == "Access Point") {
+                newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
+                newcomp.getType() == "Access Point") {
                 newcomp.addInterface(new Interface("Fast Ethernet", 1));
             }
 
-            graphCreator2.getInstance().addNode(newcomp.id);
+            Graph.getInstance().addNode(newcomp.id);
 
             return newcomp;
         }
         function cloneComponent(obj) {
-            let newcomp = createNewComponent(obj.getType(), obj.getImgPath(), obj.getImage())
+            let newcomp = createNewComponent(obj.getType(), obj.getImgPath(), obj.getIMG())
             // attributes we wish to copy
             let attributes = ["type", "imgPath", "image", "hideComponent", "hideConnections", 
                               "componentName", "textSize", "validLinkingComponents", "width",
@@ -246,9 +248,9 @@ var componentController = (function() {
         }
         function isEndDevice(comp) {
             var isEndDevice = false;
-            if (comp.getType() == "PC" || comp.getType() == "Laptop" || 
-                comp.getType() == "Printer" || comp.getType() == "Smartphone" ||
-                comp.getType() == "Server") {
+            if (comp.type == "PC" || comp.type == "Laptop" || 
+                comp.type == "Printer" || comp.type == "Smartphone" ||
+                comp.type == "Server") {
 
                     isEndDevice = true;
             }

@@ -7,9 +7,11 @@ class Subnet {
 
 
         // Only temp NEEDS TO BE CHANGED to ID of CONNECTION!!
-        this.connection = null;
+        this.connectionID = null;
     }
-
+    setEndDevices(array) {
+        this.endDevices = array;
+    }
     add(deviceID) {
         this.endDevices.push(deviceID);
     }
