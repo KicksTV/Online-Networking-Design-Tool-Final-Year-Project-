@@ -154,6 +154,13 @@ a>.card:hover {
     position: fixed;
     height: 30px;
     background-color: #cccccc;
+    max-height: 40px;
+    transition: max-height 0.30s ease-out;
+    transition-delay: 2s;
+}
+#bottomPanel:hover {
+    max-height: 300px;
+    transition: max-height 0.25s ease-in;
 }
 #bottomPanelTitleContainer {
     background-color: #eeeeee;

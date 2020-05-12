@@ -41,16 +41,16 @@ var componentController = (function() {
             else if (newcomp.getType() == "Router") {
                 newcomp.addValidLinkningComponent("Fibre");
 
-                newcomp.addInterface(new Interface("Fast Ethernet", 4));
-                newcomp.addInterface(new Interface("Serial", 2));
+                newcomp.addInterface(new Interface(null, "Fast Ethernet", 4));
+                newcomp.addInterface(new Interface(null, "Serial", 2));
             }
             else if (newcomp.getType() == "Switch") {
-                newcomp.addInterface(new Interface("Fast Ethernet", 12));
+                newcomp.addInterface(new Interface(null, "Fast Ethernet", 12));
             }
             else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
                 newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
                 newcomp.getType() == "Access Point") {
-                newcomp.addInterface(new Interface("Fast Ethernet", 1));
+                newcomp.addInterface(new Interface(null, "Fast Ethernet", 1));
             }
 
             Graph.getInstance().addNode(newcomp.id);
@@ -58,10 +58,10 @@ var componentController = (function() {
             return newcomp;
         }
         function cloneComponent(obj) {
-            let newcomp = createNewComponent(obj.getType(), obj.getImgPath(), obj.getIMG())
+            let newcomp = createNewComponent(null, obj.getType(), obj.getImgPath(), obj.getIMG())
             // attributes we wish to copy
-            let attributes = ["type", "imgPath", "image", "hideComponent", "hideConnections", 
-                              "componentName", "textSize", "validLinkingComponents", "width",
+            let attributes = ["type", "imgPath", "image", "hide", "hideConnections", 
+                              "name", "textSize", "validLinkingComponents", "width",
                               "height"]
             // goes through all attributes of obj and copies its value
             for (let key in obj) {
@@ -380,6 +380,16 @@ var componentController = (function() {
         function hasPastedComponent() {
             return pasted;
         }
+
+        function makePortAvailable(comp, interfaceAndPort) {
+            // print("interfaceAndPort", interfaceAndPort);
+            let interface = interfaceAndPort[0];
+            let number = interfaceAndPort[1];
+            let compInterface = comp.getInterfaces().find(thisInterface => thisInterface.id === interface.id);
+            interface.portAvailability[number] = true;
+            compInterface.portAvailability[number] = true;
+        }
+
         function toJSON() {
             var json = [];
             // looping through all components to get any that haven't got a connection
@@ -429,6 +439,7 @@ var componentController = (function() {
             pasteSelectedComponents:pasteSelectedComponents,
             hasCopiedComponent:hasCopiedComponent,
             hasPastedComponent:hasPastedComponent,
+            makePortAvailable:makePortAvailable,
             toJSON:toJSON,
         };   
     }

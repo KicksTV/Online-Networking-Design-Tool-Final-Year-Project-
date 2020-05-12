@@ -5,9 +5,12 @@ class Device {
         this._interfaces = [];
 
         if (!id) {
-            var val = Math.floor(1000 + Math.random() * 900000);
-            this.id = `${this.type}${val}`;
-        } else {
+            let val = Math.floor(1000 + Math.random() * 900000);
+            let type = this.type;
+            type = type.replace(/\s/g, "_");
+            this.id = `${type}${val}`;
+        }
+        else if (id != null) {
             this.id = id;
         }
     }

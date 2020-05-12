@@ -4,10 +4,36 @@ var networkController = (function() {
     function init() {
      
         var networkObject = function () {
-            this.numberOfHosts = calculateAllHost();
-            this.numberOfSubnets = calculateAllSubnets();
-            this.subnetmask = calculateSubnetMask();
-            this.supernetmask = calculateSupernetMask(this.numberOfSubnets);
+            this.hosts = 0;
+            this.subnets = 0;
+
+            // User inputted network properties
+            this.subnetMask = "255.255.255.252";
+            this.supernetMask = "255.255.255.248";
+
+
+            this.availableHostAddresses;
+            this.availableSubnets;
+            this.totalHostAddresses = calculateTotalHostAddresses(this.subnetMask);
+            this.totalSubnets = calculateTotalNumberSubnets(this.supernetMask);
+
+            this.calculatedSubnetmask = calculateSubnetMask();
+            this.calculatedSupernetmask = calculateSupernetMask(this.subnets);
+
+            this.autoCalculateMasks = true;
+
+            this.calculateNetworkMasks = () => {
+                let subnetmask = calculateSubnetMask();
+                this.subnetMask = subnetmask;
+                this.calculatedSubnetmask = subnetmask;
+                this.totalHostAddresses = calculateTotalHostAddresses(subnetmask);
+
+
+                let supernetmask = calculateSupernetMask(this.subnets);
+                this.supernetMask = subnetmask;
+                this.calculatedSupernetmask = supernetmask;
+                this.totalSubnets = calculateTotalNumberSubnets(supernetmask);
+            }
         };
         var network = new networkObject();
 
@@ -18,27 +44,138 @@ var networkController = (function() {
 
         function initGUI() {
             networkPropertiesPanel = gui.addFolder("Network Properties");
-            networkPropertiesPanel.add(network, 'numberOfHosts').listen();
-            networkPropertiesPanel.add(network, 'numberOfSubnets').listen();
-            networkPropertiesPanel.add(network, 'subnetmask').listen();
-            networkPropertiesPanel.add(network, 'supernetmask').listen();
-
+            var controllers = createNetworkPropertiesPanel();
             networkPropertiesPanel.open();
+
+            initGuiControllerEvents(controllers);
+        }
+        function createNetworkPropertiesPanel() {
+            networkPropertiesPanel.add(network, 'hosts').listen();
+            networkPropertiesPanel.add(network, 'subnets').listen();
+            networkPropertiesPanel.add(network, 'totalHostAddresses').listen();
+            networkPropertiesPanel.add(network, 'totalSubnets').listen();
+
+            var subnetController;
+            var supernetController;
+
+            if (! network.autoCalculateMasks) {
+                subnetController = networkPropertiesPanel.add(network, 'subnetMask').listen();
+                supernetController = networkPropertiesPanel.add(network, 'supernetMask').listen();
+            } else {
+                subnetController = networkPropertiesPanel.add(network, 'calculatedSubnetmask').listen();
+                supernetController = networkPropertiesPanel.add(network, 'calculatedSupernetmask').listen();
+            }
+
+            networkPropertiesPanel.add(network, 'calculateNetworkMasks');
+            var autoCalculateController = networkPropertiesPanel.add(network, 'autoCalculateMasks');
+
+
+            return [subnetController, supernetController, autoCalculateController];
+        }
+        function initGuiControllerEvents(controllers) {
+            
+            var subnetController = controllers[0];
+            subnetController.onChange(function(value) {
+                // Fires on every change, drag, keypress, etc.
+                if (! isValidSubnetMask(value)) {
+                    this.domElement.firstElementChild.style.color = "red";
+                } else {
+                    this.domElement.firstElementChild.style.color = "#1ed36f";
+                }
+                
+            });
+            subnetController.onFinishChange(function(value) {
+                // Fires when a controller loses focus.
+                // alert("The new value is " + value);
+
+                var oldValue = this.initialValue;
+
+                network.subnetMask = value;
+
+                if (isValidSubnetMask(value)) {
+                    this.domElement.firstElementChild.style.color = "#1ed36f";
+                } else {
+                    network.subnetMask = oldValue;
+                    this.domElement.firstElementChild.style.color = "orange";
+                }
+
+                window.setTimeout(() => {
+                    this.domElement.firstElementChild.style.color = "1ed36f";
+                }, 2000);
+            });
+
+
+
+            var supernetController = controllers[1];
+            supernetController.onChange(function(value) {
+                // Fires on every change, drag, keypress, etc.
+
+                if (! isValidSupernetMask(value)) {
+                    this.domElement.firstElementChild.style.color = "red";
+                } else {
+                    this.domElement.firstElementChild.style.color = "#1ed36f";
+                }
+            });
+              
+            supernetController.onFinishChange(function(value) {
+                // Fires when a controller loses focus.
+
+                var oldValue = this.initialValue;
+
+                network.supernetMask = value;
+
+                if (isValidSupernetMask(value)) {
+                    this.domElement.firstElementChild.style.color = "#1ed36f";
+                } else {
+                    network.supernetMask = oldValue;
+                    this.domElement.firstElementChild.style.color = "orange";
+                }
+
+                window.setTimeout(() => {
+                    this.domElement.firstElementChild.style.color = "1ed36f";
+                }, 2000);
+
+            });
+
+
+            var autoCalculateController = controllers[2];
+            autoCalculateController.onChange(function(value) {
+                // Fires on every change, drag, keypress, etc.
+                if (value) {
+                    // Automatically appply calculated network parameters and listen to network changes
+
+                    networkPropertiesPanel.remove();
+                    networkPropertiesPanel.remove();
+                } else {
+                    // Only listen to user input network parameters
+                }
+            });
+
+
         }
 
         function getSubnetMask() {
+<<<<<<< HEAD
             return subnetmask;
         }
         function getSupernetMask() {
             return supernetmask;
+=======
+            return network.calculatedSubnetmask;
+        }
+        function getSupernetMask() {
+            return network.calculatedSupernetmask;
+>>>>>>> improving network properties panel, but still needs some work
         }
 
         // network functions
         function calculateAllNetworkProperties() {
-            network.numberOfHosts = calculateAllHost();
-            network.numberOfSubnets = calculateAllSubnets();
-            network.subnetmask = calculateSubnetMask();
-            network.supernetmask = calculateSupernetMask();
+            network.hosts = calculateAllHost();
+            network.subnets = calculateAllSubnets();
+
+            network.calculateNetworkMasks();
+
+            print(network);
             print("network change event");
         }
         function calculateSupernetMask(subnets) {
@@ -47,24 +184,33 @@ var networkController = (function() {
             
             // var subnets = 16;
             //var x = 2;
-            var subnetBits = 1;
+            var supernetBits = 1;
+
+            // print("-----------------");
+
+            // print("subnets", subnets);
 
             //print("Number of subnets: " + subnets);
-            print("hostBits: " +hostBits);
+            // print("hostBits: " +hostBits);
 
             // calculating the necessary subnet bits needed
-            var i=subnetBits+hostBits;
+            // Need to -1 to start from 0
+            var i=(supernetBits+hostBits)-1;
+
             while (subnets > Math.pow(2, i)) {
                 i++;
-                subnetBits = i-hostBits;
+                // Adding back the 1 that was taken away earlier
+                supernetBits = (i-hostBits) + 1;
             }
 
-            print("SubnetBits: " + subnetBits);
+            print("supernetBits",supernetBits);
 
             // Total number of bits in an IP address
             var totalBits = 32;
 
-            var slashValue = totalBits - (subnetBits + hostBits);
+            var slashValue = totalBits - (supernetBits + hostBits);
+
+            print("slashValue", slashValue);
 
             // calculates the decimal representation of slash value.
             var decimalNotationOfSupernetmask = calculateDecimalFromSlashValue(slashValue);
@@ -163,12 +309,39 @@ var networkController = (function() {
             return totalNumberOfHosts;
         }
 
+        function calculateTotalHostAddresses(subnetmask) {
+            var octets = subnetmask.split(".");
+            var totalNumberOfHosts = 0;
+
+            octets.forEach(octet => {
+                if (octet != "255") {
+                    var conversionToBinary = (parseInt(octet) >>> 0).toString(2);
+                    // print("binary", conversionToBinary);
+                    let length = conversionToBinary.length;
+                    let index = 1;
+                    for (let char of conversionToBinary) {
+                        if (char == '0') {
+                            let bitPosition = length-index;
+                            // print(bitPosition);
+                            totalNumberOfHosts += Math.pow(2, bitPosition)
+                        }
+                        index++;
+                    }   
+                }
+            });
+            // Calculating totalNumberOfHosts with the addition of subnetID and broadcastID
+            totalNumberOfHosts = totalNumberOfHosts - 2;
+
+            print("totalNumberOfHosts", totalNumberOfHosts);
+            return totalNumberOfHosts;
+        }
+
         // Calculates number of subnets currently on canvas
         function calculateAllSubnets() {
             var totalNumberOfSubnets = 0;
             var connections = [];
-            
-            allComps.get().forEach((comp) => {
+        
+            for (let comp of allComps.getAll()) {
                 //print(comp.getComponentName());
                 //print(allConnections.getInstance().getConnectionsRelatedToComp(comp));
                 if (comp.getType() == "Router") {
@@ -177,7 +350,7 @@ var networkController = (function() {
                         connections.push(con);
                     });
                 }
-            });
+            }
             //print(connections);
             if (connections != null) {
                 connections = connections.filter((connections, index, self) =>
@@ -189,8 +362,40 @@ var networkController = (function() {
                 totalNumberOfSubnets += connections.length;
             }
 
+            print("totalNumberOfSubnets", totalNumberOfSubnets);
+
             return totalNumberOfSubnets;
         }
+
+
+        function calculateTotalNumberSubnets(supernetmask) {
+            var octets = supernetmask.split(".");
+            var totalNumberOfSubnets = 0;
+
+            octets.forEach(octet => {
+                if (octet != "255") {
+                    var conversionToBinary = (parseInt(octet) >>> 0).toString(2);
+                    // print("binary", conversionToBinary);
+                    let length = conversionToBinary.length;
+                    let index = 1;
+                    // print("hostBits", hostBits);
+                    // print(conversionToBinary);
+                    for (let char of conversionToBinary) {
+                        let bitPosition = length-index;
+                        // print(bitPosition);
+                        if (char == '0' && bitPosition > 1) {
+                            // print(bitPosition);
+                            totalNumberOfSubnets += Math.pow(2, bitPosition)
+                        }
+                        index++;
+                    }   
+                }
+            });
+            // print("totalNumberOfSubnets", totalNumberOfSubnets);
+            return totalNumberOfSubnets;
+        }
+
+
         function getLargestSubnet() {
             var largestSubnet = 0;
             //Get all routers
@@ -237,7 +442,7 @@ var networkController = (function() {
                         if (subnetHostSize > largestSubnet) {
                             largestSubnet = subnetHostSize;
                         } 
-                        currSubnet.setEndDevices(result);
+                        currSubnet.createSubnet(result);
                     }
                 }
 
@@ -295,6 +500,141 @@ var networkController = (function() {
             return subnetIDDecimal;
         }
 
+        function getBroadcastID(subnetID, subnetmask) {
+            var subnetIDBinary = decimalToBinary(subnetID);
+            var SubnetMaskBinary = decimalToBinary(subnetmask);
+
+            // Looping through octets and each binary character
+            var result = "";
+            for (var i=0; i<4; i++) {
+                var SubnetIDoctect = subnetIDBinary.split(".")[i];
+                var SubnetMaskoctect = SubnetMaskBinary.split(".")[i];
+
+                for (var l=0;l<8;l++) {
+                    if (parseInt(SubnetMaskoctect.charAt(l), 2) == 0) {
+                        result += 1;
+                    } else {
+                        result += (parseInt(SubnetIDoctect.charAt(l), 2) & parseInt(SubnetMaskoctect.charAt(l), 2)).toString();
+                    }
+                }
+            }
+
+            // splits result back into 4 octets
+            var broadcastIDBinary = "";
+            for (var i=0; i<result.length;i+=8) {
+                var octet = result.substring(i,i+8);
+                broadcastIDBinary += octet+".";
+            }
+
+            // Removes trailing "."
+            broadcastIDBinary = broadcastIDBinary.slice(0, -1);
+
+            var broadcastIDDecimal = binaryToDecimal(broadcastIDBinary);
+
+            return broadcastIDDecimal;
+
+        }
+        function isValidInput(value) {
+            var isValid = false;
+            var regex = RegExp("(?:[0-9]{1,3}\.){3}[0-9]{1,3}");
+            if (regex.exec(value)) {
+                isValid = true;
+            } else {
+                $('#warningConnectionToastAlert').toast('show');
+                $('#warningConnectionToastAlert .toast-body').text(
+                    "Error: Invalid input! Example SubnetMask: 255.255.255.240"
+                );
+            }
+            return isValid;
+        }
+
+        function isValidSubnetMask(value) {
+            var isValid = false;
+            if (isValidInput(value)) {
+                if (network.calculatedSubnetmask) {
+
+                    var calOctets = network.calculatedSubnetmask.split(".");
+                    var enteredOctets = value.split(".");
+
+                    var validFirstOctet = false;
+                    var validSecondOctet = false;
+                    var validThirdOctet = false;
+                    var validForthOctet = false;
+
+
+                    if (enteredOctets.length == 4) {
+                        if (calOctets[0] >= enteredOctets[0]) {
+                            validFirstOctet = true;
+                        }
+                        if (calOctets[1] >= enteredOctets[1]) {
+                            validSecondOctet = true;
+                        }
+                        if (calOctets[2] >= enteredOctets[2]) {
+                            validThirdOctet = true;
+                        }
+                        if (calOctets[3] >= enteredOctets[3]) {
+                            validForthOctet = true;
+                        }
+
+                        if (validFirstOctet && validSecondOctet && validThirdOctet && validForthOctet) {
+                            isValid = true;
+                        } else {
+                            $('#warningConnectionToastAlert').toast('show');
+                            $('#warningConnectionToastAlert .toast-body').text(
+                                "Error: Require more host bits!"
+                            );
+                        }
+                    }
+
+                }
+            }
+            // print(isValid);
+            return isValid;
+        }
+
+        function isValidSupernetMask(value) {
+            var isValid = false;
+            if (isValidInput(value)) {
+                if (network.calculatedSupernetmask) {
+
+                    var calOctets = network.calculatedSupernetmask.split(".");
+                    var enteredOctets = value.split(".");
+
+                    var validFirstOctet = false;
+                    var validSecondOctet = false;
+                    var validThirdOctet = false;
+                    var validForthOctet = false;
+
+
+                    if (enteredOctets.length == 4) {
+                        if (calOctets[0] >= enteredOctets[0]) {
+                            validFirstOctet = true;
+                        }
+                        if (calOctets[1] >= enteredOctets[1]) {
+                            validSecondOctet = true;
+                        }
+                        if (calOctets[2] >= enteredOctets[2]) {
+                            validThirdOctet = true;
+                        }
+                        if (calOctets[3] >= enteredOctets[3]) {
+                            validForthOctet = true;
+                        }
+
+                        if (validFirstOctet && validSecondOctet && validThirdOctet && validForthOctet) {
+                            isValid = true;
+                        } else {
+                            $('#warningConnectionToastAlert').toast('show');
+                            $('#warningConnectionToastAlert .toast-body').text(
+                                "Error: Require more subnet bits!"
+                            );
+                        }
+                    }
+                }
+            }
+            // print(isValid);
+            return isValid;
+        }
+
         function checkIPAddressInput(event, connection) {
             var interfaceValues;
             var currentSelectedComp = componentController.getInstance().getSelectedComponent();
@@ -350,7 +690,7 @@ var networkController = (function() {
                     found.gatewayRouterIP = IPaddressField;
 
                     // Setting Subnet ID
-                    let subnetmask = networkController.getInstance().getSubnetMask();
+                    let subnetmask = getSubnetMask();
                     found.subnetID = networkController.getInstance().calculateSubnetID(found.gatewayRouterIP, subnetmask);
 
                 }
@@ -359,7 +699,7 @@ var networkController = (function() {
                 // Finding subnet related to selected component
                 var foundSubnetforComp = null;
                 allSubnets.getInstance().toList().forEach(s => {
-                    var found = s.endDevices.find(x => x == currentSelectedComp);
+                    var found = s.endDevices.find(x => x.id == currentSelectedComp.id);
                     if (found != null) {
                         foundSubnetforComp = s;
                     }
@@ -377,21 +717,27 @@ var networkController = (function() {
                         if (numberOfOctets == 4 && octets[3] != "") {
                             // Checking for valid assignment of IP address.
 
-                            let subnetmask = networkController.getInstance().getSubnetMask();
+                            let subnetmask = getSubnetMask();
 
                             var subnetID = networkController.getInstance().calculateSubnetID(IPaddressField, subnetmask);
-
-                            if (subnetID == foundSubnetforComp.subnetID) {
+                            
+                            // Check against existing assign IP addresses
+                            if (subnetID == foundSubnetforComp.subnetID && checkAvailableIPAddress(foundSubnetforComp, IPaddressField)) {
                                 // Valid IP address for subnet
-
                                 ipfield.className = "qs_valid_ip_address";
-
                                 inter.portIPaddress[port] = IPaddressField;
+
+                                foundSubnetforComp.addAddressToSubnet(currentSelectedComp, IPaddressField);
 
                             } else {
                                 // Not valid IP address for subnet
 
                                 ipfield.className = "qs_invalid_ip_address";
+
+                                $('#warningConnectionToastAlert').toast('show');
+                                $('#warningConnectionToastAlert .toast-body').text(
+                                    "Invalid IP address for subnet!"
+                                );
                             }
                         }
                     }
@@ -400,6 +746,43 @@ var networkController = (function() {
                 }
             }
         }
+        function checkAvailableIPAddress(subnet, ip) {
+            var validIP = true;
+            let subnetmask = getSubnetMask();
+            let broadcastID = getBroadcastID(subnet.subnetID, subnetmask);
+            var currentUnavailableAddress = [subnet.gatewayRouterIP, subnet.subnetID, broadcastID];
+
+            let takenHostAddresses = subnet.unavailableAddresses;
+
+            takenHostAddresses.forEach(address => {
+                currentUnavailableAddress.push(address);
+            });
+
+
+            var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+
+            currentUnavailableAddress.forEach(takenAddress => {
+                //print(ip, takenAddress);
+
+
+                // Gets the ip address being checked
+                var foundUnavailableAddress = subnet.unavailableAddresses.find(x => x === takenAddress);
+                var index = subnet.unavailableAddresses.indexOf(foundUnavailableAddress);
+                var endDevice = subnet.getEndDevice(index);
+
+                // Checking if the ip address is taken and is not the previous ip address entered for same component
+                // If the ip is in the taken list then the ip is not valid
+                // If the ip address is in the taken list but is the ip assigned to the component being edited, then
+                // it is a valid ip address
+                if (ip == takenAddress && endDevice != currentSelectedComp) {
+                    //print(endDevice, currentSelectedComp);
+                    // Not valid
+                    validIP = false;
+                }
+            });
+            return validIP;
+        }
+
         function toJSON() {
             var json = [];
             var endDevicesID = [];

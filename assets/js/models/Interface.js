@@ -1,6 +1,6 @@
 class Interface extends componentMixin(Device) {
-    constructor(type, numPorts) {
-        super(type);
+    constructor(id, type, numPorts) {
+        super(id ,type);
         this.portType = type;
         this.bandwidth;
         this.numberOfPorts = numPorts;
