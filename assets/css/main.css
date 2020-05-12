@@ -154,7 +154,8 @@ a>.card:hover {
     position: fixed;
     background-color: #cccccc;
     max-height: 40px;
-    transition: max-height 0.15s ease-out;
+    transition: max-height 0.30s ease-out;
+    transition-delay: 2s;
 }
 #bottomPanel:hover {
     max-height: 300px;

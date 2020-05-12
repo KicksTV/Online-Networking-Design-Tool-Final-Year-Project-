@@ -124,6 +124,16 @@ var connectionController = (function() {
                 allConnections.getInstance().getSelectedConnection().setMousePos(xmouse, ymouse);
             }
         }
+        function deleteConnection(comp) {
+            var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(comp);
+            connectionsToDel.forEach((con) => {
+                allConnections.getInstance().removeConnection(con);
+                let nextComp = con.getComponents().find(thisComp => thisComp.id !== comp.id);
+                // print("nextComp", nextComp);
+                let index = con.getComponents().indexOf(nextComp);
+                componentController.getInstance().makePortAvailable(nextComp, con.getInterfacePort(index));
+            });
+        }
         function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
             print(allConnections.getInstance().getSelectedConnection());
             
@@ -228,10 +238,6 @@ var connectionController = (function() {
             updateMouseCursor();
         }
 
-        function fromJSON() {
-            
-        }
-
         function toJSON() {
             var json = [];
             allConnections.getInstance().get().forEach((con) => {
@@ -249,6 +255,7 @@ var connectionController = (function() {
             getDrawConnection: getDrawConnection,
             setDrawConnection: setDrawConnection,
             drawConnetions:drawConnetions,
+            deleteConnection:deleteConnection,
             endConnection:endConnection,
             toJSON:toJSON,
         };   

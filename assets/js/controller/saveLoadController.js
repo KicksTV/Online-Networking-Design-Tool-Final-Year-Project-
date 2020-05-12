@@ -82,17 +82,24 @@ var saveLoadController = (function() {
         // Second time running will load connections
         function loadProject(array, loadedComponents) {
             if (! loadedComponents) {
-                // LOADING SAVED SUBNETS
-                array.subnets.forEach(s => {
-                    let newSub = new Subnet()
-                    newSub = cloneObject(s, newSub)
-                    allSubnets.getInstance().add(newSub);
-                });
-
                 // Callback to this function when finished loading components
                 loadComponents(array, loadProject);
             } 
             else if (loadedComponents) {
+
+                // LOADING SAVED SUBNETS
+                array.subnets.forEach(s => {
+                    let newSub = new Subnet()
+                    newSub = cloneObject(s, newSub);
+                    let endDevices = [];
+                    for (var id of s.endDevices) {
+                        let foundComp = allComps.getAll().find(comp => comp.id === id);
+                        endDevices.push(foundComp);
+                    }
+                    newSub.setEndDevices(endDevices);
+                    allSubnets.getInstance().add(newSub);
+                });
+
 
                 loadConnections(array);
 
@@ -132,7 +139,10 @@ var saveLoadController = (function() {
                 // Creates the interfaces
                 con._interfacePorts.forEach((ip) => {
                     var index = con._interfacePorts.indexOf(ip);
-                    newconnection.addInterfacePort([new Interface(), ip[1]]);
+
+                    // print(ip[0].portType, ip[0].numberOfPorts);
+
+                    newconnection.addInterfacePort([new Interface(null, ip[0].portType, ip[0].numberOfPorts), ip[1]]);
                     Object.assign(newconnection.getInterface(index), ip[0]);
                 });
                 

@@ -296,35 +296,18 @@ function checkComponentDeleteEvent() {
             console.log("multi select delete");
             var list = compContrInstance.getSelectList();
 
-            list.forEach((c) => {
-
-                compContrInstance.removeComponent(c);
-
-
-                // get connection
-                var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(c);
-                connectionsToDel.forEach((con) => {
-                allConnections.getInstance().removeConnection(con);
-                
-                });
-
+            list.forEach((comp) => {
+                compContrInstance.removeComponent(comp);
+                // Delete related connections
+                connectionController.getInstance().deleteConnection(comp);
             });
             gui.removeFolder(compContrInstance.getPropertiesPanel());
         } 
         else if (compContrInstance.getSelectedComponent() != null) {
             var comp = compContrInstance.getSelectedComponent();
-
-            print(comp);
-
             compContrInstance.removeComponent(comp);
-
-
-            // get connection
-            var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(comp);
-            connectionsToDel.forEach((c) => {
-                allConnections.getInstance().removeConnection(c);
-            });
-
+            // Delete related connections
+            connectionController.getInstance().deleteConnection(comp);
 
             $('#deleteToastAlert').toast('show');
             $('#deleteToastAlert .toast-body').text(
