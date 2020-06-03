@@ -47,3 +47,5 @@ var allComponents = (function() {
         }
     }
 })();
+
+export default allComponents;

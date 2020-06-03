@@ -1,7 +1,8 @@
 <html lang="en">
     <% include partials/head %>
+    <% include partials/header %>
+
     <body>
-        <% include partials/header %>
         <div id="components-container" class="">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <ul id="navbar-component-links" class="navbar-nav mr-auto">
@@ -20,7 +21,7 @@
                     <span id="canvasDeleteButton" class="canvasButton fas fa-trash-alt fa-lg" data-toggle="tooltip" data-placement="bottom" title="Delete Component"></span>
                 </div>
                 <div id="canvasDiv">
-                    
+                    <div id="p5_loading" class="loadingclass">Loading....</div>
                     <% include partials/toasts.ejs %>
                 </div>
             </div>
@@ -73,8 +74,7 @@
             </div>
         </div>
 
-
-        <% include partials/p5-scripts %>
         <% include partials/scripts %>
+        <% include partials/p5-scripts %>
     </body>
 </html>

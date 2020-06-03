@@ -1,5 +1,5 @@
 // Components Bar Component and Connection Mixin 
-const compBarGetSetMixin = superclass => class extends superclass {
+export const compBarGetSetMixin = superclass => class extends superclass {
     init() {
         print(this.title);
         this.ul.addClass('navbar-nav mr-auto');
@@ -22,15 +22,16 @@ const compBarGetSetMixin = superclass => class extends superclass {
         this.buttons.push(b);
     }
 };
-const componentMixin = superclass => class extends superclass {
+export const componentMixin = superclass => class extends superclass {
     display() {
         image(this.image, this.x, this.y);
         noStroke();
         textSize(this.textSize);
-        text(this.name, this.x, this.y + this.image.height, this.image.width, 30);
+        text(this.displayName, this.x, this.y + this.image.height, this.image.width, 30);
         textAlign(CENTER, CENTER);
     }
-    correctAspectRatio() {
+
+    applyAspectRatio() {
         this.image.height = this.image.width * (this.image.height / this.width);
         this.width = this.image.width;
     }
@@ -55,7 +56,7 @@ const componentMixin = superclass => class extends superclass {
         }
     }
     
-    clicked() {
+    clicked(mouseX, mouseY) {
         var d = dist(this.x + (this.image.width/2), this.y + (this.image.height/2), mouseX, mouseY);
         if (d < (this.image.width/2)) {
             this.isClicked = true;
@@ -68,6 +69,7 @@ const componentMixin = superclass => class extends superclass {
         let parms = {
             "id": this.id,
             "name": this.name,
+            "displayName": this.displayName,
             "imgPath": this.imgPath,
             "type": this.type,
             "x": this.x,
@@ -82,7 +84,7 @@ const componentMixin = superclass => class extends superclass {
     }
 };
 
-const connectionMixin = superclass => class extends superclass {
+export const connectionMixin = superclass => class extends superclass {
     compSelectDisplay()  {
         let centerPos = this._components[0].getCenterPos();
         let x = centerPos[0];
@@ -121,6 +123,7 @@ const connectionMixin = superclass => class extends superclass {
 
         let parms = {
             "id": this.id,
+            "name": this.name,
             "type": this.type,
             "mousePos": this.mousePos,
             "_components": _comps,
@@ -132,4 +135,6 @@ const connectionMixin = superclass => class extends superclass {
 const panelMixin = superclass => class extends superclass {
     
 };
+
+export default {componentMixin, connectionMixin, compBarGetSetMixin}
 

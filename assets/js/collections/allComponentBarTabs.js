@@ -1,4 +1,4 @@
-var allComponentBarTabs = (function() {
+const allComponentBarTabs = (function() {
     var instance;
     
     function init() {
@@ -36,7 +36,7 @@ var allComponentBarTabs = (function() {
 
         function setVisableCurrent(tab) {
             tab.getLI().addClass('active');
-            allTabs.setCurrent(tab);
+            setCurrent(tab);
         }
 
         return {add:add,
@@ -60,3 +60,5 @@ var allComponentBarTabs = (function() {
         }
     }
 })();
+
+export default allComponentBarTabs;

@@ -1,4 +1,19 @@
-var connectionController = (function() {
+// Controllers
+import networkController from '../controller/networkController.js';
+import componentController from '../controller/componentController.js';
+
+// Collections
+import allConnections from '../collections/allConnections.js';
+import allVRules from '../collections/allValidationRules.js';
+
+// Models
+import Connection from '../models/connection.js';
+import Graph from '../models/graph.js';
+
+// Views
+import InterfaceView from '../views/InterfaceView.js';
+
+const connectionController = (function() {
     var instance;
     
     function init() {
@@ -8,9 +23,9 @@ var connectionController = (function() {
         var selectingSecondConnection = false;
         var selectingInterface = false;
 
-        function createNewConnection(id, type) {
-            var newcon = new Connection(id, type);
-            
+        function createNewConnection(name) {
+            let newcon = getDefaultComponentData(name);
+
             return newcon;
         }
         function drawAllConnections() {
@@ -54,7 +69,7 @@ var connectionController = (function() {
 
             // getting second connection
             compAddConnectionCounter++;
-            print("ConCounter" + compAddConnectionCounter);
+            // print("ConCounter" + compAddConnectionCounter);
 
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
@@ -74,6 +89,8 @@ var connectionController = (function() {
                     }
                     
                 } else {
+                    print("ending connection");
+
                     // Deleting connection object
                     allConnections.getInstance().removeConnection(allConnections.getInstance());
 
@@ -97,6 +114,11 @@ var connectionController = (function() {
                         print("waiting for selection of components");
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                         selectingInterface = true;
+                    } else {
+                        $('#warningConnectionToastAlert').toast('show');
+                        $('#warningConnectionToastAlert .toast-body').text(
+                            "No Available Ports!"
+                        );
                     }
                 } else {
                     endConnection();
@@ -135,7 +157,7 @@ var connectionController = (function() {
             });
         }
         function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
-            print(allConnections.getInstance().getSelectedConnection());
+            // print(allConnections.getInstance().getSelectedConnection());
             
             var isValidConnection = false;
             var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
@@ -147,7 +169,7 @@ var connectionController = (function() {
             
             if (hasSelectedBothComponents) {
                 var isValidConnectionType2 = preComp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
-                if (allVRules.isValidConnection(comp.getType(), preComp.getType()) && isValidConnectionType1 && isValidConnectionType2) {
+                if (allVRules.getInstance().isValidConnection(comp.name, preComp.name) && isValidConnectionType1 && isValidConnectionType2) {
                     isValidConnection = true;
                 }
                 //print(isValidConnectionType2);
@@ -156,7 +178,7 @@ var connectionController = (function() {
                     isValidConnection = true;
                 }
             }
-            print("is valid connection: " + isValidConnectionType1);
+            // print("is valid connection: " + isValidConnectionType1);
             return isValidConnection;
         }
         function waitForSelectedPort(interfaces, comp, preComp) {
@@ -177,8 +199,10 @@ var connectionController = (function() {
             });
                 
             $('.portButton').on('click', function(event){
-                //print(this.value);
+                print("Selected port", this.value);
                 var interfaceValues = comp.getInterfaceFromString(this.value);
+
+                print("interfaceValues: ", interfaceValues);
                 
                 addComponentToConnection(comp, interfaceValues);
 
@@ -207,23 +231,23 @@ var connectionController = (function() {
                 interfaceView.hide();
 
                 // get the interface.
-                var interface = interfaceValues[0];
+                var inter= interfaceValues[0];
                 // get the port of that interface.
                 var port = interfaceValues[1];
                 // port is now in use and cannot be selected.
-                interface.portInUse(port);
+                inter.portInUse(port);
 
                 interfaceView.clear();
 
 
                 // Triggering networkChangeEvent
-                gui.domElement.dispatchEvent(networkChangeEvent);
+                networkController.getInstance().dispatchNetworkChangeEvent();
                 //compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
 
                 if (preComp != null) {
                     $('#finishedConnectionToastAlert').toast('show');
                     $('#finishedConnectionToastAlert .toast-body').text(
-                        "Now linked " + preComp.getComponentName() + "  ---->  " + comp.getComponentName() + "."
+                        "Now linked " + preComp.displayName + "  ---->  " + comp.displayName + "."
                     );
                 }
             });
@@ -235,7 +259,7 @@ var connectionController = (function() {
             selectingSecondConnection = false;
             allConnections.getInstance().setSelectedConnection(null);
             compAddConnectionCounter=0;
-            updateMouseCursor();
+            //updateMouseCursor();
         }
 
         function toJSON() {
@@ -244,6 +268,21 @@ var connectionController = (function() {
                 json.push(con.prepareForJson());
             });
             return json;
+        }
+
+        async function getDefaultComponentData(name) {
+            
+            let promise = new Promise((resolve, reject) => {
+                loadXML(`/assets/components/${name}.xml`, (xml) => {
+                    resolve(xml);
+                });
+            });
+            let data = await promise;
+            let type = data.getChild('type').getContent();
+            var defaultComponent = new Connection(null, name, type);
+
+            print(defaultComponent);
+            return defaultComponent;
         }
 
         return {
@@ -271,3 +310,5 @@ var connectionController = (function() {
         }
     }
 })();
+
+export default connectionController;

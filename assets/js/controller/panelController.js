@@ -1,4 +1,10 @@
-var panelController = (function() {
+// Collections
+import allConnections from '../collections/allConnections.js';
+
+// Views
+import PanelView from '../views/PanelView.js';
+
+const panelController = (function() {
     var instance;
     
     function init() {
@@ -56,3 +62,5 @@ var panelController = (function() {
         }
     }
 })();
+
+export default panelController;

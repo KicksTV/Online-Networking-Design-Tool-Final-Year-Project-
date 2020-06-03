@@ -7,9 +7,7 @@ var allConnections = (function() {
         var selectedConnection;
         
         function add(connection) {
-            _connections.push(connection);
-
-            
+            _connections.push(connection);            
         }
 
         function length() {
@@ -66,3 +64,5 @@ var allConnections = (function() {
         }
     }
 })();
+
+export default allConnections;

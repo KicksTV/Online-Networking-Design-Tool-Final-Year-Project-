@@ -45,3 +45,5 @@ function validationRule(type1, type2, allowed, msg) {
     );
     
 }
+
+export default validationRule;

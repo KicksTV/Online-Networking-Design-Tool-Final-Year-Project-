@@ -75,3 +75,5 @@ const buttonDisplayer = (state) => ({
         state.li.hide();
     }
 });
+
+export default buttonDisplayer

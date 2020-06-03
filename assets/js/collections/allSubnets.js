@@ -41,3 +41,5 @@ var allSubnets = (function () {
         }
     }
 })();
+
+export default allSubnets;

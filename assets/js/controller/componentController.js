@@ -1,4 +1,15 @@
-var componentController = (function() {
+// Controllers
+import networkController from './networkController.js';
+
+// Collections
+import allComponents from '../collections/allComponents.js';
+
+// Models
+import Component from '../models/component.js';
+import Graph from '../models/graph.js';
+import Interface from '../models/Interface.js';
+
+const componentController = (function() {
     var instance;
     
     function init() {
@@ -23,45 +34,57 @@ var componentController = (function() {
         var cut;
 
         // dat.GUI 
+        var gui = null;
         var compPropertiesPanel = null;
 
 
-        function createNewComponent(id, type, imgPath, img) {
-            var newcomp = new Component(id, type, imgPath, img);
-            let num = getNumberOfExistingCompType(type);
-            num++;
-            newcomp.setComponentName(`${type}_${num}`);
+        async function createNewComponent(name) {
 
-            // NEED FUCNTION TO LOAD COMP PROPORTIES
+            // Getting the default values for component attributes from xml files 
+            let defaultComponent = await getDefaultComponentData(name);
+            setNewlyCreatedComp(defaultComponent);
+
+            // print("defaultComponent", defaultComponent);
+
+
+            // Wait for img to be loaded
+            let promise = new Promise((resolve, reject) => {
+                // Loading component image
+                loadImage(defaultComponent.getImgPath(), img => {
+                    img.width = img.width/2;
+                    img.height = img.height/2;
+
+                    resolve(img);
+                });
+            });
+
+            let img = await promise;
+            defaultComponent.setIMG(img);
+
             
-            //TEMP needs to be removed!!!!!!!!!!!!!!!!
-            if (newcomp.getType() == "Smartphone") {
-                newcomp.setValidLinkningComponents([]);
+            // Default naming of created components
+            let num = getNumberOfExistingCompType(defaultComponent.name);
+            num++;
+            if (name == `${defaultComponent.name}_${num}`) {
+                defaultComponent.displayName = `${defaultComponent.name}_${num}`;
+            } 
+            else if (name == defaultComponent.name) {
+                defaultComponent.displayName = `${defaultComponent.name}_${num}`;
             }
-            else if (newcomp.getType() == "Router") {
-                newcomp.addValidLinkningComponent("Fibre");
-
-                newcomp.addInterface(new Interface(null, "Fast Ethernet", 4));
-                newcomp.addInterface(new Interface(null, "Serial", 2));
-            }
-            else if (newcomp.getType() == "Switch") {
-                newcomp.addInterface(new Interface(null, "Fast Ethernet", 12));
-            }
-            else if (newcomp.getType() == "PC" || newcomp.getType() == "Laptop" || 
-                newcomp.getType() == "printer" || newcomp.getType() == "Server" ||
-                newcomp.getType() == "Access Point") {
-                newcomp.addInterface(new Interface(null, "Fast Ethernet", 1));
+            else {
+                defaultComponent.displayName = name;
             }
 
-            Graph.getInstance().addNode(newcomp.id);
+            
 
-            return newcomp;
+
+            return defaultComponent;
         }
         function cloneComponent(obj) {
-            let newcomp = createNewComponent(null, obj.getType(), obj.getImgPath(), obj.getIMG())
+            let newcomp = createNewComponent(null, obj.name, obj.type, obj.imgPath, obj.image)
             // attributes we wish to copy
             let attributes = ["type", "imgPath", "image", "hide", "hideConnections", 
-                              "name", "textSize", "validLinkingComponents", "width",
+                              "displayName", "textSize", "validLinkingComponents", "width",
                               "height"]
             // goes through all attributes of obj and copies its value
             for (let key in obj) {
@@ -71,17 +94,21 @@ var componentController = (function() {
                     }
                 }
             }
-            newcomp.setComponentName(newcomp.getComponentName() + " - copy");
+            newcomp.setComponentName(newcomp.displayname + " - copy");
         
             return newcomp;
         }
-        function getNumberOfExistingCompType(type) {
-            const found = allComps.get().filter(comp => comp.getType() == type);
+        function getNumberOfExistingCompType(name) {
+            const found = allComponents.getInstance().get().filter(comp => comp.name == name);
             return found.length;
         }
 
-        function initGUI(gui) {
-            compPropertiesPanel = gui.addFolder("Component Properties");
+        function initGUI(g) {
+            gui = g;
+            compPropertiesPanel = g.addFolder("Component Properties");
+        }
+        function getGUI() {
+            return gui;
         }
         function getPropertiesPanel() {
             return compPropertiesPanel;
@@ -118,7 +145,6 @@ var componentController = (function() {
             componentDrag = val;
         }
         function getDraggingNewComponent() {
-            print(draggingNewComponent);
             return draggingNewComponent;
         }
         function setDraggingNewComponent(val) {
@@ -167,7 +193,7 @@ var componentController = (function() {
                 var clicked = comp.clicked(mouseX, mouseY);
                 if (clicked) {
                     clickedComponent = comp;
-                    print("selected a comp");
+                    // print("selected a comp");
                 }
             });
 
@@ -187,12 +213,14 @@ var componentController = (function() {
             compPropertiesPanel = gui.addFolder("Component Properties");
             let comp = getSelectedComponent();
 
-            compPropertiesPanel.add(comp, 'name').listen();
+            compPropertiesPanel.add(comp, 'displayName').listen();
             compPropertiesPanel.add(comp, 'x').listen();
             compPropertiesPanel.add(comp, 'y').listen();
+            compPropertiesPanel.add(comp, 'textSize', 8, 32).listen();
             compPropertiesPanel.add(comp.image, 'width', 30, 200).listen();
             compPropertiesPanel.add(comp.image, 'height', 30, 200).listen();
-            compPropertiesPanel.add(comp, 'correctAspectRatio').listen();
+
+            compPropertiesPanel.add(comp, 'applyAspectRatio').listen();
 
             compPropertiesPanel.add(comp, 'hide').listen();
             compPropertiesPanel.add(comp, 'hideConnections').listen();
@@ -239,18 +267,20 @@ var componentController = (function() {
             }
         }
         function removeComponent(comp) {
-            var index = allComps.get().findIndex(c => c === comp);
+            var index = allComponents.getInstance().get().findIndex(c => c === comp);
             // creates a new list without the component.
-            var newlist = allComps.get().filter((value, i, arr) => {
+            var newlist = allComponents.getInstance().get().filter((value, i, arr) => {
                 return i != index; 
             });
-            allComps.set(newlist);
+            allComponents.getInstance().set(newlist);
         }
         function isEndDevice(comp) {
             var isEndDevice = false;
-            if (comp.type == "PC" || comp.type == "Laptop" || 
-                comp.type == "Printer" || comp.type == "Smartphone" ||
-                comp.type == "Server") {
+            if (comp.name == "PC" || 
+                comp.name == "Laptop" || 
+                comp.name == "Printer" || 
+                comp.name == "Smartphone" ||
+                comp.name == "Server") {
 
                     isEndDevice = true;
             }
@@ -347,7 +377,7 @@ var componentController = (function() {
                         clonedComponent.setXpos(mouseX + xDifference);
                         clonedComponent.setYpos(mouseY + yDifference);
 
-                        allComps.add(clonedComponent);
+                        allComponents.getInstance().add(clonedComponent);
                     }
                 }
                 copied = false;
@@ -360,7 +390,7 @@ var componentController = (function() {
                     let clonedComponent = cloneComponent(selectedComponent);
                     clonedComponent.setXpos(mouseX);
                     clonedComponent.setYpos(mouseY);
-                    allComps.add(clonedComponent);
+                    allComponents.getInstance().add(clonedComponent);
                     copied = false;
                 }
                 else if (cut) {
@@ -383,26 +413,58 @@ var componentController = (function() {
 
         function makePortAvailable(comp, interfaceAndPort) {
             // print("interfaceAndPort", interfaceAndPort);
-            let interface = interfaceAndPort[0];
+            let inte = interfaceAndPort[0];
             let number = interfaceAndPort[1];
-            let compInterface = comp.getInterfaces().find(thisInterface => thisInterface.id === interface.id);
-            interface.portAvailability[number] = true;
+            let compInterface = comp.getInterfaces().find(thisInterface => thisInterface.id === inte.id);
+            inte.portAvailability[number] = true;
             compInterface.portAvailability[number] = true;
         }
 
         function toJSON() {
             var json = [];
             // looping through all components to get any that haven't got a connection
-            allComps.get().forEach((comp) => {
+            allComponents.getInstance().get().forEach((comp) => {
                 json.push(comp.prepareForJson());
             });
             return json;
+        }
+
+        async function getDefaultComponentData(name) {
+            
+            let promise = new Promise((resolve, reject) => {
+                loadXML(`/assets/components/${name}.xml`, (xml) => {
+                    resolve(xml);
+                });
+            });
+            
+            let data = await promise;
+            
+            let type = data.getChild('type').getContent();
+            let image = data.getChild('image').getString('path');
+
+            var defaultComponent = new Component(null, name, type, image, null);
+
+            for (let getInter of data.getChild("interfaces").getChildren()) {
+                // print(getInter.getString('portType'));
+                let portType = getInter.getString('portType');
+                let numberOfPorts = getInter.getString('numberOfPorts');
+                let newInter = new Interface(null, portType, "Network_Card", numberOfPorts);
+                defaultComponent.addInterface(newInter);
+            }
+            let validLinkingComps = [];
+            for (let getValidLinkingComp of data.getChild("validLinkingComponents").getChildren()) {
+                validLinkingComps.push(getValidLinkingComp.getContent());
+            }
+            defaultComponent.setValidLinkningComponents(validLinkingComps);
+
+            return defaultComponent;
         }
 
         return {
             createNewComponent:createNewComponent,
             cloneComponent:cloneComponent,
             initGUI:initGUI,
+            getGUI:getGUI,
             getPropertiesPanel:getPropertiesPanel,
             isCurrentlyClickingComp:isCurrentlyClickingComp,
             getSelectedComponent:getSelectedComponent,
@@ -454,3 +516,5 @@ var componentController = (function() {
         }
     }
 })();
+
+export default componentController;

@@ -1,4 +1,4 @@
-var allValidationRules = (function() {
+const allValidationRules = (function() {
     var instance;
     
     function init() {
@@ -16,7 +16,7 @@ var allValidationRules = (function() {
             return _rules[index];
         }
         function isValidConnection(type1, type2) {
-            validConnection = true;
+            var validConnection = true;
             
             _rules.forEach((r) => {
                 if (r.getRuleType(0) == type1 && r.getRuleType(1) == type2 || r.getRuleType(0) == type2 && r.getRuleType(1) == type1) {
@@ -32,14 +32,13 @@ var allValidationRules = (function() {
             return lastBrokenRule;
         }
 
-        
-
-        return {add:add,
-                length:length,
-                get:get,
-                isValidConnection:isValidConnection,
-                getLastBrokenRule:getLastBrokenRule,
-                };   
+        return {
+            add:add,
+            length:length,
+            get:get,
+            isValidConnection:isValidConnection,
+            getLastBrokenRule:getLastBrokenRule,
+        };   
     }
 
     return {
@@ -52,3 +51,5 @@ var allValidationRules = (function() {
         }
     }
 })();
+
+export default allValidationRules;

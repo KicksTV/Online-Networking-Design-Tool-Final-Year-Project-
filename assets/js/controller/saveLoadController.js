@@ -1,4 +1,21 @@
-var saveLoadController = (function() {
+// Controllers
+import connectionController from '../controller/connectionController.js';
+import componentController from '../controller/componentController.js';
+import networkController from '../controller/networkController.js';
+
+
+// Collections
+import allComponents from '../collections/allComponents.js';
+import allConnections from '../collections/allConnections.js';
+import allSubnets from '../collections/allSubnets.js';
+
+// Models
+import Graph from '../models/graph.js';
+import Subnet from '../models/Subnet.js';
+import Interface from '../models/Interface.js';
+
+
+const saveLoadController = (function() {
     var instance;
     
     function init() {
@@ -13,7 +30,7 @@ var saveLoadController = (function() {
                 "subnets": [],
             };
             // Checking if anything exists on canvas
-            if (!allComps.isEmpty()) {
+            if (!allComponents.getInstance().isEmpty()) {
 
                 var data = await getAllSaveData();
 
@@ -80,12 +97,12 @@ var saveLoadController = (function() {
         // First running 'loadProject' will load subnets and components
         // Once 'loadComponents' is finished, it will callback 'loadProject'
         // Second time running will load connections
-        function loadProject(array, loadedComponents) {
-            if (! loadedComponents) {
+        async function loadProject(array, loadedComponents) {
+            // if (! loadedComponents) {
                 // Callback to this function when finished loading components
-                loadComponents(array, loadProject);
-            } 
-            else if (loadedComponents) {
+                let finishedLoadingComponents = await loadComponents(array, loadProject);
+            // } 
+            // else if (loadedComponents) {
 
                 // LOADING SAVED SUBNETS
                 array.subnets.forEach(s => {
@@ -93,7 +110,7 @@ var saveLoadController = (function() {
                     newSub = cloneObject(s, newSub);
                     let endDevices = [];
                     for (var id of s.endDevices) {
-                        let foundComp = allComps.getAll().find(comp => comp.id === id);
+                        let foundComp = allComponents.getInstance().getAll().find(comp => comp.id === id);
                         endDevices.push(foundComp);
                     }
                     newSub.setEndDevices(endDevices);
@@ -101,39 +118,36 @@ var saveLoadController = (function() {
                 });
 
 
-                loadConnections(array);
+                let finishedLoadingConnections = await loadConnections(array);
 
                 window.setTimeout(() => {
                     print("Check network event");
-                    gui.domElement.dispatchEvent(networkChangeEvent)
+                    networkController.getInstance().dispatchNetworkChangeEvent();
                 }, 500);
-            }
+            // }
         }
-        function loadComponents(array, callback) {
+        async function loadComponents(array, callback) {
             // LOADING COMPONENTS
             for (let comp of array.components) {
-                loadImage(comp.imgPath, img => {
-                    var  newcomp = compContrInstance.createNewComponent(comp.id, comp.type, comp.imgPath, img);
+                    var  newcomp = await componentController.getInstance().createNewComponent(comp.name);
                     newcomp = Object.assign(newcomp, comp);
-                    // Setting size of the component
 
+                    // Setting size of the component
                     newcomp.image.resize(comp.width, comp.height);
 
-                    allComps.add(newcomp);
+                    allComponents.getInstance().add(newcomp);
 
-                    // Checks if all components have been loaded.
-                    // If so, load rest of the saved data.
-                    if (array.components.length == allComps.length()) {
-                        callback(array, true);
-                    }
-                });
+                    // Adds component to graph
+                    Graph.getInstance().addNode(newcomp.id);
+
             }
+            return true;
         }
-        function loadConnections(array) {
+        async function loadConnections(array) {
             // LOADING CONNECTIONS
             for (let con of array.connections) {
                 // new connection
-                var newconnection = connectionController.getInstance().createNewConnection(con.id, con.type);
+                var newconnection = await connectionController.getInstance().createNewConnection(con.name);
                 newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
 
                 // Creates the interfaces
@@ -146,18 +160,27 @@ var saveLoadController = (function() {
                     Object.assign(newconnection.getInterface(index), ip[0]);
                 });
                 
-                // looping through all the components in the connection
-                for (let savedComp of con._components) {
-                    
-                    let foundComp = allComps.getAll().find(nextComp => nextComp.id == savedComp);
-                        
-                    // comp has a connection
-                    foundComp.setHasConnection(true);
-                    // add comps interfaces
-                    foundComp.injectInterfaceSavedData(newconnection.getInterface(con._components.indexOf(savedComp)));
-                    newconnection.addComponent(foundComp);
+                // Wait for components to be added to connection
+                let promise = new Promise((resolve, reject) => {
+                    const loadCompsToConnection = (newconnection) => {
+                        // looping through all the components in the connection
+                        for (let savedComp of con._components) {
+                            
+                            let foundComp = allComponents.getInstance().getAll().find(nextComp => nextComp.id == savedComp);
+                                
+                            // comp has a connection
+                            foundComp.setHasConnection(true);
+                            // add comps interfaces
+                            foundComp.injectInterfaceSavedData(newconnection.getInterface(con._components.indexOf(savedComp)));
+                            newconnection.addComponent(foundComp);
 
-                }
+                        }
+                        return newconnection;
+                    }
+                    
+                    resolve(loadCompsToConnection(newconnection));
+                });
+                newconnection = await promise;
                 print("adding saved connection");
 
                 // Creating new Edge on graph	
@@ -168,6 +191,16 @@ var saveLoadController = (function() {
 
                 allConnections.getInstance().add(newconnection);
             }
+
+            return true;
+        }
+
+        function cloneObject(srcObj, targetObj) {
+            // goes through all attributes of obj and copies its value
+            for (let key in srcObj) {
+                targetObj[key] = srcObj[key] 
+            }
+            return targetObj;
         }
         
         return {
@@ -185,3 +218,5 @@ var saveLoadController = (function() {
         }
     }
 })();
+
+export default saveLoadController;

@@ -1,4 +1,16 @@
-var networkController = (function() {
+// Controllers
+import componentController from '../controller/componentController.js';
+
+// Collections
+import allComps from '../collections/allComponents.js';
+import allConnections from '../collections/allConnections.js';
+import allSubnets from '../collections/allSubnets.js';
+
+// Models
+import Graph from '../models/graph.js';
+import Subnet from '../models/Subnet.js';
+
+const networkController = (function() {
     var instance;
     
     function init() {
@@ -14,7 +26,7 @@ var networkController = (function() {
 
             this.availableHostAddresses;
             this.availableSubnets;
-            this.totalHostAddresses = calculateTotalHostAddresses(this.subnetMask);
+            this.totalIPAddresses = calculateTotalIPAddresses(this.subnetMask);
             this.totalSubnets = calculateTotalNumberSubnets(this.supernetMask);
 
             this.calculatedSubnetmask = calculateSubnetMask();
@@ -24,36 +36,46 @@ var networkController = (function() {
 
             this.calculateNetworkMasks = () => {
                 let subnetmask = calculateSubnetMask();
-                this.subnetMask = subnetmask;
-                this.calculatedSubnetmask = subnetmask;
-                this.totalHostAddresses = calculateTotalHostAddresses(subnetmask);
-
-
                 let supernetmask = calculateSupernetMask(this.subnets);
-                this.supernetMask = subnetmask;
+                this.calculatedSubnetmask = subnetmask;
                 this.calculatedSupernetmask = supernetmask;
-                this.totalSubnets = calculateTotalNumberSubnets(supernetmask);
+
+                if (this.autoCalculateMasks) {
+                    this.subnetMask = subnetmask;
+                    this.supernetMask = supernetmask;
+
+                    this.totalIPAddresses = calculateTotalIPAddresses(subnetmask);
+                    this.totalSubnets = calculateTotalNumberSubnets(supernetmask);
+                } else {
+                    this.totalIPAddresses = calculateTotalIPAddresses(this.subnetMask);
+                    this.totalSubnets = calculateTotalNumberSubnets(this.supernetMask);
+                }
             }
         };
+        var networkChangeEvent = new CustomEvent('networkChangeEvent');
+
         var network = new networkObject();
 
         var hostBits = 0;
 
         // dat.GUI
+        var gui = null;
         var networkPropertiesPanel = null;
+        var properties = [];
 
-        function initGUI() {
-            networkPropertiesPanel = gui.addFolder("Network Properties");
-            var controllers = createNetworkPropertiesPanel();
+        function initGUI(g) {
+            gui = g;
+            networkPropertiesPanel = g.addFolder("Network Properties");
+            createNetworkPropertiesPanel();
             networkPropertiesPanel.open();
 
-            initGuiControllerEvents(controllers);
+            initGuiControllerEvents();
         }
         function createNetworkPropertiesPanel() {
-            networkPropertiesPanel.add(network, 'hosts').listen();
-            networkPropertiesPanel.add(network, 'subnets').listen();
-            networkPropertiesPanel.add(network, 'totalHostAddresses').listen();
-            networkPropertiesPanel.add(network, 'totalSubnets').listen();
+            var hosts = networkPropertiesPanel.add(network, 'hosts').listen();
+            var subnets = networkPropertiesPanel.add(network, 'subnets').listen();
+            var totalHosts = networkPropertiesPanel.add(network, 'totalIPAddresses').listen();
+            var totalSubnets = networkPropertiesPanel.add(network, 'totalSubnets').listen();
 
             var subnetController;
             var supernetController;
@@ -65,16 +87,26 @@ var networkController = (function() {
                 subnetController = networkPropertiesPanel.add(network, 'calculatedSubnetmask').listen();
                 supernetController = networkPropertiesPanel.add(network, 'calculatedSupernetmask').listen();
             }
-
-            networkPropertiesPanel.add(network, 'calculateNetworkMasks');
             var autoCalculateController = networkPropertiesPanel.add(network, 'autoCalculateMasks');
 
 
-            return [subnetController, supernetController, autoCalculateController];
+            properties = [hosts, subnets, totalHosts, totalSubnets, subnetController, 
+                          supernetController, autoCalculateController];
         }
-        function initGuiControllerEvents(controllers) {
+        function removeAllPanelProperties() {
+            // print(networkPropertiesPanel);
+
+            networkPropertiesPanel.remove(properties[0]);     
+            networkPropertiesPanel.remove(properties[1]);              
+            networkPropertiesPanel.remove(properties[2]);              
+            networkPropertiesPanel.remove(properties[3]); 
+            networkPropertiesPanel.remove(properties[4]);              
+            networkPropertiesPanel.remove(properties[5]);              
+            networkPropertiesPanel.remove(properties[6]); 
+        }
+        function initGuiControllerEvents() {
             
-            var subnetController = controllers[0];
+            var subnetController = properties[4];
             subnetController.onChange(function(value) {
                 // Fires on every change, drag, keypress, etc.
                 if (! isValidSubnetMask(value)) {
@@ -106,7 +138,7 @@ var networkController = (function() {
 
 
 
-            var supernetController = controllers[1];
+            var supernetController = properties[5];
             supernetController.onChange(function(value) {
                 // Fires on every change, drag, keypress, etc.
 
@@ -138,20 +170,27 @@ var networkController = (function() {
             });
 
 
-            var autoCalculateController = controllers[2];
+            var autoCalculateController = properties[6];
             autoCalculateController.onChange(function(value) {
                 // Fires on every change, drag, keypress, etc.
-                if (value) {
-                    // Automatically appply calculated network parameters and listen to network changes
 
-                    networkPropertiesPanel.remove();
-                    networkPropertiesPanel.remove();
+                network.autoCalculateMasks = value;
+
+                calculateAllNetworkProperties();
+
+                if (value) {
+                    // Automatically apply calculated network parameters and listen to network changes
+                    // print("auto true");
+                    removeAllPanelProperties();
+
                 } else {
                     // Only listen to user input network parameters
+                    // print("auto false");
+                    removeAllPanelProperties();
                 }
+                createNetworkPropertiesPanel();
+                initGuiControllerEvents();
             });
-
-
         }
 
         function getSubnetMask() {
@@ -168,6 +207,16 @@ var networkController = (function() {
 >>>>>>> improving network properties panel, but still needs some work
         }
 
+        function initNetworkListener() {
+            gui.domElement.addEventListener('networkChangeEvent', calculateAllNetworkProperties);
+        }
+
+        function dispatchNetworkChangeEvent() {
+            componentController.getInstance().getGUI().domElement.dispatchEvent(networkChangeEvent);
+        }
+
+        
+
         // network functions
         function calculateAllNetworkProperties() {
             network.hosts = calculateAllHost();
@@ -175,7 +224,7 @@ var networkController = (function() {
 
             network.calculateNetworkMasks();
 
-            print(network);
+            // print(network);
             print("network change event");
         }
         function calculateSupernetMask(subnets) {
@@ -203,14 +252,14 @@ var networkController = (function() {
                 supernetBits = (i-hostBits) + 1;
             }
 
-            print("supernetBits",supernetBits);
+            // print("supernetBits",supernetBits);
 
             // Total number of bits in an IP address
             var totalBits = 32;
 
             var slashValue = totalBits - (supernetBits + hostBits);
 
-            print("slashValue", slashValue);
+            // print("slashValue", slashValue);
 
             // calculates the decimal representation of slash value.
             var decimalNotationOfSupernetmask = calculateDecimalFromSlashValue(slashValue);
@@ -301,17 +350,17 @@ var networkController = (function() {
         // Calculates all the host devices currently displayed on canvas
         function calculateAllHost() {
             var totalNumberOfHosts = 0;
-            allComps.get().forEach((comp) => {
-                if (compContrInstance.isEndDevice(comp)) {
+            allComps.getInstance().get().forEach((comp) => {
+                if (componentController.getInstance().isEndDevice(comp)) {
                     totalNumberOfHosts += 1;
                 }
             });
             return totalNumberOfHosts;
         }
 
-        function calculateTotalHostAddresses(subnetmask) {
+        function calculateTotalIPAddresses(subnetmask) {
             var octets = subnetmask.split(".");
-            var totalNumberOfHosts = 0;
+            var totalNumberOfHosts = 1;
 
             octets.forEach(octet => {
                 if (octet != "255") {
@@ -332,7 +381,7 @@ var networkController = (function() {
             // Calculating totalNumberOfHosts with the addition of subnetID and broadcastID
             totalNumberOfHosts = totalNumberOfHosts - 2;
 
-            print("totalNumberOfHosts", totalNumberOfHosts);
+            // print("totalNumberOfHosts", totalNumberOfHosts);
             return totalNumberOfHosts;
         }
 
@@ -341,10 +390,10 @@ var networkController = (function() {
             var totalNumberOfSubnets = 0;
             var connections = [];
         
-            for (let comp of allComps.getAll()) {
+            for (let comp of allComps.getInstance().getAll()) {
                 //print(comp.getComponentName());
                 //print(allConnections.getInstance().getConnectionsRelatedToComp(comp));
-                if (comp.getType() == "Router") {
+                if (comp.name == "Router") {
                     //print("found router");
                     allConnections.getInstance().getConnectionsRelatedToComp(comp).forEach((con) => {
                         connections.push(con);
@@ -362,7 +411,7 @@ var networkController = (function() {
                 totalNumberOfSubnets += connections.length;
             }
 
-            print("totalNumberOfSubnets", totalNumberOfSubnets);
+            // print("totalNumberOfSubnets", totalNumberOfSubnets);
 
             return totalNumberOfSubnets;
         }
@@ -399,7 +448,7 @@ var networkController = (function() {
         function getLargestSubnet() {
             var largestSubnet = 0;
             //Get all routers
-            var allRouters = allComps.get().filter(comp => comp.getType() == "Router");
+            var allRouters = allComps.getInstance().get().filter(comp => comp.name == "Router");
 
             for (let router of allRouters) {
                 let connections = allConnections.getInstance().getConnectionsRelatedToComp(router);
@@ -447,7 +496,7 @@ var networkController = (function() {
                 }
 
             }  
-            print("largest Subnet: " + largestSubnet);
+            // print("largest Subnet: " + largestSubnet);
             return largestSubnet;       
         }
         function binaryToDecimal(IPaddress) {
@@ -650,7 +699,7 @@ var networkController = (function() {
             var port = interfaceValues[1];
 
             var routerComp = null;
-            if (currentSelectedComp.getType() == "Router") {
+            if (currentSelectedComp.name == "Router") {
                 routerComp = currentSelectedComp;
             }
 
@@ -664,7 +713,7 @@ var networkController = (function() {
             if (event.key == "Enter") {
                 event.preventDefault();
             }
-            print("Address entered");
+            // print("Address entered");
 
             // Get all field content and last key pressed
             var IPaddressField = event.srcElement.innerText + event.key;
@@ -800,6 +849,8 @@ var networkController = (function() {
         
         return {
             initGUI:initGUI,
+            initNetworkListener:initNetworkListener,
+            dispatchNetworkChangeEvent:dispatchNetworkChangeEvent,
             calculateAllNetworkProperties:calculateAllNetworkProperties,
             calculateAllHost:calculateAllHost,
             calculateAllSubnets:calculateAllSubnets,
@@ -826,3 +877,5 @@ var networkController = (function() {
         }
     }
 })();
+
+export default networkController;

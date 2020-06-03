@@ -41,3 +41,5 @@ var allPanels = (function () {
         }
     }
 })();
+
+export default allPanels;

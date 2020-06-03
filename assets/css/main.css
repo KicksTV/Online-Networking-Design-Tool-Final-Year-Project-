@@ -43,43 +43,8 @@ a>.card:hover {
     padding: 5px;
 
 }
-.qs_pin_container {
-    display: inline-block;
-    float: right;
-    margin-right: 5px;
-}
-.qs_pin_button {
-
-}
-.qs_connections_container {
-    overflow-y: auto;
-}
-.qs_connection {
-    display: inline-block;
-    margin: 0 5px 0 5px;
-}
-.qs_connection_table_value {
-    text-align: center;
-}
-
-.qs_invalid_ip_address {
-    border: 2px;
-    border-color: red;
-    border-style: solid;
-    color: red;
-}
-
-.qs_valid_ip_address {
-    border: 2px;
-    border-color: green;
-    border-style: solid;
-    color: green;
-}
-
-.qs_arrow {
-    display: inline-block;
-    margin: 0 5px 0 5px;
-    font-size: 5mm;
+#componentsNav {
+    width: 1470px !important;
 }
 .canvasButtonContainer {
     position: absolute;
@@ -144,9 +109,12 @@ a>.card:hover {
 }
 #rightSidePanel {
     position: absolute;
-    top: 188px;
+    top: 111px;
     right: 0px;
 }
+/* .dg li.title {
+    background: #191919 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+} */
 #bottomPanel {
     position: absolute;
     top: initial;
