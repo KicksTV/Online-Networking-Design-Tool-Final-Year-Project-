@@ -1,5 +1,6 @@
 // Controllers
 import networkController from './networkController.js';
+import ioController from './ioController.js';
 
 // Collections
 import allComponents from '../collections/allComponents.js';
@@ -35,18 +36,16 @@ const componentController = (function() {
 
         // dat.GUI 
         var gui = null;
+        var guiProperties = [];
         var compPropertiesPanel = null;
 
 
         async function createNewComponent(name) {
-
             // Getting the default values for component attributes from xml files 
             let defaultComponent = await getDefaultComponentData(name);
             setNewlyCreatedComp(defaultComponent);
 
             // print("defaultComponent", defaultComponent);
-
-
             // Wait for img to be loaded
             let promise = new Promise((resolve, reject) => {
                 // Loading component image
@@ -74,10 +73,6 @@ const componentController = (function() {
             else {
                 defaultComponent.displayName = name;
             }
-
-            
-
-
             return defaultComponent;
         }
         function cloneComponent(obj) {
@@ -103,12 +98,74 @@ const componentController = (function() {
             return found.length;
         }
 
-        function initGUI(g) {
+        async function initGUI(g) {
             gui = g;
-            compPropertiesPanel = g.addFolder("Component Properties");
+            compPropertiesPanel = gui.addFolder("Component Properties");
+            await createComponentPropertiesPanel();
+            await initGuiControllerEvents();
         }
         function getGUI() {
             return gui;
+        }
+        async function createComponentPropertiesPanel() {
+            
+            
+            let comp = await componentController.getInstance().createNewComponent('pc');
+
+            var displayName = compPropertiesPanel.add(comp, 'displayName').listen();
+            var xPos = compPropertiesPanel.add(comp, 'x').listen();
+            var yPos = compPropertiesPanel.add(comp, 'y').listen();
+            var textSize = compPropertiesPanel.add(comp, 'textSize', 8, 32).listen();
+            var width = compPropertiesPanel.add(comp.image, 'width', 30, 200).listen();
+            var height = compPropertiesPanel.add(comp.image, 'height', 30, 200).listen();
+
+            var applyAspectRatio = compPropertiesPanel.add(comp, 'applyAspectRatio').listen();
+
+            var hide = compPropertiesPanel.add(comp, 'hide').listen();
+            var hideConnections = compPropertiesPanel.add(comp, 'hideConnections').listen();
+
+            console.log("create component panel");
+
+            guiProperties = [displayName, xPos, yPos, textSize, width, height, applyAspectRatio, 
+                hide, hideConnections];
+        }
+        function initGuiControllerEvents() {
+            print("init events");
+            for (let property of guiProperties) {
+                property.onChange(function(value) {
+                    // Fires on every change, drag, keypress, etc.
+                    // print(value);
+                    ioController.getInstance().sendData('componentChange', selectedComponent.prepareForJson());
+                });
+            }
+        }
+        function applyGUIValues() {
+            var att = Object.keys(gui.__folders);
+            if (compPropertiesPanel != null && att.length > 1 || att[1] == "Component Properties") {
+                gui.removeFolder(compPropertiesPanel);
+            }
+            compPropertiesPanel = gui.addFolder("Component Properties");
+            let comp = getSelectedComponent();
+
+            var displayName = compPropertiesPanel.add(comp, 'displayName').listen();
+            var xPos = compPropertiesPanel.add(comp, 'x').listen();
+            var yPos = compPropertiesPanel.add(comp, 'y').listen();
+            var textSize = compPropertiesPanel.add(comp, 'textSize', 8, 32).listen();
+            var width = compPropertiesPanel.add(comp.image, 'width', 30, 200).listen();
+            var height = compPropertiesPanel.add(comp.image, 'height', 30, 200).listen();
+
+            var applyAspectRatio = compPropertiesPanel.add(comp, 'applyAspectRatio').listen();
+
+            var hide = compPropertiesPanel.add(comp, 'hide').listen();
+            var hideConnections = compPropertiesPanel.add(comp, 'hideConnections').listen();
+
+            compPropertiesPanel.open();
+
+            guiProperties = [displayName, xPos, yPos, textSize, width, height, applyAspectRatio, 
+                hide, hideConnections];
+
+            initGuiControllerEvents();
+
         }
         function getPropertiesPanel() {
             return compPropertiesPanel;
@@ -204,29 +261,6 @@ const componentController = (function() {
                 selectedComponent = currentClick;
             }
             return;
-        }
-        function applyGUIValues() {
-            var att = Object.keys(gui.__folders);
-            if (compPropertiesPanel != null && att.length > 1 || att[1] == "Component Properties") {
-                gui.removeFolder(compPropertiesPanel);
-            }
-            compPropertiesPanel = gui.addFolder("Component Properties");
-            let comp = getSelectedComponent();
-
-            compPropertiesPanel.add(comp, 'displayName').listen();
-            compPropertiesPanel.add(comp, 'x').listen();
-            compPropertiesPanel.add(comp, 'y').listen();
-            compPropertiesPanel.add(comp, 'textSize', 8, 32).listen();
-            compPropertiesPanel.add(comp.image, 'width', 30, 200).listen();
-            compPropertiesPanel.add(comp.image, 'height', 30, 200).listen();
-
-            compPropertiesPanel.add(comp, 'applyAspectRatio').listen();
-
-            compPropertiesPanel.add(comp, 'hide').listen();
-            compPropertiesPanel.add(comp, 'hideConnections').listen();
-
-            compPropertiesPanel.open();
-
         }
         function displayAllComponents() {
             let _components = allComponents.getInstance().get();
@@ -432,7 +466,7 @@ const componentController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve, reject) => {
-                loadXML(`/assets/components/${name}.xml`, (xml) => {
+                loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
                 });
             });
