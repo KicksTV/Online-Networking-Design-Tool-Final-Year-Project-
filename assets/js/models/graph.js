@@ -1,4 +1,7 @@
-var Graph = (function () {
+// Collections
+import allComponents from '../collections/allComponents.js';
+
+const Graph = (function () {
     var instance;
     function init() {
 
@@ -12,7 +15,6 @@ var Graph = (function () {
         function addEdge(src, target) {
             _adjacencyList.get(src).push(target);
             _adjacencyList.get(target).push(src);
-    
         }
         function getNodes() {
             return _adjacencyList.entries();
@@ -20,7 +22,7 @@ var Graph = (function () {
         function updateGraph() {
             for (const [key, value] of _adjacencyList.entries()) {
                 let exists = false;
-                let foundComp = allComps.getAll().find(comp => comp.id == key);
+                let foundComp = allComponents.getInstance().getAll().find(comp => comp.id == key);
                 if (foundComp) {
                     exists = true;
                 }
@@ -64,7 +66,7 @@ var Graph = (function () {
                 // Prevents from travelling up the graph
                 if (! destination.includes("Router")) {
                     // Retrieves component object
-                    var adjacentComp = allComps.getAll().find(nextComp => nextComp.id.toString() === destination.toString());
+                    var adjacentComp = allComponents.getInstance().getAll().find(nextComp => nextComp.id.toString() === destination.toString());
                     if (adjacentComp) {
                         if (searchCase(adjacentComp) && ! visited.has(destination)) {
                             foundNodesFromSearch.push(adjacentComp);
@@ -121,3 +123,5 @@ var Graph = (function () {
         }
     }
 })();
+
+export default Graph;

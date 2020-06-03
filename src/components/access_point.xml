@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+    <name>Access_Point</name>
+    <type>Device</type>
+    <image path="/assets/img/wireless-access-point.svg" alt="Access_Point icon"></image>
+    <interfaces>
+        <interface portType="Fast_Ethernet" numberOfPorts="12"></interface>
+    </interfaces>
+    <validLinkingComponents>
+        <linkingComponent>Twisted_Pair</linkingComponent>
+    </validLinkingComponents>
+</component>

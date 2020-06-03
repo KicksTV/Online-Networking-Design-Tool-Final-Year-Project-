@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+    <name>Laptop</name>
+    <type>Device</type>
+    <image path="/assets/img/laptop.svg" alt="Laptop icon"></image>
+    <interfaces>
+        <interface portType="Fast_Ethernet" numberOfPorts="1"></interface>
+    </interfaces>
+    <validLinkingComponents>
+        <linkingComponent>Twisted_Pair</linkingComponent>
+    </validLinkingComponents>
+</component>

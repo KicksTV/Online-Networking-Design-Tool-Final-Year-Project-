@@ -1,4 +1,4 @@
-class Subnet {
+export default class Subnet {
     constructor() {
         this.subnetID = null;
         this.gatewayRouterID = null;

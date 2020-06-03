@@ -1,14 +1,15 @@
-class Device {
-    constructor(id, type) {
+export default class Device {
+    constructor(id, name, type) {
         this.id = null;
+        this.name = name;
         this.type = type;
         this._interfaces = [];
 
         if (!id) {
             let val = Math.floor(1000 + Math.random() * 900000);
-            let type = this.type;
-            type = type.replace(/\s/g, "_");
-            this.id = `${type}${val}`;
+            let name = this.name;
+            name = name.replace(/\s/g, "_");
+            this.id = `${name}${val}`;
         }
         else if (id != null) {
             this.id = id;
@@ -38,7 +39,6 @@ class Device {
     hasAvailablePort() {
         var hasAvailablePort = false;
         this._interfaces.forEach((i) => {
-            print(i);
             if (i.availablePorts > 0) {
                 hasAvailablePort = true;
             }

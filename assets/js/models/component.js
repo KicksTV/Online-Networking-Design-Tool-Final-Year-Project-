@@ -1,7 +1,12 @@
-class Component extends componentMixin(Device) {
-    constructor(id, type, path, image) {
-        super(id, type);
-        this.name = `${type}`;
+// Mixin
+import {componentMixin} from '../mixin/mixin.js';
+
+import Device from './device.js';
+
+export default class Component extends componentMixin(Device) {
+    constructor(id, name, type, path, image) {
+        super(id, name, type);
+        this.displayName = name;
         this.image;
         this.imgPath = path;
         this.x = 100;
@@ -17,7 +22,9 @@ class Component extends componentMixin(Device) {
         this.hasCon = false;
         this.isClicked = false;
         this.guiParams = null;
-        this.validLinkingComponents = ["Twisted Pair"];
+
+        // Default
+        this.validLinkingComponents = ["Twisted_Pair"];
 
         if (image) {
             this.image = image;
@@ -38,6 +45,8 @@ class Component extends componentMixin(Device) {
     }
     setIMG(val) {
         this.image = val;
+        this.width = this.image.width;
+        this.height = this.image.height;
         this.aspectRatio[0] = this.image.width;
         this.aspectRatio[1] = this.image.height;
         return this.image;
@@ -93,12 +102,6 @@ class Component extends componentMixin(Device) {
     setHasConnection(val) {
         this.hasCon = val;
     }
-    getComponentName() {
-        return this.name;
-    }
-    setComponentName(val) {
-        this.name = val;
-    }
     getTextSize() {
         return this.textSize;
     }
@@ -125,9 +128,8 @@ class Component extends componentMixin(Device) {
     }
     checkValidLinkingComponent(comp) {
         var isValid = false;
-        print(comp.getType());
         this.validLinkingComponents.forEach((c)=> {
-            if (comp.getType() == c) {
+            if (comp.name == c) {
                 isValid = true;
             }
         });

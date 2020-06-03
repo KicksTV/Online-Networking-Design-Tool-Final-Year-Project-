@@ -1,10 +1,13 @@
-function Button(imgPath, imgAlt, compType) {
+import buttonDisplayer from '../behaviors/behaviors.js';
+
+export default function Button(name, compType, imgPath, imgAlt) {
     let state = {
         text,
         width,
         height,
         imgPath,
         imgAlt,
+        "name": name,
         "componentType": compType,
 
         "li": createElement('li', ''),
@@ -26,6 +29,9 @@ function Button(imgPath, imgAlt, compType) {
     });
     
     const buttonGetterSetter = (state) => ({
+        getName: () => {
+            return state.name;
+        },
         getComponentType: () => {
             return state.componentType;
         },

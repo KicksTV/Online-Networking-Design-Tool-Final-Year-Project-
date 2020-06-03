@@ -1,4 +1,4 @@
-class InterfaceView {
+export default class InterfaceView {
     constructor(interfaces) {
         this.container = createDiv();
         this.title = "Interfaces";
@@ -31,11 +31,11 @@ class InterfaceView {
     }
     create() {
         this.interfaces.forEach(i => {
-            var div = createDiv(i.portType);
+            var div = createDiv(i.name);
             div.parent(this.container);
             div.class('interfaceTitleContainer');
             for (var p=0; p<i.availablePorts;p++) {
-                var button = createButton(i.portType + " " + p, i.portType + " " + p);
+                var button = createButton(i.name + " " + p, i.name + " " + p);
                 //print("Port" + i.portAvailability[p]);
                 
                 button.class('portButton');

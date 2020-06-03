@@ -1,12 +1,32 @@
+
+// Controllers
+import connectionController from '../controller/connectionController.js';
+import networkController from '../controller/networkController.js';
+import componentController from '../controller/componentController.js';
+import ioController from '../controller/ioController.js';
+
+// Collections
+import allComponents from '../collections/allComponents.js';
+import allConnections from '../collections/allConnections.js';
+import allTabs from '../collections/allComponentBarTabs.js';
+
+// Mixin
+import {compBarGetSetMixin} from '../mixin/mixin.js';
+
+// Models
+import Graph from '../models/graph.js';
+
+var p5 = require('p5')
+
 class ComponentsBarItem {
     constructor(title) {
         this.title = title;
         this.buttons = [];
-        this.ul = createElement('ul', '');
+        this.ul = new p5().createElement('ul', '');
     }
 }
 
-function componentsBarTab (title, width, height, bar) {
+export function componentsBarTab (title, width, height, bar) {
     let state = {
         title,
         width,
@@ -15,8 +35,8 @@ function componentsBarTab (title, width, height, bar) {
         bar,
         // CREATING NEW HTML ELEMENTS
         
-        "li": createElement('li', ''),
-        "a": createElement('a',title),
+        "li": new p5().createElement('li', ''),
+        "a": new p5().createElement('a', title),
     }
 
     
@@ -51,10 +71,10 @@ function componentsBarTab (title, width, height, bar) {
 
     const switchBehavior = (state) => ({
         switchCurrent: () => {
-            allTabs.hideCurrentButtons();
-            allTabs.unsetVisableCurrent();
+            allTabs.getInstance().hideCurrentButtons();
+            allTabs.getInstance().unsetVisableCurrent();
             state.bar.displayAllButtons();
-            allTabs.setVisableCurrent(state);
+            allTabs.getInstance().setVisableCurrent(state);
         }
     });
 
@@ -69,7 +89,7 @@ function componentsBarTab (title, width, height, bar) {
     );
 }
 
-class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
+export class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
 
     displayAllButtons() {
 
@@ -87,38 +107,29 @@ class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
             
     
             // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS CLICKED
-            this.buttons[i].getIMG().mousePressed(() => {
+            this.buttons[i].getIMG().mousePressed(async () => {
     
-                compContrInstance.setDraggingNewComponent(true);
+                componentController.getInstance().setDraggingNewComponent(true);
 
                 // CREATES NEW COMPONENT
+                var name = this.buttons[i].getName();
+                let defaultComponent = await componentController.getInstance().createNewComponent(name);
 
-                var path = this.buttons[i].getImgPath();
-                var type = this.buttons[i].getComponentType();
 
-                loadImage(path, img => {
-                    img.width = img.width/2;
-                    img.height = img.height/2;
-                    let newcomp = componentController.getInstance().createNewComponent(null, type, path, img);
-                    
-                    compContrInstance.setNewlyCreatedComp(newcomp);
-                    // ADDS IT TO ARRAY OF ALL components
-                    allComps.add(newcomp);
+                ioController.getInstance().sendData('createComponent', defaultComponent.prepareForJson());
 
-                    gui.domElement.dispatchEvent(networkChangeEvent);
-                });
+                // ADDS IT TO ARRAY OF ALL components
+                allComponents.getInstance().add(defaultComponent);
+
+                // Adds component to graph
+                Graph.getInstance().addNode(defaultComponent.id);
             });
-            // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS DRAGGED
-            // state.buttons[i].getIMG().mouseClicked(() => {
-
-            // });
         }
-        
     }
 }
 
 
-class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
+export class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
 
     displayAllButtons() {
 
@@ -137,17 +148,13 @@ class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
     
             // CREATES A NEW COMPONENT
     
-            this.buttons[i].getIMG().mouseClicked(() => {
-                let c;
-                if (connectionController.getInstance().getDrawConnection()) {
-                    c = allConnections.getInstance().getSelectedConnection();
-                    c.setType(this.buttons[i].getComponentType());
-                }else {
-                    c = connectionController.getInstance().createNewConnection(null, this.buttons[i].getComponentType());
+            this.buttons[i].getIMG().mouseClicked(async () => {
+                let name = this.buttons[i].getName();
+                let c = await connectionController.getInstance().createNewConnection(name);
+                connectionController.getInstance().setDrawConnection(true);
+                allConnections.getInstance().setSelectedConnection(c);
 
-                    connectionController.getInstance().setDrawConnection(true);
-                    allConnections.getInstance().setSelectedConnection(c);
-                }
+                
                 $('#startConnectionToastAlert').toast('show');
                 $('#startConnectionToastAlert .toast-body').text(
                     "Please select two commonents!"

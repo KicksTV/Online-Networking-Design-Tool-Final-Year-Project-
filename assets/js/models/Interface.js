@@ -1,8 +1,12 @@
-class Interface extends componentMixin(Device) {
-    constructor(id, type, numPorts) {
-        super(id ,type);
+// Mixin
+import {componentMixin} from '../mixin/mixin.js';
+
+import Device from './device.js';
+
+export default class Interface extends componentMixin(Device) {
+    constructor(id, name, type, numPorts) {
+        super(id, name, type);
         this.portType = type;
-        this.bandwidth;
         this.numberOfPorts = numPorts;
         this.availablePorts = numPorts;
 
@@ -14,7 +18,7 @@ class Interface extends componentMixin(Device) {
         this.portIPaddress = [];
 
         for (var i=0;i<=this.numberOfPorts;i++) {
-            var port = this.portType + " " + i;
+            var port = name + " " + i;
             this.portAvailability.push(true);
             this.ports.push(port);
         }

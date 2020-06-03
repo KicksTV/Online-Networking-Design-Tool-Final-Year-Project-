@@ -1,4 +1,8 @@
-class PanelView {
+//Controllers
+import componentController from '../controller/componentController.js';
+import networkController from '../controller/networkController.js';
+
+export default class PanelView {
     constructor() {
         this.mainContainer = document.getElementById("bottomPanel");
         this.titleContainer = document.getElementById("bottomPanelTitleContainer");
