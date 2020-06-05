@@ -1,0 +1,4 @@
+# Bundling libraries together.
+browserify -r dat.gui -r socket.io-client -r p5 > bundle.js
+
+browserify -r dat.gui -r socket.io-client -r p5 -r ./assets/js/models/component.js -r ./assets/js/models/connection.js -r ./assets/js/models/Interface.js -r ./assets/js/mixin/mixin.js > bundle.js
