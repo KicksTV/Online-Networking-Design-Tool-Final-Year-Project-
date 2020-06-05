@@ -56,7 +56,7 @@ window.onload = function() {
     input.onchange = saveLoadController.getInstance().loadEvent;
 
     // SAVE
-    canvasSaveProject.addEventListener("click", saveLoadController.getInstance().saveEvent);
+    canvasSaveProject.addEventListener("click", saveLoadController.getInstance().saveEventToFile);
 
     // DELETE COMPONENT
     canvasDeleteButton.addEventListener("click", () => {
@@ -142,6 +142,12 @@ new p5(function(p5) {
         networkController.getInstance().initNetworkListener(gui);
     
         panelController.getInstance();
+
+        if (typeof projectJSON != 'undefined') {
+            // console.log(projectJSON);
+            saveLoadController.getInstance().loadProject(projectJSON) ; 
+        }
+
     }
     p5.setup = function() {
         frameRate(60);
