@@ -1,7 +1,7 @@
 // Controllers
-import connectionController from '../controller/connectionController.js';
-import componentController from '../controller/componentController.js';
-import networkController from '../controller/networkController.js';
+import connectionController from './connectionController.js';
+import componentController from './componentController.js';
+import networkController from './networkController.js';
 
 
 // Collections
@@ -12,7 +12,7 @@ import allSubnets from '../collections/allSubnets.js';
 // Models
 import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
-import Interface from '../models/Interface.js';
+const Interface = require('/assets/js/models/Interface.js');
 
 
 const saveLoadController = (function() {
@@ -21,7 +21,7 @@ const saveLoadController = (function() {
     function init() {
      
 
-        async function saveEvent() {
+        async function saveEventToFile() {
             // Setup of json format
             var json = {
                 "graph": {},
@@ -44,6 +44,32 @@ const saveLoadController = (function() {
                 return saveJSON(json, 'network_design_project.json');
             }else {
                 alert("Canvas is empty");
+            }
+        }
+
+        async function saveEventToJSON() {
+            // Setup of json format
+            var json = {
+                "graph": {},
+                "connections": [],
+                "components": [],
+                "subnets": [],
+            };
+            // Checking if anything exists on canvas
+            if (!allComponents.getInstance().isEmpty()) {
+
+                var data = await getAllSaveData();
+
+                json.graph = data[0];
+                json.connections = data[1];
+                json.components = data[2];
+                json.subnets = data[3];
+
+                // Saves json to file
+                // console.log(json);
+                return json;
+            }else {
+                return null;
             }
         }
 
@@ -97,10 +123,10 @@ const saveLoadController = (function() {
         // First running 'loadProject' will load subnets and components
         // Once 'loadComponents' is finished, it will callback 'loadProject'
         // Second time running will load connections
-        async function loadProject(array, loadedComponents) {
+        async function loadProject(array) {
             // if (! loadedComponents) {
                 // Callback to this function when finished loading components
-                let finishedLoadingComponents = await loadComponents(array, loadProject);
+                await loadComponents(array, loadProject);
             // } 
             // else if (loadedComponents) {
 
@@ -118,7 +144,7 @@ const saveLoadController = (function() {
                 });
 
 
-                let finishedLoadingConnections = await loadConnections(array);
+                await loadConnections(array);
 
                 window.setTimeout(() => {
                     print("Check network event");
@@ -126,7 +152,7 @@ const saveLoadController = (function() {
                 }, 500);
             // }
         }
-        async function loadComponents(array, callback) {
+        async function loadComponents(array) {
             // LOADING COMPONENTS
             for (let comp of array.components) {
                     var  newcomp = await componentController.getInstance().createNewComponent(comp.name);
@@ -204,8 +230,10 @@ const saveLoadController = (function() {
         }
         
         return {
-            saveEvent:saveEvent,
+            saveEventToFile:saveEventToFile,
+            saveEventToJSON:saveEventToJSON,
             loadEvent:loadEvent,
+            loadProject:loadProject,
         };   
     }
     return {
