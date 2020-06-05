@@ -1,0 +1,29 @@
+<html lang="en">
+    <% include partials/head %>
+    <% include partials/header %>
+
+    <body>
+        
+        <% include partials/canvasView %>
+
+
+        <% include partials/scripts %>
+
+
+        <script>
+            var projectPath = "<%= pagedata.project %>";
+            // console.log(pagedata)
+            var projectJSON;
+            $.ajax({
+                url: projectPath, 
+                success: function( data ) {
+                    projectJSON = data;
+                    // console.log(data);
+                }
+            });
+        </script>
+
+        <% include partials/p5-scripts %>
+
+    </body>
+</html>
