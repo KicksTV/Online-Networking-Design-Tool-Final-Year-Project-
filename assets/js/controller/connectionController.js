@@ -1,13 +1,13 @@
 // Controllers
-import networkController from '../controller/networkController.js';
-import componentController from '../controller/componentController.js';
+import networkController from './networkController.js';
+import componentController from './componentController.js';
 
 // Collections
 import allConnections from '../collections/allConnections.js';
 import allVRules from '../collections/allValidationRules.js';
 
 // Models
-import Connection from '../models/connection.js';
+const Connection = require('/assets/js/models/connection.js');
 import Graph from '../models/graph.js';
 
 // Views
@@ -17,7 +17,6 @@ const connectionController = (function() {
     var instance;
     
     function init() {
-     
         var drawConnection = false;
         var compAddConnectionCounter = 0;
         var selectingSecondConnection = false;
@@ -273,7 +272,7 @@ const connectionController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve, reject) => {
-                loadXML(`/assets/components/${name}.xml`, (xml) => {
+                loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
                 });
             });

@@ -1,4 +1,4 @@
-export default class Device {
+class Device {
     constructor(id, name, type) {
         this.id = null;
         this.name = name;
@@ -78,3 +78,5 @@ export default class Device {
         });
     }
 }
+
+module.exports = Device;

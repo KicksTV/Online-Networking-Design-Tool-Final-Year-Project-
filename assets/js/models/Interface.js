@@ -1,9 +1,9 @@
 // Mixin
-import {componentMixin} from '../mixin/mixin.js';
+const mixin = require('../mixin/mixin.js');
 
-import Device from './device.js';
+const Device = require('./device.js');
 
-export default class Interface extends componentMixin(Device) {
+class Interface extends mixin.componentMixin(Device) {
     constructor(id, name, type, numPorts) {
         super(id, name, type);
         this.portType = type;
@@ -30,3 +30,5 @@ export default class Interface extends componentMixin(Device) {
         this.availablePorts-1;
     }
 }
+
+module.exports = Interface;

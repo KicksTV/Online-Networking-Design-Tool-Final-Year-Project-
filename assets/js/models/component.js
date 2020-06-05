@@ -1,9 +1,8 @@
 // Mixin
-import {componentMixin} from '../mixin/mixin.js';
+const mixin = require('../mixin/mixin.js');
+const Device = require('./device.js');
 
-import Device from './device.js';
-
-export default class Component extends componentMixin(Device) {
+class Component extends mixin.componentMixin(Device) {
     constructor(id, name, type, path, image) {
         super(id, name, type);
         this.displayName = name;
@@ -136,3 +135,5 @@ export default class Component extends componentMixin(Device) {
         return isValid;
     }
 }
+
+module.exports = Component;
