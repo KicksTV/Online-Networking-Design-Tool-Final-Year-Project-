@@ -6,16 +6,14 @@ import ioController from './ioController.js';
 import allComponents from '../collections/allComponents.js';
 
 // Models
-import Component from '../models/component.js';
+const Component = require('/assets/js/models/component.js');
 import Graph from '../models/graph.js';
-import Interface from '../models/Interface.js';
+const Interface = require('/assets/js/models/Interface.js');
 
 const componentController = (function() {
     var instance;
     
     function init() {
-
-        
         var currentClick = null;
         var selectedComponent = null;
         var previousSelectedComp = null;

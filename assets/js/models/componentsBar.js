@@ -11,7 +11,7 @@ import allConnections from '../collections/allConnections.js';
 import allTabs from '../collections/allComponentBarTabs.js';
 
 // Mixin
-import {compBarGetSetMixin} from '../mixin/mixin.js';
+const mixin = require('/assets/js/mixin/mixin.js');
 
 // Models
 import Graph from '../models/graph.js';
@@ -89,7 +89,7 @@ export function componentsBarTab (title, width, height, bar) {
     );
 }
 
-export class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
+export class ComponentBarComponents extends mixin.compBarGetSetMixin(ComponentsBarItem) {
 
     displayAllButtons() {
 
@@ -129,7 +129,7 @@ export class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem
 }
 
 
-export class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
+export class ComponentBarConnections extends mixin.compBarGetSetMixin(ComponentsBarItem) {
 
     displayAllButtons() {
 

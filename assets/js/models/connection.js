@@ -1,9 +1,9 @@
 // Mixin
-import {connectionMixin} from '../mixin/mixin.js';
+const mixin = require('../mixin/mixin.js');
 
-import Device from './device.js';
+const Device = require('./device.js');
 
-export default class Connection extends connectionMixin(Device) {
+class Connection extends mixin.connectionMixin(Device) {
     /**
          * Attributes. Created when a connection component is successfully linked between two device components.
          * @param this.id                 {Number}          To be able to uniquely identify a connection.
@@ -61,3 +61,5 @@ export default class Connection extends connectionMixin(Device) {
     }
 
 }
+
+module.exports = Connection;
