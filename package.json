@@ -5,7 +5,8 @@
   "scripts": {
     "test": "mocha",
     "start": "node app",
-    "dev": "nodemon --watch app.js --inspect app.js"
+    "dev": "nodemon app.js",
+    "dev-debug": "nodemon --watch app.js --inspect app.js"
   },
   "author": "Llewellyn Brunsdon-Haland",
   "license": "ISC",
@@ -37,6 +38,7 @@
     "dat.gui": "^0.7.7",
     "ejs": "^2.7.4",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "extract-loader": "^5.1.0",
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",

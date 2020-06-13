@@ -174,6 +174,7 @@ const saveLoadController = (function() {
             for (let con of array.connections) {
                 // new connection
                 var newconnection = await connectionController.getInstance().createNewConnection(con.name);
+                newconnection.id = con.id;
                 newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
 
                 // Creates the interfaces

@@ -62,6 +62,18 @@ window.onload = function() {
     canvasDeleteButton.addEventListener("click", () => {
         compContrInstance.setSelectCompForDelete(true);
     });
+
+    var createRoomButton = document.getElementById("createRoom");
+    createRoomButton.addEventListener("click", () => {
+        ioController.getInstance().sendData('createRoom', ioController.getInstance().getSocket().id);
+        console.log(`Your room id: ${ioController.getInstance().getSocket().id}`);
+        
+        alert(`Your room id: ${ioController.getInstance().getSocket().id}`);
+
+        // Hide create room button
+        createRoomButton.style.display = "none";
+    });;
+
 };
 
 new p5(function(p5) {
@@ -147,7 +159,6 @@ new p5(function(p5) {
             // console.log(projectJSON);
             saveLoadController.getInstance().loadProject(projectJSON) ; 
         }
-
     }
     p5.setup = function() {
         frameRate(60);
@@ -155,7 +166,13 @@ new p5(function(p5) {
         canvas = createCanvas((windowWidth-20), windowHeight);
         canvas.parent("canvasDiv");
 
-        ioController.getInstance().initIO();
+        if (typeof room_ID != 'undefined' && room_ID != '') {
+            console.log(room_ID);
+            ioController.getInstance().initIO(room_ID);
+        } else {
+            ioController.getInstance().initIO(null);
+        }
+        
     }
     p5.draw = function() {
         clear();
