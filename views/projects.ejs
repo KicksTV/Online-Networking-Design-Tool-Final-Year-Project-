@@ -22,16 +22,36 @@
                         </div>
                     </a>
                     <a href="" style="text-decoration: none;">
+                        <div class="card" style="width: 18rem;">
+                            <img class="" src="/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
+                            <div class="card-body">
+                                <h5 class="card-title">Load Project</h5>
+                                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                                <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
+                            </div>
+                            
+                        </div>
+                    </a>
+                    <% if(pagedata.room_ID) { %>
+                        <a href="/projects/newproject?room_ID=<%= pagedata.room_ID %>">
                             <div class="card" style="width: 18rem;">
                                 <img class="" src="/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
                                 <div class="card-body">
-                                    <h5 class="card-title">Load Project</h5>
-                                    <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-                                    <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
+                                    <h5 class="card-title">Join Room</h5>
                                 </div>
-                                
                             </div>
                         </a>
+                    <% } else { %>
+                        <!-- Button trigger modal -->
+                        <a type="button" data-toggle="modal" data-target="#exampleModal" href="">
+                            <div class="card" style="width: 18rem;">
+                                <img class="" src="/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
+                                <div class="card-body">
+                                    <h5 class="card-title">Join Room</h5>
+                                </div>
+                            </div>
+                        </a>
+                    <% } %>
                 </div>
                 <br>
                 
@@ -52,6 +72,60 @@
                 </div>
             <% } %>
         </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Please enter room id.</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/projects/join" method="post">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Room ID</span>
+                            </div>
+                            <input name="room_id" type="text" class="form-control" placeholder="" aria-label="Username" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" type="button" class="btn btn-primary" value="Join">
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+        <% if(! pagedata.success && pagedata.success != null) { %>
+            <div class="modal fade" id="errorModel" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModel">Error</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+
+            
+        <% } %>
+
         <% include partials/scripts %>
+
+        <% if(! pagedata.success) { %>
+            <script>$('#errorModel').modal('show');</script>
+        <% } %>
     </body>
 </html>

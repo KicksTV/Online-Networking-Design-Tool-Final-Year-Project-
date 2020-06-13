@@ -10,33 +10,71 @@ const ioController = (function() {
     function init() {
      
         var io = require('socket.io-client')
-        var socket;
+        var socket = io.connect(`http://localhost:5000`);     
+        var room_ID = null;
 
 
-        function initIO() {
-            socket = io.connect(`http://localhost:5000/?clientId=${clientId}`);
 
+        async function initIO(rid) {
             // We make a named event called 'createComponent' and write an
             // anonymous callback function
+           
             socket.on('connection', 
                 async function(data) {
-                    console.log("new client connected");
+                    console.log("You have connected");
+                    
+                    
+                    if (rid != null) {
+                        room_ID = rid;
+                        console.log("rid", rid);
+        
+                    } else {
+                        room_ID = socket.id;
+                        console.log("socket.id", socket.id);
+                    }
+                    
+                    
+                    
+                    
+                    if (room_ID != null) {
+                        console.log(`You have connected to ${room_ID}`);
+                        // console.log('room_ID', room_ID);
+                        ioController.getInstance().sendData('joinRoom', null);
+                    }
+                }
+            );
 
+            socket.on('createRoom',
+                function(data) {
+                    console.log(socket);
+                    sendData('createRoom', socket.id);
+                }
+            );
+
+            // socket.on('joinRoom',
+            //     function(data) {
+            //         sendData();
+            //     }
+            // );
+
+            socket.on('requestCanvasData', 
+                async function(data) {
                     let json = await saveLoadController.getInstance().saveEventToJSON();
-                    console.log(json);
+                    console.log("Requesting canvas data: ", json);
                     if (json != null) {
-                        sendData('sentCanvasData', json);
+                        sendData('sentCanvasData',  json);
+                        console.log("Sent Data");
                     }
                 }
             );
 
             socket.on('receivedCanvasData', 
                 async function(data) {
-                    console.log("Got canvas data", data);
+                    console.log("Got canvas data", data.value);
 
                     // let json = await saveLoadController.getInstance().saveEventToJSON();
                     // console.log(json);
-                    saveLoadController.getInstance().loadProject(data);
+                    saveLoadController.getInstance().loadProject(data.value);
                     // sendData('sentCanvasData', json);
                 }
             );
@@ -45,9 +83,9 @@ const ioController = (function() {
                 async function(data) {
                     // console.log("Got:", data);
 
-                    let defaultComponent = await componentController.getInstance().createNewComponent(data.name);
+                    let defaultComponent = await componentController.getInstance().createNewComponent(data.value.name);
 
-                    var newcomp = Object.assign(defaultComponent, data);
+                    var newcomp = Object.assign(defaultComponent, data.value);
 
                     // ADDS IT TO ARRAY OF ALL components
                     allComponents.getInstance().add(newcomp);
@@ -89,9 +127,19 @@ const ioController = (function() {
                 }
             );
         }
+
+        function getSocket() {
+            return socket;
+        }
+
         function sendData(event , data) {
             // Send that object to the socket
             // console.log("Sending Data");
+            // console.log("socket", socket);
+
+            data = {value: data, room: room_ID}
+
+            // console.log(event, data);
             socket.emit(event, data);
         }
 
@@ -99,6 +147,7 @@ const ioController = (function() {
         
         return {
             initIO:initIO,
+            getSocket:getSocket,
             sendData:sendData,
         };   
     }

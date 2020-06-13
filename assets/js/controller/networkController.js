@@ -459,8 +459,18 @@ const networkController = (function() {
                     var currSubnet;
                     var foundSubnet = allSubnets.getInstance().toList().find(subnet => subnet.gatewayRouterID == router.getID() && subnet.connectionID == nextConnection.getID());
                    
+                    var fb = allSubnets.getInstance().toList().forEach((subnet) => {
+                        console.log(subnet.gatewayRouterID, router.getID());
+                        console.log(subnet.connectionID, nextConnection.getID());
+                    });
+
+
+                    console.log(allSubnets.getInstance().toList());
+
+                    console.log(foundSubnet);
                     // Creating or finding subnet object
                     if (foundSubnet == null) {
+                        console.log("new");
 
                         currSubnet = new Subnet();
                         currSubnet.gatewayRouterID = router.getID();
@@ -469,6 +479,7 @@ const networkController = (function() {
 
                     }
                     else {
+                        console.log("old");
                         currSubnet = foundSubnet;
                         currSubnet.gatewayRouterID = router.getID();
                         currSubnet.connectionID = nextConnection.getID();
@@ -835,18 +846,17 @@ const networkController = (function() {
         function toJSON() {
             var json = [];
             var endDevicesID = [];
+            var list = allSubnets.getInstance().getAll();
             // Saving all subnets
-            allSubnets.getInstance().getAll().forEach(s => {
+            list.forEach(s => {
                 for (var endDevice of s.endDevices) {
                     endDevicesID.push(endDevice.id);
                 }
-
-                s.endDevices = endDevicesID;
                 json.push(s);
+                json[list.indexOf(s)].endDevices = endDevicesID;
             });
             return json;
         }
-        
         return {
             initGUI:initGUI,
             initNetworkListener:initNetworkListener,
