@@ -1,15 +1,17 @@
-var express = require('express');
-var socket = require('socket.io');
-var expressSession = require('express-session');
-const serveIndex = require('serve-index');
-var defaultProjects = require('./assets/js/defaultProjects.js');
-const path = require('path');
-const bodyParser = require('body-parser');
-
+var express = require('express')
+var socket = require('socket.io')
+var expressSession = require('express-session')
+const serveIndex = require('serve-index')
+var defaultProjects = require('./assets/js/defaultProjects.js')
+const path = require('path')
+const bodyParser = require('body-parser')
 
 var app = express();
 app.set('view engine', 'ejs');
 
+app.use('/assets', express.static(path.join(__dirname, '/node_modules/jquery/dist')));
+app.use('/assets', express.static(path.join('node_modules/bootstrap/dist/js')));
+app.use('/assets', express.static(path.join('node_modules/bootstrap/dist/css')));
 app.use('/assets', express.static(path.join(__dirname, '/assets')));
 app.use('/assets', serveIndex(path.join(__dirname, '/assets')));
 app.use(bodyParser.urlencoded({ extended: true }));
