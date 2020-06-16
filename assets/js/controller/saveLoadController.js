@@ -14,13 +14,10 @@ import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
 const Interface = require('/assets/js/models/Interface.js');
 
-
 const saveLoadController = (function() {
     var instance;
     
     function init() {
-     
-
         async function saveEventToFile() {
             // Setup of json format
             var json = {
