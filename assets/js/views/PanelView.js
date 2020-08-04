@@ -67,7 +67,7 @@ export default class PanelView {
 
                 var ipfield = allCol[5];
 
-                if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.getType() == "Router") {
+                if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.name == "Router") {
                     if (inter.portIPaddress[port]) {
                         ipfield.innerText = inter.portIPaddress[port];
                     }
