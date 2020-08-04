@@ -26,10 +26,7 @@ export default class Subnet {
                 // print(this.endDevices);
                 this.unavailableAddresses[index] = null;
             }
-
-            
             this.unavailableAddresses = this.unavailableAddresses.filter(ip => ip != null);
-            
         }
 
         // Set new end devices

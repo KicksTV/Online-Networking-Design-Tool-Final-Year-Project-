@@ -215,8 +215,6 @@ const networkController = (function() {
             componentController.getInstance().getGUI().domElement.dispatchEvent(networkChangeEvent);
         }
 
-        
-
         // network functions
         function calculateAllNetworkProperties() {
             network.hosts = calculateAllHost();
@@ -459,18 +457,13 @@ const networkController = (function() {
                     var currSubnet;
                     var foundSubnet = allSubnets.getInstance().toList().find(subnet => subnet.gatewayRouterID == router.getID() && subnet.connectionID == nextConnection.getID());
                    
-                    var fb = allSubnets.getInstance().toList().forEach((subnet) => {
-                        console.log(subnet.gatewayRouterID, router.getID());
-                        console.log(subnet.connectionID, nextConnection.getID());
-                    });
+                    // console.log(allSubnets.getInstance().toList());
 
+                    // console.log(foundSubnet);
 
-                    console.log(allSubnets.getInstance().toList());
-
-                    console.log(foundSubnet);
                     // Creating or finding subnet object
                     if (foundSubnet == null) {
-                        console.log("new");
+                        // console.log("new");
 
                         currSubnet = new Subnet();
                         currSubnet.gatewayRouterID = router.getID();
@@ -479,17 +472,17 @@ const networkController = (function() {
 
                     }
                     else {
-                        console.log("old");
+                        // console.log("old");
                         currSubnet = foundSubnet;
                         currSubnet.gatewayRouterID = router.getID();
                         currSubnet.connectionID = nextConnection.getID();
                     }
 
                     // Getting adjacent component to router
-                    if (nextConnection.getComponent(0).type != 'Router') {
+                    if (nextConnection.getComponent(0).name != 'Router') {
                         searchingComp = nextConnection.getComponent(0);
                     }
-                    else if (nextConnection.getComponent(1).type != 'Router') {
+                    else if (nextConnection.getComponent(1).name != 'Router') {
                         searchingComp = nextConnection.getComponent(1);
                     }
 
@@ -770,7 +763,7 @@ const networkController = (function() {
 
                     // Checks if router has been assigned an IP address first
                     if (foundSubnetforComp.gatewayRouterIP == null) {
-                        e.preventDefault();
+                        event.preventDefault();
                         alert("Please assign an IP address to Default Gateway (Router) first.");
                     } else {
                         
@@ -847,9 +840,13 @@ const networkController = (function() {
             var json = [];
             var endDevicesID = [];
             var list = allSubnets.getInstance().getAll();
+
+            console.log(list)
+
             // Saving all subnets
             list.forEach(s => {
                 for (var endDevice of s.endDevices) {
+                    console.log(endDevice.id);
                     endDevicesID.push(endDevice.id);
                 }
                 json.push(s);

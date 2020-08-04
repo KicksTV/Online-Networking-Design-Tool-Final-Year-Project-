@@ -62,12 +62,24 @@ export default class PanelView {
                 }
                 allCol[0].setAttribute("scope", "row");
 
-                allCol[0].innerHTML = dataArray.indexOf(data)+1;
-                allCol[1].innerHTML = data.getComponent(0).name;
-                allCol[2].innerHTML = "→";
-                allCol[3].innerHTML = data.getComponent(1).name;
-                allCol[4].innerHTML = data.getType();
-                allCol[5].innerHTML = "";
+                allCol[0].innerText = dataArray.indexOf(data)+1;
+                allCol[1].innerText = data.getComponent(0).name;
+                allCol[2].innerText = "→";
+                allCol[3].innerText = data.getComponent(1).name;
+                allCol[4].innerText = data.getType();
+
+                var ipfield = allCol[5];
+
+                if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.name == "Router") {
+                    if (inter.portIPaddress[port]) {
+                        ipfield.innerText = inter.portIPaddress[port];
+                    }
+                    ipfield.setAttribute("contenteditable", "true");
+
+                    ipfield.addEventListener('keypress', function(e) {
+                        networkController.getInstance().checkIPAddressInput(e, data);
+                    });
+                }
 
             });
         } else {
