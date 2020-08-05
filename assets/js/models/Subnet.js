@@ -33,9 +33,11 @@ export default class Subnet {
         this.setEndDevices(endDevices);
     }
     setEndDevices(array) {
+        print("array",array)
         this.endDevices = array;
     }
     add(deviceID) {
+        print("deviceID",deviceID)
         this.endDevices.push(deviceID);
 
         this.unavailableAddresses.push(null);
