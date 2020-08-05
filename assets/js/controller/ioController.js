@@ -81,11 +81,11 @@ const ioController = (function() {
 
             socket.on('createComponent',
                 async function(data) {
-                    // console.log("Got:", data);
+                    console.log("Got:", data);
 
-                    let defaultComponent = await componentController.getInstance().createNewComponent(data.value.name);
+                    let defaultComponent = await componentController.getInstance().createNewComponent(data.name);
 
-                    var newcomp = Object.assign(defaultComponent, data.value);
+                    var newcomp = Object.assign(defaultComponent, data);
 
                     // ADDS IT TO ARRAY OF ALL components
                     allComponents.getInstance().add(newcomp);

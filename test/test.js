@@ -5,6 +5,14 @@
 const expect = require('chai').expect;
 
 // Create the variable you are going to test
+
+// Controllers
+const componentController = require('../assets/js/controller/componentController.js');
+
+// Collections
+const allComponents = require('../assets/js/collections/allComponents.js');
+
+// Models
 const Component = require('../assets/js/models/component.js');
 const Connection = require('../assets/js/models/connection.js');
 
@@ -30,5 +38,31 @@ describe('testing methods for component', function() {
       expect(valid).to.equal(false);
       // done tells the program the test is complete.
       done();
+    });
+});
+
+describe('testing networking calculation functions', function() {
+
+  // it() lets you comment on what an individual test is about.
+  it('test calculating all hosts function', function(done) {
+
+    componentController.getInstance().createNewComponent('PC')
+    componentController.getInstance().createNewComponent('Switch')
+    componentController.getInstance().createNewComponent('Router')
+
+
+    let len = allComponents.getInstance().length();
+    // expect is the actual test.  This test checks if the var is a string.
+    expect(len).to.equal(3);
+    // done tells the program the test is complete.
+    done();
+  });
+
+  it('Checking if a invalid connection component returns false', function(done) {
+    let valid = comp.checkValidLinkingComponent(connection2);
+    // expect is the actual test.  This test checks if the var is a string.
+    expect(valid).to.equal(false);
+    // done tells the program the test is complete.
+    done();
     });
 });

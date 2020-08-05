@@ -10,6 +10,8 @@ import allSubnets from '../collections/allSubnets.js';
 import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
 
+const clone = require('rfdc')({ proto: false, circles: false })
+
 const networkController = (function() {
     var instance;
     
@@ -24,13 +26,13 @@ const networkController = (function() {
             this.supernetMask = "255.255.255.248";
 
 
-            this.availableHostAddresses;
-            this.availableSubnets;
-            this.totalIPAddresses = calculateTotalIPAddresses(this.subnetMask);
-            this.totalSubnets = calculateTotalNumberSubnets(this.supernetMask);
+            this.available_Host_Addresses;
+            this.available_subnets;
+            this.available_IP_addresses = calculateTotalIPAddresses(this.subnetMask);
+            this.available_subnets = calculateTotalNumberSubnets(this.supernetMask);
 
-            this.calculatedSubnetmask = calculateSubnetMask();
-            this.calculatedSupernetmask = calculateSupernetMask(this.subnets);
+            this.calculated_subnetmask = calculateSubnetMask();
+            this.calculated_supernetmask = calculateSupernetMask(this.subnets);
 
             this.autoCalculateMasks = true;
 
@@ -74,8 +76,8 @@ const networkController = (function() {
         function createNetworkPropertiesPanel() {
             var hosts = networkPropertiesPanel.add(network, 'hosts').listen();
             var subnets = networkPropertiesPanel.add(network, 'subnets').listen();
-            var totalHosts = networkPropertiesPanel.add(network, 'totalIPAddresses').listen();
-            var totalSubnets = networkPropertiesPanel.add(network, 'totalSubnets').listen();
+            var totalHosts = networkPropertiesPanel.add(network, 'available_IP_addresses').listen();
+            var totalSubnets = networkPropertiesPanel.add(network, 'available_subnets').listen();
 
             var subnetController;
             var supernetController;
@@ -84,8 +86,8 @@ const networkController = (function() {
                 subnetController = networkPropertiesPanel.add(network, 'subnetMask').listen();
                 supernetController = networkPropertiesPanel.add(network, 'supernetMask').listen();
             } else {
-                subnetController = networkPropertiesPanel.add(network, 'calculatedSubnetmask').listen();
-                supernetController = networkPropertiesPanel.add(network, 'calculatedSupernetmask').listen();
+                subnetController = networkPropertiesPanel.add(network, 'calculated_subnetmask').listen();
+                supernetController = networkPropertiesPanel.add(network, 'calculated_supernetmask').listen();
             }
             var autoCalculateController = networkPropertiesPanel.add(network, 'autoCalculateMasks');
 
@@ -455,7 +457,10 @@ const networkController = (function() {
                     var searchingComp;
 
                     var currSubnet;
-                    var foundSubnet = allSubnets.getInstance().toList().find(subnet => subnet.gatewayRouterID == router.getID() && subnet.connectionID == nextConnection.getID());
+                    var foundSubnet = allSubnets.getInstance().toList().find(subnet => 
+                                                            subnet.gatewayRouterID == router.getID() && 
+                                                            subnet.connectionID == nextConnection.getID()
+                                                            );
                    
                     // console.log(allSubnets.getInstance().toList());
 
@@ -837,21 +842,9 @@ const networkController = (function() {
         }
 
         function toJSON() {
-            var json = [];
-            var endDevicesID = [];
-            var list = allSubnets.getInstance().getAll();
-
-            console.log(list)
-
             // Saving all subnets
-            list.forEach(s => {
-                for (var endDevice of s.endDevices) {
-                    console.log(endDevice.id);
-                    endDevicesID.push(endDevice.id);
-                }
-                json.push(s);
-                json[list.indexOf(s)].endDevices = endDevicesID;
-            });
+            var json = allSubnets.getInstance().toJSON();
+            console.log(json)
             return json;
         }
         return {

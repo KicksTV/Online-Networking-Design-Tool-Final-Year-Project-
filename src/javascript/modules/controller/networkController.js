@@ -825,20 +825,20 @@ const networkController = (function() {
             return validIP;
         }
 
-        function toJSON() {
-            var json = [];
-            var endDevicesID = [];
-            // Saving all subnets
-            allSubnets.getInstance().getAll().forEach(s => {
-                for (var endDevice of s.endDevices) {
-                    endDevicesID.push(endDevice.id);
-                }
+        // function toJSON() {
+        //     var json = [];
+        //     var endDevicesID = [];
+        //     // Saving all subnets
+        //     allSubnets.getInstance().getAll().forEach(s => {
+        //         for (var endDevice of s.endDevices) {
+        //             endDevicesID.push(endDevice.id);
+        //         }
 
-                s.endDevices = endDevicesID;
-                json.push(s);
-            });
-            return json;
-        }
+        //         s.endDevices = endDevicesID;
+        //         json.push(s);
+        //     });
+        //     return json;
+        // }
         
         return {
             initGUI:initGUI,

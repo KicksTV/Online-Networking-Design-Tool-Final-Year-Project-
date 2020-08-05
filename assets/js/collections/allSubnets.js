@@ -21,6 +21,26 @@ var allSubnets = (function () {
         function toList() {
             return _subnets;
         }
+        function toJSON() {
+            var json = [];
+            _subnets.forEach(s => {
+                var endDevicesID = [];
+                let item = {
+                    "subnetID": this.subnetID,
+                    "gatewayRouterID": this.gatewayRouterID,
+                    "gatewayRouterIP": this.gatewayRouterIP,
+                    "endDevices": null,
+                    "unavailableAddresses": this.unavailableAddresses,
+                }
+                for (var endDevice of s.endDevices) {
+                    console.log(endDevice.id);
+                    endDevicesID.push(endDevice.id);
+                }
+                item.endDevices = endDevicesID;
+                json.push(item);
+            });
+            return json;
+        }
 
         return {
             get:get,
@@ -29,6 +49,7 @@ var allSubnets = (function () {
             add:add,
             length:length,
             toList:toList,
+            toJSON:toJSON,
         };  
     }
     return {
