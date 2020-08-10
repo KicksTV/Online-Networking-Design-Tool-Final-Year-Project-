@@ -21,7 +21,7 @@ const allValidationRules = (function() {
             _rules.forEach((r) => {
                 if (r.getRuleType(0) == type1 && r.getRuleType(1) == type2 || r.getRuleType(0) == type2 && r.getRuleType(1) == type1) {
                     lastBrokenRule = r;
-                    print("lastBrokenRule");
+                    console.log("lastBrokenRule");
                     validConnection = false;
                 }
             });

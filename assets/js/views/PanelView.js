@@ -11,11 +11,11 @@ export default class PanelView {
 
     }
     show() {
-        print("show");
+        console.log("show");
         this.contentContainer.style.visibility = "visable";
     }
     hide() {
-        print("hide");
+        console.log("hide");
         this.contentContainer.style.visibility = "hidden";
     }
     update(dataArray) {
@@ -42,7 +42,7 @@ export default class PanelView {
                     interfaceValues = data.getInterfacePort(1);
                 }
 
-                print(interfaceValues);
+                console.log(interfaceValues);
 
                 var inter = interfaceValues[0];
                 var port = interfaceValues[1];

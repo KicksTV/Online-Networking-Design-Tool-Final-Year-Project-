@@ -1,14 +1,13 @@
 // Controllers
-import networkController from './networkController.js';
 import ioController from './ioController.js';
 
 // Collections
 import allComponents from '../collections/allComponents.js';
 
 // Models
-const Component = require('/assets/js/models/component.js');
+import Component from '../models/component.js';
+import Interface from '../models/Interface.js';
 import Graph from '../models/graph.js';
-const Interface = require('/assets/js/models/Interface.js');
 
 const componentController = (function() {
     var instance;
@@ -47,7 +46,7 @@ const componentController = (function() {
             // Wait for img to be loaded
             let promise = new Promise((resolve, reject) => {
                 // Loading component image
-                loadImage(defaultComponent.getImgPath(), img => {
+                app.loadImage(defaultComponent.getImgPath(), img => {
                     img.width = img.width/2;
                     img.height = img.height/2;
 
@@ -72,6 +71,15 @@ const componentController = (function() {
                 defaultComponent.displayName = name;
             }
             return defaultComponent;
+        }
+        async function createNewComponentFromArray(array) {
+            for (let d of array) {
+                let comp = await componentController.getInstance().createNewComponent(d)
+                // ADDS IT TO ARRAY OF ALL components
+                allComponents.getInstance().add(comp);
+                // Adds component to graph
+                Graph.getInstance().addNode(comp.id);
+            }
         }
         function cloneComponent(obj) {
             let newcomp = createNewComponent(null, obj.name, obj.type, obj.imgPath, obj.image)
@@ -128,7 +136,7 @@ const componentController = (function() {
                 hide, hideConnections];
         }
         function initGuiControllerEvents() {
-            print("init events");
+            console.log("init events");
             for (let property of guiProperties) {
                 property.onChange(function(value) {
                     // Fires on every change, drag, keypress, etc.
@@ -363,14 +371,14 @@ const componentController = (function() {
             if (selectedComponent) {
                 copied = true;
                 pasted = false;
-                print("copied"); 
+                console.log("copied"); 
             }
         }
         function cutSelectedComponents() {
             if (selectedComponent) {
                 cut = true;
                 pasted = false;
-                print("Component is cut"); 
+                console.log("Component is cut"); 
             }
         }
         function pasteSelectedComponents() {
@@ -464,7 +472,7 @@ const componentController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve, reject) => {
-                loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
+                app.loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
                 });
             });
@@ -494,6 +502,7 @@ const componentController = (function() {
 
         return {
             createNewComponent:createNewComponent,
+            createNewComponentFromArray:createNewComponentFromArray,
             cloneComponent:cloneComponent,
             initGUI:initGUI,
             getGUI:getGUI,

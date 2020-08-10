@@ -1,388 +1,4 @@
-require=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/assets/js/mixin/mixin.js":[function(require,module,exports){
-// Components Bar Component and Connection Mixin 
-const compBarGetSetMixin = superclass => class extends superclass {
-    init() {
-        print(this.title);
-        this.ul.addClass('navbar-nav mr-auto');
-        this.ul.id(`${this.title}navbar-component`);
-        this.ul.parent('componentsNav');
-    }
-    getTitle() {
-        return this.title;
-    }
-    setTitle(t) {
-        this.title = t;
-    }
-    getButtons(){
-        return this.buttons;
-    }
-    getUL() {
-        return this.ul;
-    }
-    add(b) {
-        this.buttons.push(b);
-    }
-};
-const componentMixin = superclass => class extends superclass {
-    display() {
-        image(this.image, this.x, this.y);
-        noStroke();
-        textSize(this.textSize);
-        text(this.displayName, this.x, this.y + this.image.height, this.image.width, 30);
-        textAlign(CENTER, CENTER);
-    }
-
-    applyAspectRatio() {
-        this.image.height = this.image.width * (this.image.height / this.width);
-        this.width = this.image.width;
-    }
-    
-    move(x, y) {
-        x = x - (this.image.width/2);
-        y = y - (this.image.height/2);
-        
-        if ((windowWidth) > (x + this.image.width) && 0 < x) {
-            this.x = x;
-        }
-        if (windowHeight > (y + this.image.height) && 0 < y) {
-            this.y = y;
-        }
-    }
-    multiMove(x, y) {
-        if ((windowWidth) > (x + this.image.width) && 0 < (x + this.x)) {
-            this.x += x;
-        }
-        if (windowHeight > (y + this.image.height) && 0 < (y + this.y)) {
-            this.y += y;
-        }
-    }
-    
-    clicked(mouseX, mouseY) {
-        var d = dist(this.x + (this.image.width/2), this.y + (this.image.height/2), mouseX, mouseY);
-        if (d < (this.image.width/2)) {
-            this.isClicked = true;
-        }else {
-            this.isClicked = false;
-        }
-        return this.isClicked;
-    }
-    prepareForJson() {
-        let parms = {
-            "id": this.id,
-            "name": this.name,
-            "displayName": this.displayName,
-            "imgPath": this.imgPath,
-            "type": this.type,
-            "x": this.x,
-            "y": this.y,
-            "width": this.image.width,
-            "height": this.image.height,
-            "hide": this.hide,
-            "hideConnections": this.hideConnections,
-            "textSize": this.textSize,
-        }
-        return parms;
-    }
-};
-
-const connectionMixin = superclass => class extends superclass {
-    compSelectDisplay()  {
-        let centerPos = this._components[0].getCenterPos();
-        let x = centerPos[0];
-        let y = centerPos[1];
-        push();
-        stroke('black');
-        strokeWeight(2);
-        line(x, y, this.mousePos[0], this.mousePos[1]);
-        pop();
-    }
-    defaultDisplay()  {
-        let centerPos1 = this._components[0].getCenterPos();
-        let centerPos2 = this._components[1].getCenterPos();
-        let x1 = centerPos1[0];
-        let y1 = centerPos1[1];
-        let x2 = centerPos2[0];
-        let y2 = centerPos2[1];
-
-        push();
-        stroke('black');
-        line(x1, y1, x2, y2);
-        pop();
-    }
-    isHidden()  {
-        let comp1 = this._components[0];
-        let comp2 = this._components[1];
-
-        if (comp1.getHideConnections() || comp2.getHideConnections()) {
-            return true;
-        }
-        return false;
-    }
-    prepareForJson()  {
-
-        let _comps = [this.getComponent(0).id, this.getComponent(1).id];
-
-        let parms = {
-            "id": this.id,
-            "name": this.name,
-            "type": this.type,
-            "mousePos": this.mousePos,
-            "_components": _comps,
-            "_interfacePorts": this._interfacePorts,
-        }
-        return parms;
-    }
-};
-const panelMixin = superclass => class extends superclass {
-    
-};
-
-module.exports = {componentMixin, connectionMixin, compBarGetSetMixin};
-
-
-},{}],"/assets/js/models/Interface.js":[function(require,module,exports){
-// Mixin
-const mixin = require('../mixin/mixin.js');
-
-const Device = require('./device.js');
-
-class Interface extends mixin.componentMixin(Device) {
-    constructor(id, name, type, numPorts) {
-        super(id, name, type);
-        this.portType = type;
-        this.numberOfPorts = numPorts;
-        this.availablePorts = numPorts;
-
-        // port name - which maps to availability and ip address below
-        this.ports = [];
-        // port availability i.e. if port currently has cable plugged in
-        this.portAvailability = [];
-        // port IP address i.e. if port currently has ip address
-        this.portIPaddress = [];
-
-        for (var i=0;i<=this.numberOfPorts;i++) {
-            var port = name + " " + i;
-            this.portAvailability.push(true);
-            this.ports.push(port);
-        }
-    }
-    portInUse(portNumber) {
-        this.portAvailability[portNumber] = false;
-    }
-    subtractPossibleAvailablePort() {
-        this.availablePorts-1;
-    }
-}
-
-module.exports = Interface;
-
-},{"../mixin/mixin.js":"/assets/js/mixin/mixin.js","./device.js":6}],"/assets/js/models/component.js":[function(require,module,exports){
-// Mixin
-const mixin = require('../mixin/mixin.js');
-const Device = require('./device.js');
-
-class Component extends mixin.componentMixin(Device) {
-    constructor(id, name, type, path, image) {
-        super(id, name, type);
-        this.displayName = name;
-        this.image;
-        this.imgPath = path;
-        this.x = 100;
-        this.y = 100;
-        this.width;
-        this.height;
-        this.aspectRatio = [];
-        this.centerPos = [];
-        this.textSize = 10;
-        this.hide = false;
-        this.hideConnections = false;
-        this.lock = false;
-        this.hasCon = false;
-        this.isClicked = false;
-        this.guiParams = null;
-
-        // Default
-        this.validLinkingComponents = ["Twisted_Pair"];
-
-        if (image) {
-            this.image = image;
-            this.width = this.image.width;
-            this.height = this.image.height;
-            this.aspectRatio[0] = this.image.width;
-            this.aspectRatio[1] = this.image.height;
-        }
-    }
-    getImgPath() {
-        return this.imgPath;
-    }
-    setImgPath(path) {
-        this.imgPath = path;
-    }
-    getIMG() {
-        return this.image;
-    }
-    setIMG(val) {
-        this.image = val;
-        this.width = this.image.width;
-        this.height = this.image.height;
-        this.aspectRatio[0] = this.image.width;
-        this.aspectRatio[1] = this.image.height;
-        return this.image;
-    }
-    getXpos() {
-        return this.x;
-    }
-    setXpos(val) {
-        this.x = val;
-    }
-    getYpos() {
-        return this.y;
-    }
-    setYpos(val) {
-        this.y = val;
-    }
-    getWidth() {
-        return this.image.width;
-    }
-    setWidth(val) {
-        this.image.width = val;
-    }
-    getHeight() {
-        return this.image.height;
-    }
-    setHeight(val) {
-        this.image.height = val;
-    }
-    getCenterPos() {
-        return this.centerPos = [this.x+(this.image.width/2), this.y+(this.image.height/2)];
-    }
-    getHideComponent() {
-        return this.hide;
-    }
-    setHideComponent(val) {
-        this.hide = val;
-    }
-    getHideConnections() {
-        return this.hideConnections;
-    }
-    setHideConnections(val) {
-        this.hideConnections = val;
-    }
-    getIsClicked() {
-        return this.isClicked;
-    }
-    setIsClicked(val) {
-        this.isClicked = val;
-    }
-    hasConnection() {
-        return this.hasCon;
-    }
-    setHasConnection(val) {
-        this.hasCon = val;
-    }
-    getTextSize() {
-        return this.textSize;
-    }
-    setTextSize(val) {
-        this.textSize = val;
-    }
-    getValidLinkingComponent(index) {
-        return this.validLinkingComponents[index];
-    }
-    setValidLinkningComponents(comps) {
-        this.validLinkingComponents = comps;
-    }
-    addValidLinkningComponent(comp) {
-        this.validLinkingComponents.push(comp);
-    }
-    getValidLinkingComponent(index) {
-        return this.validLinkingComponents[index];
-    }
-    setValidLinkningComponents(comps) {
-        this.validLinkingComponents = comps;
-    }
-    addValidLinkningComponent(comp) {
-        this.validLinkingComponents.push(comp);
-    }
-    checkValidLinkingComponent(comp) {
-        var isValid = false;
-        this.validLinkingComponents.forEach((c)=> {
-            if (comp.name == c) {
-                isValid = true;
-            }
-        });
-        return isValid;
-    }
-}
-
-module.exports = Component;
-},{"../mixin/mixin.js":"/assets/js/mixin/mixin.js","./device.js":6}],"/assets/js/models/connection.js":[function(require,module,exports){
-// Mixin
-const mixin = require('../mixin/mixin.js');
-
-const Device = require('./device.js');
-
-class Connection extends mixin.connectionMixin(Device) {
-    /**
-         * Attributes. Created when a connection component is successfully linked between two device components.
-         * @param this.id                 {Number}          To be able to uniquely identify a connection.
-         * @param this.name               {String}          The name of cable is being used e.g. fibre or Twisted Pair.
-         * @param this.type               {String}          What type of component is this? e.g. device or cable.
-         * @param this.mousePos           {Array}           The inital mouse clicks when setup of connection between device components.
-         * @param this._component         {Array}           The components that have been linked together.
-         * @param this._interfacePorts    {Array}           The interface and the selected port to make the connection between the two components.
-    */
-    constructor(id, name, type) {
-        super(id, name, type);
-        this.mousePos = [0, 0];
-        // [comp1, comp2]
-        this._components = [];
-        // [[interface object, port number], [interface object, port number]] - First object in is comp1
-        this._interfacePorts = [];
-    }
-    getMousePos()  {
-        return this.mousePos;
-    }
-    setMousePos(x, y)  {
-        this.mousePos = [x, y];
-    }
-    addComponent(comp)  {
-        this._components.push(comp);
-    }
-    getComponents()  {
-        return this._components;
-    }
-    getComponent(index)  {
-        return this._components[index];
-    }
-    setComponent(index, val)  {
-        this._components[index] = val;
-    }
-    addInterfacePort(values)  {
-        this._interfacePorts.push(values);
-    }
-    /**
-         * Returns an interface object
-         * @param index    {Number}    The Interface and Port wanting to be fetched from array.
-         * @returns        {Object}    An interface object for the index in the array.
-    */
-    getInterface(index)  {
-        return this._interfacePorts[index][0];
-    }
-    /**
-         * Returns an array containing the interface and port used to make a connection.
-         * @param index    {Number}    The Interface and Port wanting to be fetched from array.
-         * @returns        {Object}    An array containing the interface and port for a particular component.
-    */
-    // Gets interface and port in array
-    getInterfacePort(index)  {
-        return this._interfacePorts[index];
-    }
-
-}
-
-module.exports = Connection;
-},{"../mixin/mixin.js":"/assets/js/mixin/mixin.js","./device.js":6}],1:[function(require,module,exports){
+require=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2592,89 +2208,6 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],6:[function(require,module,exports){
-class Device {
-    constructor(id, name, type) {
-        this.id = null;
-        this.name = name;
-        this.type = type;
-        this._interfaces = [];
-
-        if (!id) {
-            let val = Math.floor(1000 + Math.random() * 900000);
-            let name = this.name;
-            name = name.replace(/\s/g, "_");
-            this.id = `${name}${val}`;
-        }
-        else if (id != null) {
-            this.id = id;
-        }
-    }
-    getID() {
-        return this.id;
-    }
-    setID(val) {
-        this.id = val;
-    }
-    getType() {
-        return this.type;
-    }
-    setType(val) {
-        this.type = val;
-    }
-    addInterface(inter) {
-        this._interfaces.push(inter);
-    }
-    getInterface(index) {
-        return this._interfaces[index];
-    } 
-    getInterfaces() {
-        return this._interfaces;
-    }
-    hasAvailablePort() {
-        var hasAvailablePort = false;
-        this._interfaces.forEach((i) => {
-            if (i.availablePorts > 0) {
-                hasAvailablePort = true;
-            }
-        });
-        return hasAvailablePort;
-    }
-    hasInterface(thisInterface) {
-        var hasInterface = false;
-        this._interfaces.forEach(listedInterface => {
-            if (listedInterface.portType.includes(thisInterface)) {
-                hasInterface = true;
-            }
-        });
-
-        return hasInterface;
-    }
-    getInterfaceFromString(string) {
-        var foundInterface = null;
-        var index = 0;
-        this._interfaces.forEach(i => {
-            i.ports.forEach(p => {
-                if (p == string) {
-                    foundInterface = i;
-                    index = i.ports.indexOf(p);
-                }
-            });
-        });
-        return [foundInterface,index];
-    }
-    injectInterfaceSavedData(thisInterface) {
-        this._interfaces.forEach(nextInterface => {
-            if (thisInterface.type == nextInterface.type) {
-                nextInterface.id = thisInterface.id;
-                nextInterface.portAvailability = thisInterface.portAvailability;
-                nextInterface.portIPaddress = thisInterface.portIPaddress;
-            }
-        });
-    }
-}
-
-module.exports = Device;
-},{}],7:[function(require,module,exports){
 module.exports = after
 
 function after(count, callback, err_cb) {
@@ -2704,7 +2237,7 @@ function after(count, callback, err_cb) {
 
 function noop() {}
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * An abstraction for slicing an arraybuffer even when
  * ArrayBuffer.prototype.slice is not supported
@@ -2735,7 +2268,7 @@ module.exports = function(arraybuffer, start, end) {
   return result.buffer;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 /**
  * Expose `Backoff`.
@@ -2822,7 +2355,7 @@ Backoff.prototype.setJitter = function(jitter){
 };
 
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*
  * base64-arraybuffer
  * https://github.com/niklasvh/base64-arraybuffer
@@ -2891,7 +2424,7 @@ Backoff.prototype.setJitter = function(jitter){
   };
 })();
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Create a blob builder even when vendor prefixes exist
  */
@@ -2993,7 +2526,7 @@ module.exports = (function() {
   }
 })();
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Slice reference.
  */
@@ -3018,7 +2551,7 @@ module.exports = function(obj, fn){
   }
 };
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -3195,7 +2728,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 module.exports = function(a, b){
   var fn = function(){};
@@ -3203,7 +2736,7 @@ module.exports = function(a, b){
   a.prototype = new fn;
   a.prototype.constructor = a;
 };
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = (function () {
   if (typeof self !== 'undefined') {
     return self;
@@ -3214,7 +2747,7 @@ module.exports = (function () {
   }
 })();
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 module.exports = require('./socket');
 
@@ -3226,7 +2759,7 @@ module.exports = require('./socket');
  */
 module.exports.parser = require('engine.io-parser');
 
-},{"./socket":17,"engine.io-parser":28}],17:[function(require,module,exports){
+},{"./socket":16,"engine.io-parser":27}],16:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -3976,7 +3509,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
   return filteredUpgrades;
 };
 
-},{"./transport":18,"./transports/index":19,"component-emitter":13,"debug":25,"engine.io-parser":28,"indexof":34,"parseqs":35,"parseuri":36}],18:[function(require,module,exports){
+},{"./transport":17,"./transports/index":18,"component-emitter":12,"debug":24,"engine.io-parser":27,"indexof":33,"parseqs":34,"parseuri":35}],17:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -4139,7 +3672,7 @@ Transport.prototype.onClose = function () {
   this.emit('close');
 };
 
-},{"component-emitter":13,"engine.io-parser":28}],19:[function(require,module,exports){
+},{"component-emitter":12,"engine.io-parser":27}],18:[function(require,module,exports){
 /**
  * Module dependencies
  */
@@ -4194,7 +3727,7 @@ function polling (opts) {
   }
 }
 
-},{"./polling-jsonp":20,"./polling-xhr":21,"./websocket":23,"xmlhttprequest-ssl":24}],20:[function(require,module,exports){
+},{"./polling-jsonp":19,"./polling-xhr":20,"./websocket":22,"xmlhttprequest-ssl":23}],19:[function(require,module,exports){
 /**
  * Module requirements.
  */
@@ -4426,7 +3959,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
   }
 };
 
-},{"../globalThis":15,"./polling":22,"component-inherit":14}],21:[function(require,module,exports){
+},{"../globalThis":14,"./polling":21,"component-inherit":13}],20:[function(require,module,exports){
 /* global attachEvent */
 
 /**
@@ -4846,7 +4379,7 @@ function unloadHandler () {
   }
 }
 
-},{"../globalThis":15,"./polling":22,"component-emitter":13,"component-inherit":14,"debug":25,"xmlhttprequest-ssl":24}],22:[function(require,module,exports){
+},{"../globalThis":14,"./polling":21,"component-emitter":12,"component-inherit":13,"debug":24,"xmlhttprequest-ssl":23}],21:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -5093,7 +4626,7 @@ Polling.prototype.uri = function () {
   return schema + '://' + (ipv6 ? '[' + this.hostname + ']' : this.hostname) + port + this.path + query;
 };
 
-},{"../transport":18,"component-inherit":14,"debug":25,"engine.io-parser":28,"parseqs":35,"xmlhttprequest-ssl":24,"yeast":54}],23:[function(require,module,exports){
+},{"../transport":17,"component-inherit":13,"debug":24,"engine.io-parser":27,"parseqs":34,"xmlhttprequest-ssl":23,"yeast":53}],22:[function(require,module,exports){
 (function (Buffer){
 /**
  * Module dependencies.
@@ -5396,7 +4929,7 @@ WS.prototype.check = function () {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../transport":18,"buffer":3,"component-inherit":14,"debug":25,"engine.io-parser":28,"parseqs":35,"ws":2,"yeast":54}],24:[function(require,module,exports){
+},{"../transport":17,"buffer":3,"component-inherit":13,"debug":24,"engine.io-parser":27,"parseqs":34,"ws":2,"yeast":53}],23:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 
 var hasCORS = require('has-cors');
@@ -5436,7 +4969,7 @@ module.exports = function (opts) {
   }
 };
 
-},{"./globalThis":15,"has-cors":33}],25:[function(require,module,exports){
+},{"./globalThis":14,"has-cors":32}],24:[function(require,module,exports){
 (function (process){
 /* eslint-env browser */
 
@@ -5704,7 +5237,7 @@ formatters.j = function (v) {
 };
 
 }).call(this,require('_process'))
-},{"./common":26,"_process":5}],26:[function(require,module,exports){
+},{"./common":25,"_process":5}],25:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -5972,7 +5505,7 @@ function setup(env) {
 
 module.exports = setup;
 
-},{"ms":27}],27:[function(require,module,exports){
+},{"ms":26}],26:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -6136,7 +5669,7 @@ function plural(ms, msAbs, n, name) {
   return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
 }
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -6743,7 +6276,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
   });
 };
 
-},{"./keys":29,"./utf8":30,"after":7,"arraybuffer.slice":8,"base64-arraybuffer":10,"blob":11,"has-binary2":31}],29:[function(require,module,exports){
+},{"./keys":28,"./utf8":29,"after":6,"arraybuffer.slice":7,"base64-arraybuffer":9,"blob":10,"has-binary2":30}],28:[function(require,module,exports){
 
 /**
  * Gets the keys for an object.
@@ -6764,7 +6297,7 @@ module.exports = Object.keys || function keys (obj){
   return arr;
 };
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
 
 var stringFromCharCode = String.fromCharCode;
@@ -6976,7 +6509,7 @@ module.exports = {
 	decode: utf8decode
 };
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function (Buffer){
 /* global Blob File */
 
@@ -7044,14 +6577,14 @@ function hasBinary (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":3,"isarray":32}],32:[function(require,module,exports){
+},{"buffer":3,"isarray":31}],31:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -7070,7 +6603,7 @@ try {
   module.exports = false;
 }
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -7081,7 +6614,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /**
  * Compiles a querystring
  * Returns string representation of the object
@@ -7120,7 +6653,7 @@ exports.decode = function(qs){
   return qry;
 };
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -7161,7 +6694,7 @@ module.exports = function parseuri(str) {
     return uri;
 };
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (global){
 /**!
  * @fileOverview Kickass library to create and place poppers near their reference elements.
@@ -9789,7 +9322,7 @@ return Popper;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -10364,7 +9897,7 @@ Manager.prototype.onreconnect = function () {
   this.emitAll('reconnect', attempt);
 };
 
-},{"./on":39,"./socket":40,"backo2":9,"component-bind":12,"component-emitter":42,"debug":43,"engine.io-client":16,"indexof":34,"socket.io-parser":48}],39:[function(require,module,exports){
+},{"./on":38,"./socket":39,"backo2":8,"component-bind":11,"component-emitter":41,"debug":42,"engine.io-client":15,"indexof":33,"socket.io-parser":47}],38:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -10390,7 +9923,7 @@ function on (obj, ev, fn) {
   };
 }
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -10830,7 +10363,7 @@ Socket.prototype.binary = function (binary) {
   return this;
 };
 
-},{"./on":39,"component-bind":12,"component-emitter":42,"debug":43,"has-binary2":31,"parseqs":35,"socket.io-parser":48,"to-array":53}],41:[function(require,module,exports){
+},{"./on":38,"component-bind":11,"component-emitter":41,"debug":42,"has-binary2":30,"parseqs":34,"socket.io-parser":47,"to-array":52}],40:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -10907,7 +10440,7 @@ function url (uri, loc) {
   return obj;
 }
 
-},{"debug":43,"parseuri":36}],42:[function(require,module,exports){
+},{"debug":42,"parseuri":35}],41:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -11072,15 +10605,15 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
+arguments[4][24][0].apply(exports,arguments)
+},{"./common":43,"_process":5,"dup":24}],43:[function(require,module,exports){
 arguments[4][25][0].apply(exports,arguments)
-},{"./common":44,"_process":5,"dup":25}],44:[function(require,module,exports){
+},{"dup":25,"ms":45}],44:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],45:[function(require,module,exports){
 arguments[4][26][0].apply(exports,arguments)
-},{"dup":26,"ms":46}],45:[function(require,module,exports){
-arguments[4][32][0].apply(exports,arguments)
-},{"dup":32}],46:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],47:[function(require,module,exports){
+},{"dup":26}],46:[function(require,module,exports){
 /*global Blob,File*/
 
 /**
@@ -11223,7 +10756,7 @@ exports.removeBlobs = function(data, callback) {
   }
 };
 
-},{"./is-buffer":49,"isarray":45}],48:[function(require,module,exports){
+},{"./is-buffer":48,"isarray":44}],47:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -11640,7 +11173,7 @@ function error(msg) {
   };
 }
 
-},{"./binary":47,"./is-buffer":49,"component-emitter":42,"debug":50,"isarray":45}],49:[function(require,module,exports){
+},{"./binary":46,"./is-buffer":48,"component-emitter":41,"debug":49,"isarray":44}],48:[function(require,module,exports){
 (function (Buffer){
 
 module.exports = isBuf;
@@ -11664,7 +11197,7 @@ function isBuf(obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":3}],50:[function(require,module,exports){
+},{"buffer":3}],49:[function(require,module,exports){
 (function (process){
 /**
  * This is the web browser implementation of `debug()`.
@@ -11863,7 +11396,7 @@ function localstorage() {
 }
 
 }).call(this,require('_process'))
-},{"./debug":51,"_process":5}],51:[function(require,module,exports){
+},{"./debug":50,"_process":5}],50:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -12090,7 +11623,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":52}],52:[function(require,module,exports){
+},{"ms":51}],51:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -12244,7 +11777,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = toArray
 
 function toArray(list, index) {
@@ -12259,7 +11792,7 @@ function toArray(list, index) {
     return array
 }
 
-},{}],54:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
@@ -16741,7 +16274,7 @@ module.exports = yeast;
 })));
 
 
-},{"jquery":"jquery","popper.js":37}],"dat.gui":[function(require,module,exports){
+},{"jquery":"jquery","popper.js":36}],"dat.gui":[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -30542,4 +30075,4 @@ exports.connect = lookup;
 exports.Manager = require('./manager');
 exports.Socket = require('./socket');
 
-},{"./manager":38,"./socket":40,"./url":41,"debug":43,"socket.io-parser":48}]},{},[]);
+},{"./manager":37,"./socket":39,"./url":40,"debug":42,"socket.io-parser":47}]},{},[]);

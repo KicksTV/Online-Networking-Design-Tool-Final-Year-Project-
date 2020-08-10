@@ -27,6 +27,9 @@ var allComponents = (function() {
                 return false;
             }
         }
+        function clear() {
+            _components = [];
+        }
         return {
             get:get,
             getAll:getAll,
@@ -34,6 +37,7 @@ var allComponents = (function() {
             add:add,
             length:length,
             isEmpty:isEmpty,
+            clear:clear,
         };   
     }
 

@@ -38,7 +38,7 @@ const Graph = (function () {
                     _adjacencyList.delete(key);
                 }
             }
-            print("Updated Graph");
+            console.log("Updated Graph");
         }
         function set(index, obj) {
             _adjacencyList[index] = obj;

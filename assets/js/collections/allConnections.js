@@ -16,6 +16,9 @@ var allConnections = (function() {
         function get() {
             return _connections;
         }
+        function getAll() {
+            return _connections;
+        }
         function getConnetion(num) {
             return _connections[num];
         }
@@ -33,7 +36,6 @@ var allConnections = (function() {
         }
         function getConnectionsRelatedToComp(c) {
             var _relatedConnections = [];
-            //print(_connections);
             _connections.forEach((i) => {
                 if (i != selectedConnection) {
                     if (c == i.getComponent(0) || c == i.getComponent(1)) {
@@ -46,12 +48,13 @@ var allConnections = (function() {
         return {add:add,
                 length:length,
                 get:get,
+                getAll:getAll,
                 getConnetion:getConnetion,
                 removeConnection:removeConnection,
                 getSelectedConnection:getSelectedConnection,
                 setSelectedConnection:setSelectedConnection,
                 getConnectionsRelatedToComp:getConnectionsRelatedToComp,
-                };   
+            };   
     }
 
     return {
