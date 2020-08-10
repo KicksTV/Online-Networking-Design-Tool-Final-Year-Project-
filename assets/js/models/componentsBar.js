@@ -1,9 +1,9 @@
 
 // Controllers
 import connectionController from '../controller/connectionController.js';
-import networkController from '../controller/networkController.js';
 import componentController from '../controller/componentController.js';
 import ioController from '../controller/ioController.js';
+import networkController from '../controller/networkController.js';
 
 // Collections
 import allComponents from '../collections/allComponents.js';
@@ -11,10 +11,10 @@ import allConnections from '../collections/allConnections.js';
 import allTabs from '../collections/allComponentBarTabs.js';
 
 // Mixin
-const mixin = require('/assets/js/mixin/mixin.js');
+import {compBarGetSetMixin} from '../mixin/mixin.js';
 
 // Models
-import Graph from '../models/graph.js';
+import Graph from './graph.js';
 
 var p5 = require('p5')
 
@@ -89,7 +89,7 @@ export function componentsBarTab (title, width, height, bar) {
     );
 }
 
-export class ComponentBarComponents extends mixin.compBarGetSetMixin(ComponentsBarItem) {
+export class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem) {
 
     displayAllButtons() {
 
@@ -123,13 +123,15 @@ export class ComponentBarComponents extends mixin.compBarGetSetMixin(ComponentsB
 
                 // Adds component to graph
                 Graph.getInstance().addNode(defaultComponent.id);
+
+                networkController.getInstance().dispatchNetworkChangeEvent()
             });
         }
     }
 }
 
 
-export class ComponentBarConnections extends mixin.compBarGetSetMixin(ComponentsBarItem) {
+export class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarItem) {
 
     displayAllButtons() {
 

@@ -1,7 +1,6 @@
 // Components Bar Component and Connection Mixin 
-const compBarGetSetMixin = superclass => class extends superclass {
+export const compBarGetSetMixin = superclass => class extends superclass {
     init() {
-        print(this.title);
         this.ul.addClass('navbar-nav mr-auto');
         this.ul.id(`${this.title}navbar-component`);
         this.ul.parent('componentsNav');
@@ -22,7 +21,7 @@ const compBarGetSetMixin = superclass => class extends superclass {
         this.buttons.push(b);
     }
 };
-const componentMixin = superclass => class extends superclass {
+export const componentMixin = superclass => class extends superclass {
     display() {
         image(this.image, this.x, this.y);
         noStroke();
@@ -84,7 +83,7 @@ const componentMixin = superclass => class extends superclass {
     }
 };
 
-const connectionMixin = superclass => class extends superclass {
+export const connectionMixin = superclass => class extends superclass {
     compSelectDisplay()  {
         let centerPos = this._components[0].getCenterPos();
         let x = centerPos[0];
@@ -136,5 +135,5 @@ const panelMixin = superclass => class extends superclass {
     
 };
 
-module.exports = {componentMixin, connectionMixin, compBarGetSetMixin};
+export default {componentMixin, connectionMixin, compBarGetSetMixin}
 

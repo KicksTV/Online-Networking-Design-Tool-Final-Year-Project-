@@ -1,68 +1,212 @@
 'use strict';
 
-// Import the expect library.  This is what allows us to check our code.
-// You can check out the full documentation at http://chaijs.com/api/bdd/
-const expect = require('chai').expect;
-
-// Create the variable you are going to test
-
 // Controllers
-const componentController = require('../assets/js/controller/componentController.js');
+import connectionController from '../assets/js/controller/connectionController.js';
+import componentController from '../assets/js/controller/componentController.js';
+import networkController from '../assets/js/controller/networkController.js';
 
 // Collections
-const allComponents = require('../assets/js/collections/allComponents.js');
+import allComponents from '../assets/js/collections/allComponents.js';
 
 // Models
-const Component = require('../assets/js/models/component.js');
-const Connection = require('../assets/js/models/connection.js');
+import Connection from '../assets/js/models/connection.js';
+import Interface from '../assets/js/models/Interface.js';
+import allConnections from '../assets/js/collections/allConnections.js';
+import Graph from '../assets/js/models/graph.js';
+
+
+var assert = chai.assert;
+var expect = chai.expect;
+
+var p5 = require('p5')
+
+var chaiAsPromised = require("chai-as-promised")
+chai.use(chaiAsPromised);
+var should = chai.should();
+
+
+window.app = new p5(function(p5) {
+  p5.preload = function() {
+  }
+  p5.setup = function() {
+    var canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight);
+    canvas.parent("canvasDiv");
+  }
+  p5.draw = function() {
+  }
+});
+
 
 
 // describe lets you comment on what this block of code is for.
-describe('testing methods for component', function() {
-  let comp = new Component(1, "PC", "Device", "/assets/img/pc.svg", null);
+describe('component functions', () => {
+
+  before('setup of some components', async function () {
+    var pc = await componentController.getInstance().createNewComponent('PC')
+    var netswitch = await componentController.getInstance().createNewComponent('Switch')
+    var router = await componentController.getInstance().createNewComponent('Router')
+
+    // ADDS IT TO ARRAY OF ALL components
+    allComponents.getInstance().add(pc);
+    allComponents.getInstance().add(netswitch);
+    allComponents.getInstance().add(router);
+
+    // Adds component to graph
+    Graph.getInstance().addNode(pc.id);
+    Graph.getInstance().addNode(netswitch.id);
+    Graph.getInstance().addNode(router.id);
+
+  });
+
   let connection1 = new Connection(1, "Twisted_Pair", "Cable");
   let connection2 = new Connection(2, "Fibre", "Cable");
 
-    // it() lets you comment on what an individual test is about.
-    it('Checking if a valid connection component returns true', function(done) {
-      let valid = comp.checkValidLinkingComponent(connection1);
-      // expect is the actual test.  This test checks if the var is a string.
-      expect(valid).to.equal(true);
-      // done tells the program the test is complete.
-      done();
-    });
 
-    it('Checking if a invalid connection component returns false', function(done) {
-      let valid = comp.checkValidLinkingComponent(connection2);
-      // expect is the actual test.  This test checks if the var is a string.
-      expect(valid).to.equal(false);
-      // done tells the program the test is complete.
-      done();
-    });
-});
-
-describe('testing networking calculation functions', function() {
-
-  // it() lets you comment on what an individual test is about.
-  it('test calculating all hosts function', function(done) {
-
-    componentController.getInstance().createNewComponent('PC')
-    componentController.getInstance().createNewComponent('Switch')
-    componentController.getInstance().createNewComponent('Router')
-
-
-    let len = allComponents.getInstance().length();
-    // expect is the actual test.  This test checks if the var is a string.
-    expect(len).to.equal(3);
-    // done tells the program the test is complete.
-    done();
+  it('test if comps exist in collection', async () => {
+    const comps = allComponents.getInstance().getAll();
+    comps.should.have.length(3);
   });
 
-  it('Checking if a invalid connection component returns false', function(done) {
-    let valid = comp.checkValidLinkingComponent(connection2);
+  it('test if default comp values have been loaded', async () => {
+    var defaultPC = await componentController.getInstance().createNewComponent('PC')
+
+    let promise = new Promise((resolve, reject) => {
+      app.loadXML(`/assets/components/${'pc'}.xml`, (xml) => {
+          resolve(xml);
+      });
+    });
+
+    let data = await promise;
+
+    let type = data.getChild('type').getContent();
+    let image = data.getChild('image').getString('path');
+    
+    let validLinkingComps = [];
+    for (let getValidLinkingComp of data.getChild("validLinkingComponents").getChildren()) {
+        validLinkingComps.push(getValidLinkingComp.getContent());
+    }
+
+    expect(defaultPC.type).to.equal(type);
+    expect(defaultPC.imgPath).to.equal(image);
+    expect(defaultPC.validLinkingComponents).to.eql(validLinkingComps);
+    expect(defaultPC).to.have.property('_interfaces').with.lengthOf(1);
+
+    defaultPC._interfaces.forEach(i => {
+      expect(i).to.be.an.instanceof(Interface);
+    });
+  });
+
+
+  // it() lets you comment on what an individual test is about.
+  it('Checking if a valid connection component returns true', async () => {
+    
+    var pc = allComponents.getInstance().getAll().find(c => c.name == "PC" )
+    
+    let valid = pc.checkValidLinkingComponent(connection1);
+    // expect is the actual test.  This test checks if the var is a string.
+    expect(valid).to.equal(true);
+  });
+
+  it('Checking if a invalid connection component returns false', async () => {
+    
+    var pc = allComponents.getInstance().getAll().find(c => c.name == "PC" )
+
+    let valid = pc.checkValidLinkingComponent(connection2);
     // expect is the actual test.  This test checks if the var is a string.
     expect(valid).to.equal(false);
-    // done tells the program the test is complete.
-    done();
-    });
+  });
+
+    
 });
+
+describe('networking calculation functions', function() {
+  
+  before('setup of some components', async function () {
+    allComponents.getInstance().clear()
+    
+    var devices = ['PC', 'Switch', 'Router', 'Router', 'Smartphone', 'Cloud', 'Laptop', 'Printer', 'Server', 'PC', 'Switch', 'Switch', 'Router']
+
+    await componentController.getInstance().createNewComponentFromArray(devices);
+
+    await setupNetwork();
+  });
+
+  // it() lets you comment on what an individual test is about.
+  it('Test for calculating number of hosts', async () => {
+    var calculated_host_devices = networkController.getInstance().calculateAllHost();
+    expect(calculated_host_devices).to.equal(6);
+  });
+
+  it('Test for calculating number of subnets', async () => {
+    var calculated_subnets = networkController.getInstance().calculateAllSubnets();
+    expect(calculated_subnets).to.equal(5);
+  });
+
+  it('Test #1 for calculating subnetmask', async () => {
+    var subnetmask = networkController.getInstance().calculateSubnetMask();
+    expect(subnetmask).to.equal('255.255.255.248');
+  });
+  describe('Overriding setup network', function() {
+
+    it('Test #2 for calculating subnetmask', async () => {
+      var subnetmask = networkController.getInstance().calculateSubnetMask();
+      expect(subnetmask).to.equal('255.255.255.248');
+    });
+  });
+});
+
+async function setupNetwork() {
+  var list_of_routers = allComponents.getInstance().getAll().filter(c => c.name === 'Router');
+  var list_of_PCs = allComponents.getInstance().getAll().filter(c => c.name === 'PC');
+
+  var netswitch = allComponents.getInstance().getAll().find(c => c.name === 'Switch');
+
+
+  // Router_1  -> Switch_1
+  var connection1 = await connectionController.getInstance().createNewConnection("twisted_pair");
+  connection1._components = [list_of_routers[0], netswitch];
+  allConnections.getInstance().add(connection1);
+
+  // Router_1 -> Router_2
+  var connection2 = await connectionController.getInstance().createNewConnection("twisted_pair");
+  connection2._components = [list_of_routers[0], list_of_routers[1]];
+  allConnections.getInstance().add(connection2);
+
+  // Router_2 -> PC_1
+  var connection3 = await connectionController.getInstance().createNewConnection("twisted_pair");
+  connection3._components = [list_of_routers[1], list_of_PCs[0]];
+  allConnections.getInstance().add(connection3);
+
+  // Router_2 -> Router_3
+  var connection4 = await connectionController.getInstance().createNewConnection("twisted_pair");
+  connection4._components = [list_of_routers[1], list_of_routers[2]];
+  allConnections.getInstance().add(connection4);
+
+  var connection5 = await connectionController.getInstance().createNewConnection("twisted_pair");
+  connection5._components = [list_of_routers[2], list_of_PCs[1]];
+  allConnections.getInstance().add(connection5);
+
+
+  var list_of_end_devices = allComponents.getInstance()
+                                          .getAll().filter(c => 
+                                                          c.name === 'PC' ||
+                                                          c.name === 'Laptop' ||
+                                                          c.name === 'Printer' ||
+                                                          c.name === 'Server');
+
+  var netswitch = allComponents.getInstance().getAll().find(c => c.name === 'Switch');
+
+  for (let endDevice of list_of_end_devices) {
+    var con = await connectionController.getInstance().createNewConnection("twisted_pair");
+
+    endDevice.getInterface(0).portInUse(0);
+    endDevice.getInterface(0).portIPaddress[0] = `192.168.1.${list_of_end_devices.indexOf(endDevice)+1}`;
+    con._components = [netswitch, endDevice];
+    // Creating new Edge on graph
+    Graph.getInstance().addEdge(
+      netswitch.getID(), 
+      endDevice.getID()
+    );
+    allConnections.getInstance().add(con);
+  }
+}

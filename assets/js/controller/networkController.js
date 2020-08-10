@@ -10,7 +10,7 @@ import allSubnets from '../collections/allSubnets.js';
 import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
 
-const clone = require('rfdc')({ proto: false, circles: false })
+// const clone = require('rfdc')({ proto: false, circles: false })
 
 const networkController = (function() {
     var instance;
@@ -39,18 +39,18 @@ const networkController = (function() {
             this.calculateNetworkMasks = () => {
                 let subnetmask = calculateSubnetMask();
                 let supernetmask = calculateSupernetMask(this.subnets);
-                this.calculatedSubnetmask = subnetmask;
-                this.calculatedSupernetmask = supernetmask;
+                this.calculated_subnetmask = subnetmask;
+                this.calculated_supernetmask = supernetmask;
 
                 if (this.autoCalculateMasks) {
                     this.subnetMask = subnetmask;
                     this.supernetMask = supernetmask;
 
-                    this.totalIPAddresses = calculateTotalIPAddresses(subnetmask);
-                    this.totalSubnets = calculateTotalNumberSubnets(supernetmask);
+                    this.available_IP_addresses = calculateTotalIPAddresses(subnetmask);
+                    this.available_subnets = calculateTotalNumberSubnets(supernetmask);
                 } else {
-                    this.totalIPAddresses = calculateTotalIPAddresses(this.subnetMask);
-                    this.totalSubnets = calculateTotalNumberSubnets(this.supernetMask);
+                    this.available_IP_addresses = calculateTotalIPAddresses(this.subnetMask);
+                    this.available_subnets = calculateTotalNumberSubnets(this.supernetMask);
                 }
             }
         };
@@ -196,17 +196,10 @@ const networkController = (function() {
         }
 
         function getSubnetMask() {
-<<<<<<< HEAD
-            return subnetmask;
-        }
-        function getSupernetMask() {
-            return supernetmask;
-=======
             return network.calculatedSubnetmask;
         }
         function getSupernetMask() {
             return network.calculatedSupernetmask;
->>>>>>> improving network properties panel, but still needs some work
         }
 
         function initNetworkListener() {
@@ -225,7 +218,7 @@ const networkController = (function() {
             network.calculateNetworkMasks();
 
             // print(network);
-            print("network change event");
+            console.log("network change event");
         }
         function calculateSupernetMask(subnets) {
             // Calculates the Supernet Mask for network,
@@ -394,13 +387,12 @@ const networkController = (function() {
                 //print(comp.getComponentName());
                 //print(allConnections.getInstance().getConnectionsRelatedToComp(comp));
                 if (comp.name == "Router") {
-                    //print("found router");
                     allConnections.getInstance().getConnectionsRelatedToComp(comp).forEach((con) => {
                         connections.push(con);
                     });
                 }
             }
-            //print(connections);
+            // console.log("connections", connections);
             if (connections != null) {
                 connections = connections.filter((connections, index, self) =>
                     index === self.findIndex((c) => (

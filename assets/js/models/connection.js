@@ -1,16 +1,16 @@
 // Mixin
-const mixin = require('../mixin/mixin.js');
+import {connectionMixin} from '../mixin/mixin.js';
 
-const Device = require('./device.js');
+import Device from './device.js';
 
-class Connection extends mixin.connectionMixin(Device) {
+export default class Connection extends connectionMixin(Device) {
     /**
          * Attributes. Created when a connection component is successfully linked between two device components.
          * @param this.id                 {Number}          To be able to uniquely identify a connection.
          * @param this.name               {String}          The name of cable is being used e.g. fibre or Twisted Pair.
          * @param this.type               {String}          What type of component is this? e.g. device or cable.
          * @param this.mousePos           {Array}           The inital mouse clicks when setup of connection between device components.
-         * @param this._component         {Array}           The components that have been linked together.
+         * @param this._components         {Array}           The components that have been linked together.
          * @param this._interfacePorts    {Array}           The interface and the selected port to make the connection between the two components.
     */
     constructor(id, name, type) {
@@ -61,5 +61,3 @@ class Connection extends mixin.connectionMixin(Device) {
     }
 
 }
-
-module.exports = Connection;

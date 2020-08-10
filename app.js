@@ -13,6 +13,8 @@ app.use('/assets', express.static(path.join(__dirname, '/node_modules/jquery/dis
 app.use('/assets', express.static(path.join('node_modules/bootstrap/dist/js')));
 app.use('/assets', express.static(path.join('node_modules/bootstrap/dist/css')));
 app.use('/assets', express.static(path.join(__dirname, '/assets')));
+app.use('/test', express.static(path.join(__dirname, '/test')));
+
 app.use('/assets', serveIndex(path.join(__dirname, '/assets')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: false}));
@@ -76,6 +78,10 @@ app.get('/projects/newproject', function (req, res) {
         'room_ID': req.query.room_ID,
     };
     res.render('newproject', {pagedata:pagedata, user:user});
+});
+
+app.get('/test/', function (req, res) {
+    res.render('test');
 });
 
 for (let project of defaultProjects.projects) {

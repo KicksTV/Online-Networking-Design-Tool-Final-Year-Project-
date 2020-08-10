@@ -209,7 +209,7 @@ new p5(function(p5) {
     
         if (compContrInstance.isCurrentlyClickingComp() != null) {
             if (!compContrInstance.hasClickedSelectedComponent() && !multiSelect) {
-                print("clear select list");
+                console.log("clear select list");
                 compContrInstance.clearSelectList();
             }
             
@@ -246,7 +246,7 @@ new p5(function(p5) {
             // checking if the user is clicking the bin icon, if so then dont clear select list.
             if (mouseX > 104 && mouseY > 39) {
                 if (!compContrInstance.hasClickedSelectedComponent() && !multiSelect) {
-                    print("clear select list");
+                    console.log("clear select list");
                     compContrInstance.clearSelectList();
                 }
                 if (!compContrInstance.hasCopiedComponent()) {
@@ -316,7 +316,7 @@ new p5(function(p5) {
     
     // dynamically adjust the canvas to the window
     p5.windowResized = function() {
-        print("resize window");
+        console.log("resize window");
         p5.resizeCanvas((windowWidth-20), windowHeight);
     }
 });
@@ -374,9 +374,9 @@ function checkComponentDeleteEvent() {
 
     if (compContrInstance.getSelectCompForDelete()) {
         
-        print("IsSelectListEmpty: " + compContrInstance.isSelectListEmpty());
+        console.log("IsSelectListEmpty: " + compContrInstance.isSelectListEmpty());
 
-        print("List: " + compContrInstance.getSelectList());
+        console.log("List: " + compContrInstance.getSelectList());
 
         if (! compContrInstance.isSelectListEmpty()) {
             console.log("multi select delete");

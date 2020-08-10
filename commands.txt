@@ -5,4 +5,8 @@ browserify -r dat.gui -r socket.io-client -r p5 -r ./assets/js/models/component.
 
 // this one
 
-browserify -r dat.gui -r socket.io-client -r p5 -r bootstrap -r jquery -r rfdc -r ./assets/js/models/component.js -r ./assets/js/models/connection.js -r ./assets/js/models/Interface.js -r ./assets/js/mixin/mixin.js > bundle.js
+browserify -r dat.gui -r socket.io-client -r p5 -r bootstrap -r jquery -r rfdc > bundle.js
+
+// test bundle
+
+browserify -r chai-as-promised > test_bundle.js

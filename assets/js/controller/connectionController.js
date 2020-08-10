@@ -7,7 +7,7 @@ import allConnections from '../collections/allConnections.js';
 import allVRules from '../collections/allValidationRules.js';
 
 // Models
-const Connection = require('/assets/js/models/connection.js');
+import Connection from '../models/connection.js';
 import Graph from '../models/graph.js';
 
 // Views
@@ -64,7 +64,7 @@ const connectionController = (function() {
             if (compAddConnectionCounter > 2) {
                 return;
             }
-            console.log("adding comp to selected connection");
+            // console.log("adding comp to selected connection");
 
             // getting second connection
             compAddConnectionCounter++;
@@ -88,7 +88,7 @@ const connectionController = (function() {
                     }
                     
                 } else {
-                    print("ending connection");
+                    // print("ending connection");
 
                     // Deleting connection object
                     allConnections.getInstance().removeConnection(allConnections.getInstance());
@@ -105,12 +105,12 @@ const connectionController = (function() {
             } 
             else if (compAddConnectionCounter == 1) {
                 if (checkValidConnection(false, comp, null)) {
-                    print("connecting first component");
+                    // print("connecting first component");
                     //print(comp.hasAvailablePort());
 
                     // NEED TO CHANGE THIS!!!
                     if (comp.hasAvailablePort()) {
-                        print("waiting for selection of components");
+                        // print("waiting for selection of components");
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                         selectingInterface = true;
                     } else {
@@ -198,10 +198,10 @@ const connectionController = (function() {
             });
                 
             $('.portButton').on('click', function(event){
-                print("Selected port", this.value);
+                // print("Selected port", this.value);
                 var interfaceValues = comp.getInterfaceFromString(this.value);
 
-                print("interfaceValues: ", interfaceValues);
+                // print("interfaceValues: ", interfaceValues);
                 
                 addComponentToConnection(comp, interfaceValues);
 
@@ -272,15 +272,13 @@ const connectionController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve, reject) => {
-                loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
+                app.loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
                 });
             });
             let data = await promise;
             let type = data.getChild('type').getContent();
             var defaultComponent = new Connection(null, name, type);
-
-            print(defaultComponent);
             return defaultComponent;
         }
 

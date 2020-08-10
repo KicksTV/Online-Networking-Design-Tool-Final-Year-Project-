@@ -27,7 +27,6 @@ const allComponentBarTabs = (function() {
             return currentTab;
         }
         function hideCurrentButtons() {
-            print(currentTab.getTitle());
             currentTab.getBar().getUL().hide();
         }
         function unsetVisableCurrent() {

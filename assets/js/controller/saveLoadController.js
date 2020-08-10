@@ -12,7 +12,7 @@ import allSubnets from '../collections/allSubnets.js';
 // Models
 import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
-const Interface = require('/assets/js/models/Interface.js');
+import Interface from '../models/Interface.js';
 
 const saveLoadController = (function() {
     var instance;
@@ -144,7 +144,7 @@ const saveLoadController = (function() {
                 await loadConnections(array);
 
                 window.setTimeout(() => {
-                    print("Check network event");
+                    console.log("Check network event");
                     networkController.getInstance().dispatchNetworkChangeEvent();
                 }, 500);
             // }
@@ -205,7 +205,7 @@ const saveLoadController = (function() {
                     resolve(loadCompsToConnection(newconnection));
                 });
                 newconnection = await promise;
-                print("adding saved connection");
+                console.log("adding saved connection");
 
                 // Creating new Edge on graph	
                 Graph.getInstance().addEdge(	

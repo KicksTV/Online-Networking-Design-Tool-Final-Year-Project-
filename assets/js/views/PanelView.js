@@ -12,11 +12,11 @@ export default class PanelView {
         this.addEvents();
     }
     show() {
-        print("show");
+        console.log("show");
         this.contentContainer.style.visibility = "visable";
     }
     hide() {
-        print("hide");
+        console.log("hide");
         this.contentContainer.style.visibility = "hidden";
     }
     addEvents() {
@@ -48,6 +48,13 @@ export default class PanelView {
         if (dataArray.length > 0) {
             dataArray.forEach(data => {
 
+<<<<<<< HEAD
+=======
+                console.log(interfaceValues);
+
+                var inter = interfaceValues[0];
+                var port = interfaceValues[1];
+>>>>>>> General fixes and some tests have been created
 
                 var tr = document.createElement("tr");
 
