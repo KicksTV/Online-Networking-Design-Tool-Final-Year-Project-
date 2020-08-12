@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<component>
-    <name>Coaxial</name>
-    <type>Cable</type>
-    <image path="/assets/img/coaxial-cable.svg" alt="coaxial icon"></image>
-</component>
