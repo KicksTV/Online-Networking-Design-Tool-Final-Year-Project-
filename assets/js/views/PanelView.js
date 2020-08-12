@@ -48,13 +48,10 @@ export default class PanelView {
         if (dataArray.length > 0) {
             dataArray.forEach(data => {
 
-<<<<<<< HEAD
-=======
                 console.log(interfaceValues);
 
                 var inter = interfaceValues[0];
                 var port = interfaceValues[1];
->>>>>>> General fixes and some tests have been created
 
                 var tr = document.createElement("tr");
 
