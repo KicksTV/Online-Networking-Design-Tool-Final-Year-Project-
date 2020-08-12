@@ -10,7 +10,7 @@ const ioController = (function() {
     function init() {
      
         var io = require('socket.io-client')
-        var socket = io.connect(`http://localhost:5000`);     
+        var socket = io.connect();     
         var room_ID = null;
 
 
