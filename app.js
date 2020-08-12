@@ -7,6 +7,11 @@ const path = require('path')
 const bodyParser = require('body-parser')
 
 var app = express();
+
+var PORT = process.env.PORT || 5000
+
+
+
 app.set('view engine', 'ejs');
 
 app.use('/assets', express.static(path.join(__dirname, '/node_modules/jquery/dist')));
@@ -107,8 +112,8 @@ for (let project of defaultProjects.projects) {
 }
 
 
-var server = app.listen(5000, () => {
-    console.log("The server is now running on port 5000!");
+var server = app.listen(PORT, () => {
+    console.log(`Listening on ${PORT}`);
 });
 
 let io = socket.listen(server);
