@@ -81,7 +81,11 @@ app.get('/projects/newproject', function (req, res) {
 });
 
 app.get('/test/', function (req, res) {
-    res.render('test');
+    var pagedata = {
+        'title': 'App Tests',
+        'navExpand': 'show',
+    };
+    res.render('test', {pagedata:pagedata});
 });
 
 for (let project of defaultProjects.projects) {
