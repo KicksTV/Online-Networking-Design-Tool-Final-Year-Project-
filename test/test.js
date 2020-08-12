@@ -123,6 +123,8 @@ describe('networking calculation functions', function() {
   this.timeout(20000);
   var hosts;
   var subnets;
+  var subnetmask;
+  var supernetmask;
 
   before('setup of some components', async function () {
     allComponents.getInstance().clear();
@@ -149,21 +151,32 @@ describe('networking calculation functions', function() {
   });
 
   it('Test #1 for calculating subnetmask', async () => {
-    var subnetmask = networkController.getInstance().calculateSubnetMask();
+    subnetmask = networkController.getInstance().calculateSubnetMask();
     expect(subnetmask).to.equal('255.255.255.248');
   });
+ 
   it('Test #1 for calculating supernetmask', async () => {
-    var supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
+    supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
     expect(supernetmask).to.equal('255.255.255.240');
   });
 
+  it('Test #1 for calculating max number of IP addresses', async () => {
+    var max_number_hosts = networkController.getInstance().calculateTotalIPAddresses(subnetmask);
+    expect(max_number_hosts).to.equal(6);
+  });
 
+  it('Test #1 for calculating max number of subnets', async () => {
+    var max_number_subnets = networkController.getInstance().calculateTotalNumberSubnets(supernetmask);
+    expect(max_number_subnets).to.equal(14);
+  });
 
 
 
   describe('Overriding setup network', function() {
     var hosts;
     var subnets;
+    var subnetmask;
+    var supernetmask;
 
     before('setup of some components', async function () {
       allComponents.getInstance().clear();
@@ -193,12 +206,21 @@ describe('networking calculation functions', function() {
       expect(subnets).to.equal(15);
     });
     it('Test #2 for calculating subnetmask', async () => {
-      var subnetmask = networkController.getInstance().calculateSubnetMask();
+      subnetmask = networkController.getInstance().calculateSubnetMask();
       expect(subnetmask).to.equal('255.255.255.240');
     });
     it('Test #2 for calculating supernetmask', async () => {
-      var supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
+      supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
       expect(supernetmask).to.equal('255.255.255.224');
+    });
+    it('Test #2 for calculating max number of IP addresses', async () => {
+      var max_number_hosts = networkController.getInstance().calculateTotalIPAddresses(subnetmask);
+      expect(max_number_hosts).to.equal(14);
+    });
+  
+    it('Test #2 for calculating max number of subnets', async () => {
+      var max_number_subnets = networkController.getInstance().calculateTotalNumberSubnets(supernetmask);
+      expect(max_number_subnets).to.equal(30);
     });
   });
 });

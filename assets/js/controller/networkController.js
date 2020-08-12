@@ -370,21 +370,23 @@ const networkController = (function() {
             octets.forEach(octet => {
                 if (octet != "255") {
                     var conversionToBinary = (parseInt(octet) >>> 0).toString(2);
-                    // print("binary", conversionToBinary);
+                    // console.log("binary", conversionToBinary);
                     let length = conversionToBinary.length;
                     let index = 1;
                     for (let char of conversionToBinary) {
                         if (char == '0') {
                             let bitPosition = length-index;
-                            // print(bitPosition);
+                            // console.log(bitPosition);
                             totalNumberOfHosts += Math.pow(2, bitPosition)
                         }
                         index++;
                     }   
                 }
             });
+            // console.log(totalNumberOfHosts)
             // Calculating totalNumberOfHosts with the addition of subnetID and broadcastID
             totalNumberOfHosts = totalNumberOfHosts - 2;
+            // console.log(totalNumberOfHosts)
 
             // print("totalNumberOfHosts", totalNumberOfHosts);
             return totalNumberOfHosts;
@@ -860,6 +862,8 @@ const networkController = (function() {
             calculateAllSubnets:calculateAllSubnets,
             calculateSupernetMask:calculateSupernetMask,
             calculateSubnetMask:calculateSubnetMask,
+            calculateTotalIPAddresses:calculateTotalIPAddresses,
+            calculateTotalNumberSubnets:calculateTotalNumberSubnets,
             calculateDecimalFromSlashValue:calculateDecimalFromSlashValue,
             binaryToDecimal:binaryToDecimal,
             decimalToBinary:decimalToBinary,
