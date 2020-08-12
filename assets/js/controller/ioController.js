@@ -23,7 +23,6 @@ const ioController = (function() {
                 async function(data) {
                     console.log("You have connected");
                     
-                    
                     if (rid != null) {
                         room_ID = rid;
                         console.log("rid", rid);
@@ -32,10 +31,6 @@ const ioController = (function() {
                         room_ID = socket.id;
                         console.log("socket.id", socket.id);
                     }
-                    
-                    
-                    
-                    
                     if (room_ID != null) {
                         console.log(`You have connected to ${room_ID}`);
                         // console.log('room_ID', room_ID);

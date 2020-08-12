@@ -120,11 +120,16 @@ describe('component functions', () => {
 });
 
 describe('networking calculation functions', function() {
-  
+  var hosts;
+  var subnets;
+
   before('setup of some components', async function () {
-    allComponents.getInstance().clear()
-    
-    var devices = ['PC', 'Switch', 'Router', 'Router', 'Smartphone', 'Cloud', 'Laptop', 'Printer', 'Server', 'PC', 'Switch', 'Switch', 'Router']
+    allComponents.getInstance().clear();
+    allConnections.getInstance().clear();
+    // Must be same number of PCs and Routers
+    var devices = ['PC', 'Switch', 'Router', 'Router', 'Smartphone', 'Cloud', 
+                   'Laptop', 'Printer', 'Server', 'PC', 'Switch', 'Switch', 
+                   'Router', 'Laptop', 'Laptop', 'PC']
 
     await componentController.getInstance().createNewComponentFromArray(devices);
 
@@ -132,25 +137,67 @@ describe('networking calculation functions', function() {
   });
 
   // it() lets you comment on what an individual test is about.
-  it('Test for calculating number of hosts', async () => {
-    var calculated_host_devices = networkController.getInstance().calculateAllHost();
-    expect(calculated_host_devices).to.equal(6);
+  it('Test #1 for calculating number of hosts', async () => {
+    hosts = networkController.getInstance().calculateAllHost();
+    expect(hosts).to.equal(9);
   });
 
-  it('Test for calculating number of subnets', async () => {
-    var calculated_subnets = networkController.getInstance().calculateAllSubnets();
-    expect(calculated_subnets).to.equal(5);
+  it('Test #1 for calculating number of subnets', async () => {
+    subnets = networkController.getInstance().calculateAllSubnets();
+    expect(subnets).to.equal(5);
   });
 
   it('Test #1 for calculating subnetmask', async () => {
     var subnetmask = networkController.getInstance().calculateSubnetMask();
     expect(subnetmask).to.equal('255.255.255.248');
   });
-  describe('Overriding setup network', function() {
+  it('Test #1 for calculating supernetmask', async () => {
+    var supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
+    expect(supernetmask).to.equal('255.255.255.240');
+  });
 
+
+
+
+
+  describe('Overriding setup network', function() {
+    var hosts;
+    var subnets;
+
+    before('setup of some components', async function () {
+      allComponents.getInstance().clear();
+      allConnections.getInstance().clear();
+
+      // Must be same number of PCs and Routers
+      var devices = ['Laptop', 'Printer', 'Server', 'Switch',
+                     'Router', 'Router', 'Router', 'Router',
+                     'Router', 'Router', 'Router', 'Router', 
+                     'Laptop', 'Laptop', 'Laptop', 'Laptop',
+                     'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 'PC'
+                    ]
+  
+      await componentController.getInstance().createNewComponentFromArray(devices);
+  
+      await setupNetwork();
+
+    });
+
+    it('Test #2 for calculating number of hosts', async () => {
+      hosts = networkController.getInstance().calculateAllHost();
+      expect(hosts).to.equal(15);
+    });
+  
+    it('Test #2 for calculating number of subnets', async () => {
+      subnets = networkController.getInstance().calculateAllSubnets();
+      expect(subnets).to.equal(15);
+    });
     it('Test #2 for calculating subnetmask', async () => {
       var subnetmask = networkController.getInstance().calculateSubnetMask();
-      expect(subnetmask).to.equal('255.255.255.248');
+      expect(subnetmask).to.equal('255.255.255.240');
+    });
+    it('Test #2 for calculating supernetmask', async () => {
+      var supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
+      expect(supernetmask).to.equal('255.255.255.224');
     });
   });
 });
@@ -161,46 +208,54 @@ async function setupNetwork() {
 
   var netswitch = allComponents.getInstance().getAll().find(c => c.name === 'Switch');
 
+  // Creates a connection between all routers
+  for (let r in list_of_routers) {
+    if (r != list_of_routers.length-1) {
+      var con = await connectionController.getInstance().createNewConnection("twisted_pair");
+      con._components = [list_of_routers[r], list_of_routers[r++]];
+      
+      // Creating new Edge on graph
+      Graph.getInstance().addEdge(
+        list_of_routers[r].getID(), 
+        list_of_routers[r++].getID()
+      );
+
+      allConnections.getInstance().add(con);
+    }
+  }
 
   // Router_1  -> Switch_1
   var connection1 = await connectionController.getInstance().createNewConnection("twisted_pair");
   connection1._components = [list_of_routers[0], netswitch];
   allConnections.getInstance().add(connection1);
 
-  // Router_1 -> Router_2
-  var connection2 = await connectionController.getInstance().createNewConnection("twisted_pair");
-  connection2._components = [list_of_routers[0], list_of_routers[1]];
-  allConnections.getInstance().add(connection2);
+  // Create a subnet for each router
+  for (let i in list_of_routers) {
+    if (i != 0) {
+      var con = await connectionController.getInstance().createNewConnection("twisted_pair");
+      con._components = [list_of_routers[i], list_of_PCs[i]];
+      console.log(list_of_PCs[i]);
+      // Creating new Edge on graph
+      Graph.getInstance().addEdge(
+        list_of_routers[i].getID(), 
+        list_of_PCs[i].getID()
+      );
 
-  // Router_2 -> PC_1
-  var connection3 = await connectionController.getInstance().createNewConnection("twisted_pair");
-  connection3._components = [list_of_routers[1], list_of_PCs[0]];
-  allConnections.getInstance().add(connection3);
-
-  // Router_2 -> Router_3
-  var connection4 = await connectionController.getInstance().createNewConnection("twisted_pair");
-  connection4._components = [list_of_routers[1], list_of_routers[2]];
-  allConnections.getInstance().add(connection4);
-
-  var connection5 = await connectionController.getInstance().createNewConnection("twisted_pair");
-  connection5._components = [list_of_routers[2], list_of_PCs[1]];
-  allConnections.getInstance().add(connection5);
-
+      allConnections.getInstance().add(con);
+    }
+  }
 
   var list_of_end_devices = allComponents.getInstance()
                                           .getAll().filter(c => 
-                                                          c.name === 'PC' ||
                                                           c.name === 'Laptop' ||
                                                           c.name === 'Printer' ||
                                                           c.name === 'Server');
-
-  var netswitch = allComponents.getInstance().getAll().find(c => c.name === 'Switch');
 
   for (let endDevice of list_of_end_devices) {
     var con = await connectionController.getInstance().createNewConnection("twisted_pair");
 
     endDevice.getInterface(0).portInUse(0);
-    endDevice.getInterface(0).portIPaddress[0] = `192.168.1.${list_of_end_devices.indexOf(endDevice)+1}`;
+    // endDevice.getInterface(0).portIPaddress[0] = `192.168.1.${list_of_end_devices.indexOf(endDevice)+1}`;
     con._components = [netswitch, endDevice];
     // Creating new Edge on graph
     Graph.getInstance().addEdge(

@@ -239,11 +239,23 @@ const networkController = (function() {
             // Need to -1 to start from 0
             var i=(supernetBits+hostBits)-1;
 
-            while (subnets > Math.pow(2, i)) {
-                i++;
+            console.log(Math.pow(2, i));
+            console.log("super", subnets);
+
+
+            var total_number_of_subnets = 0
+            
+            while (subnets > total_number_of_subnets) {
+                for (let k=0; k<=i; k++) {
+                    total_number_of_subnets += Math.pow(2, k);
+                }
+                total_number_of_subnets--;
+                console.log("total", total_number_of_subnets)
                 // Adding back the 1 that was taken away earlier
                 supernetBits = (i-hostBits) + 1;
+                i++;
             }
+            
 
             // print("supernetBits",supernetBits);
 
@@ -416,23 +428,23 @@ const networkController = (function() {
             octets.forEach(octet => {
                 if (octet != "255") {
                     var conversionToBinary = (parseInt(octet) >>> 0).toString(2);
-                    // print("binary", conversionToBinary);
+                    //console.log("binary", conversionToBinary);
                     let length = conversionToBinary.length;
                     let index = 1;
-                    // print("hostBits", hostBits);
-                    // print(conversionToBinary);
+                    //print("hostBits", hostBits);
+                    //print(conversionToBinary);
                     for (let char of conversionToBinary) {
                         let bitPosition = length-index;
-                        // print(bitPosition);
-                        if (char == '0' && bitPosition > 1) {
-                            // print(bitPosition);
+                        //console.log(bitPosition);
+                        if (char == '0' && bitPosition >= 1) {
+                            //console.log("r ", Math.pow(2, bitPosition));
                             totalNumberOfSubnets += Math.pow(2, bitPosition)
                         }
                         index++;
                     }   
                 }
             });
-            // print("totalNumberOfSubnets", totalNumberOfSubnets);
+            //print("totalNumberOfSubnets", totalNumberOfSubnets);
             return totalNumberOfSubnets;
         }
 

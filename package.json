@@ -2,6 +2,7 @@
   "name": "online_design_tool",
   "version": "1.0.0",
   "private": true,
+  "main": "app.js",
   "scripts": {
     "test": "mocha -r esm",
     "start": "node app",
@@ -34,6 +35,9 @@
     "rfdc": "^1.1.4",
     "serve-index": "^1.9.1",
     "socket.io": "^2.3.0"
+  },
+  "engines": {
+    "node": "10.16.3"
   },
   "repository": {
     "type": "git",

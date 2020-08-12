@@ -19,6 +19,9 @@ var allConnections = (function() {
         function getAll() {
             return _connections;
         }
+        function clear() {
+            _connections = [];
+        }
         function getConnetion(num) {
             return _connections[num];
         }
@@ -49,6 +52,7 @@ var allConnections = (function() {
                 length:length,
                 get:get,
                 getAll:getAll,
+                clear:clear,
                 getConnetion:getConnetion,
                 removeConnection:removeConnection,
                 getSelectedConnection:getSelectedConnection,
