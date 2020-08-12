@@ -120,6 +120,7 @@ describe('component functions', () => {
 });
 
 describe('networking calculation functions', function() {
+  this.timeout(5000);
   var hosts;
   var subnets;
 
