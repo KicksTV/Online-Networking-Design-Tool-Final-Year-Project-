@@ -9,6 +9,9 @@ var allSubnets = (function () {
         function get(index) {
             return _subnets[index];
         }
+        function getWithConnectionID(connectionID) {
+            return _subnets.find(sub => sub.connectionID == connectionID);
+        }
         function getAll() {
             return _subnets;
         }
@@ -21,19 +24,22 @@ var allSubnets = (function () {
         function toList() {
             return _subnets;
         }
+        function clear() {
+            _subnets = [];
+        }
         function toJSON() {
             var json = [];
             _subnets.forEach(s => {
                 var endDevicesID = [];
                 let item = {
-                    "subnetID": this.subnetID,
-                    "gatewayRouterID": this.gatewayRouterID,
-                    "gatewayRouterIP": this.gatewayRouterIP,
+                    "subnetID": s.subnetID,
+                    "gatewayRouterID": s.gatewayRouterID,
+                    "gatewayRouterIP": s.gatewayRouterIP,
                     "endDevices": null,
-                    "unavailableAddresses": this.unavailableAddresses,
+                    "unavailableAddresses": s.unavailableAddresses,
                 }
                 for (var endDevice of s.endDevices) {
-                    console.log(endDevice.id);
+                    // console.log(endDevice.id);
                     endDevicesID.push(endDevice.id);
                 }
                 item.endDevices = endDevicesID;
@@ -44,11 +50,13 @@ var allSubnets = (function () {
 
         return {
             get:get,
+            getWithConnectionID:getWithConnectionID,
             getAll:getAll,
             set:set,
             add:add,
             length:length,
             toList:toList,
+            clear:clear,
             toJSON:toJSON,
         };  
     }

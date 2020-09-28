@@ -48,10 +48,25 @@ export default class PanelView {
         if (dataArray.length > 0) {
             dataArray.forEach(data => {
 
-                console.log(interfaceValues);
+                var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+                var ConComponents = data._components;
+                var interfaces = data._interfacePorts;
+                var selectedCompInterface;
+                var selectedCompInterfacePort;
 
-                var inter = interfaceValues[0];
-                var port = interfaceValues[1];
+                var con_index = dataArray.indexOf(data);
+
+                // index that the current selected comp is found in connection
+                var index = 0;
+
+                for (let compindex in ConComponents) {
+                    if (ConComponents[compindex] == currentSelectedComp) {
+                        index = compindex;
+                    }
+                }
+
+                selectedCompInterface = interfaces[index][0];
+                selectedCompInterfacePort = interfaces[index][1];
 
                 var tr = document.createElement("tr");
 
@@ -74,13 +89,17 @@ export default class PanelView {
 
                 var ipfield = allCol[5];
 
+                ipfield.id = `IP_address_field_${con_index}`;
+
+                var $IP_field = $(`#${ipfield.id}`);
+
                 if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.name == "Router") {
-                    if (inter.portIPaddress[port]) {
-                        ipfield.innerText = inter.portIPaddress[port];
+                    if (selectedCompInterface.portIPaddress[selectedCompInterfacePort]) {
+                        ipfield.innerText = selectedCompInterface.portIPaddress[selectedCompInterfacePort];
                     }
                     ipfield.setAttribute("contenteditable", "true");
 
-                    ipfield.addEventListener('keypress', function(e) {
+                    $IP_field.on('keypress', (e) => {
                         networkController.getInstance().checkIPAddressInput(e, data);
                     });
                 }

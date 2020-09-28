@@ -37,8 +37,8 @@ const saveLoadController = (function() {
                 json.subnets = data[3];
 
                 // Saves json to file
-                console.log(json);
-                return saveJSON(json, 'network_design_project.json');
+                // console.log(json);
+                return app.saveJSON(json, 'network_design_project.json');
             }else {
                 alert("Canvas is empty");
             }
@@ -195,6 +195,11 @@ const saveLoadController = (function() {
                             // comp has a connection
                             foundComp.setHasConnection(true);
                             // add comps interfaces
+
+                            console.log("index", con._components.indexOf(savedComp));
+                            console.log("interface ports", newconnection._interfacePorts);
+                            console.log(newconnection.id);
+
                             foundComp.injectInterfaceSavedData(newconnection.getInterface(con._components.indexOf(savedComp)));
                             newconnection.addComponent(foundComp);
 

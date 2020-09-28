@@ -15,9 +15,12 @@
 
     <div id="mocha"></div>
 
-    <div id="canvasDiv"></div>
 
-    <script src="/assets/js/bundle.js"></script>
+    <% include partials/canvasView %>
+
+
+    <% include partials/scripts %>
+
     <script src="/assets/js/test_bundle.js"></script>
 
     <script src="https://unpkg.com/chai/chai.js"></script>
@@ -31,7 +34,5 @@
     <script type="module" class="mocha-exec">
       mocha.run();
     </script>
-
-    <% include partials/scripts %>
   </body>
 </html>

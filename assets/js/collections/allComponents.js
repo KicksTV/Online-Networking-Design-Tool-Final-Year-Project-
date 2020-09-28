@@ -5,11 +5,14 @@ var allComponents = (function() {
      
         var _components = [];
         
+        function getAll() {
+            return _components;
+        }
         function get() {
             return _components;
         }
-        function getAll() {
-            return _components;
+        function getWithID(id) {
+            return _components.find(comp => comp.id == id);
         }
         function set(newlist) {
             _components = newlist;
@@ -33,6 +36,7 @@ var allComponents = (function() {
         return {
             get:get,
             getAll:getAll,
+            getWithID:getWithID,
             set:set,
             add:add,
             length:length,

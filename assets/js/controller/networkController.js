@@ -196,10 +196,10 @@ const networkController = (function() {
         }
 
         function getSubnetMask() {
-            return network.calculatedSubnetmask;
+            return network.calculated_subnetmask;
         }
         function getSupernetMask() {
-            return network.calculatedSupernetmask;
+            return network.calculated_supernetmask;
         }
 
         function initNetworkListener() {
@@ -239,10 +239,6 @@ const networkController = (function() {
             // Need to -1 to start from 0
             var i=(supernetBits+hostBits)-1;
 
-            console.log(Math.pow(2, i));
-            console.log("super", subnets);
-
-
             var total_number_of_subnets = 0
             
             while (subnets > total_number_of_subnets) {
@@ -250,7 +246,6 @@ const networkController = (function() {
                     total_number_of_subnets += Math.pow(2, k);
                 }
                 total_number_of_subnets--;
-                console.log("total", total_number_of_subnets)
                 // Adding back the 1 that was taken away earlier
                 supernetBits = (i-hostBits) + 1;
                 i++;
@@ -276,18 +271,18 @@ const networkController = (function() {
             hostBits = 0;
             //var hosts = 16;
             var x = 2;
-            
             var hosts = getLargestSubnet();
 
+            // console.log(hosts);
             // Required hosts bits
             hosts += 1;
             //print("Number of hosts: " + hosts);
 
-
             // calculating the necessary host bits needed, includes id and broadcast addresses
             var i=0;
+
             while (hosts > Math.pow(2, i)-2) {
-                //print(Math.pow(2, i));
+                // console.log("hosts", Math.pow(2, i)-2);
                 i++;
                 hostBits = i;
             }
@@ -458,27 +453,27 @@ const networkController = (function() {
 
             for (let router of allRouters) {
                 let connections = allConnections.getInstance().getConnectionsRelatedToComp(router);
+                // console.log(connections);
                 for (let nextConnection of connections) {
                     var subnetHostSize = 0;
-                    var searchingComp;
+                    var searchingComp = null;
 
-                    var currSubnet;
+                    var currSubnet = null;
                     var foundSubnet = allSubnets.getInstance().toList().find(subnet => 
-                                                            subnet.gatewayRouterID == router.getID() && 
-                                                            subnet.connectionID == nextConnection.getID()
+                                                            subnet.gatewayRouterID == router.id && 
+                                                            subnet.connectionID == nextConnection.id
                                                             );
                    
                     // console.log(allSubnets.getInstance().toList());
 
-                    // console.log(foundSubnet);
+                    //console.log(foundSubnet);
 
                     // Creating or finding subnet object
                     if (foundSubnet == null) {
                         // console.log("new");
-
                         currSubnet = new Subnet();
-                        currSubnet.gatewayRouterID = router.getID();
-                        currSubnet.connectionID = nextConnection.getID();
+                        currSubnet.gatewayRouterID = router.id;
+                        currSubnet.connectionID = nextConnection.id;
                         allSubnets.getInstance().add(currSubnet);
 
                     }
@@ -497,6 +492,8 @@ const networkController = (function() {
                         searchingComp = nextConnection.getComponent(1);
                     }
 
+                    // console.log(currSubnet);
+
                     // if component exists, continue to find end devices.
                     if (searchingComp) {
                         let result = Graph.getInstance().depthFirstSearchForHostDevices(searchingComp.id, componentController.getInstance().isEndDevice);
@@ -505,7 +502,8 @@ const networkController = (function() {
                         }
                         if (subnetHostSize > largestSubnet) {
                             largestSubnet = subnetHostSize;
-                        } 
+                        }
+                        // console.log(result);
                         currSubnet.createSubnet(result);
                     }
                 }
@@ -615,9 +613,9 @@ const networkController = (function() {
         function isValidSubnetMask(value) {
             var isValid = false;
             if (isValidInput(value)) {
-                if (network.calculatedSubnetmask) {
+                if (network.calculated_subnetmask) {
 
-                    var calOctets = network.calculatedSubnetmask.split(".");
+                    var calOctets = network.calculated_subnetmask.split(".");
                     var enteredOctets = value.split(".");
 
                     var validFirstOctet = false;
@@ -652,16 +650,15 @@ const networkController = (function() {
 
                 }
             }
-            // print(isValid);
             return isValid;
         }
 
         function isValidSupernetMask(value) {
             var isValid = false;
             if (isValidInput(value)) {
-                if (network.calculatedSupernetmask) {
+                if (network.calculated_supernetmask) {
 
-                    var calOctets = network.calculatedSupernetmask.split(".");
+                    var calOctets = network.calculated_supernetmask.split(".");
                     var enteredOctets = value.split(".");
 
                     var validFirstOctet = false;
@@ -695,13 +692,18 @@ const networkController = (function() {
                     }
                 }
             }
-            // print(isValid);
             return isValid;
         }
 
         function checkIPAddressInput(event, connection) {
             var interfaceValues;
             var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+            var key = String.fromCharCode(event.keyCode)
+
+            // console.log(event);
+            // console.log(allSubnets.getInstance().getAll())
+            // console.log(allConnections.getInstance().getAll())
+
 
             if (connection.getComponent(0) == currentSelectedComp) {
                 interfaceValues = connection.getInterfacePort(0);
@@ -718,20 +720,22 @@ const networkController = (function() {
                 routerComp = currentSelectedComp;
             }
 
-            // Preventing characters otherthan numbers from being entered
+            // Preventing characters other than numbers from being entered
             var regex = new RegExp("^[a-zA-Z]+$");
-            if (regex.test(event.key)) {
-                if (event.key.toString().length == 1) {
+            if (regex.test(key)) {
+                if (key.length == 1) {
                     event.preventDefault();
                 }
             }
-            if (event.key == "Enter") {
+            if (key == "Enter") {
                 event.preventDefault();
             }
             // print("Address entered");
 
             // Get all field content and last key pressed
-            var IPaddressField = event.srcElement.innerText + event.key;
+            var IPaddressField = event.target.innerText + key;
+
+            // console.log(IPaddressField);
 
             // Get the number of octets currently IP address field
             var numberOfOctets = IPaddressField.split(".").length;
@@ -772,6 +776,8 @@ const networkController = (function() {
 
                 if (foundSubnetforComp) {
 
+                    console.log(foundSubnetforComp);
+
                     // Checks if router has been assigned an IP address first
                     if (foundSubnetforComp.gatewayRouterIP == null) {
                         event.preventDefault();
@@ -806,13 +812,17 @@ const networkController = (function() {
                         }
                     }
                 } else {
-                    alert("Device is not part of any subnet!");
+                    $('#warningConnectionToastAlert').toast('show');
+                    $('#warningConnectionToastAlert .toast-body').text(
+                        "Device is not part of any subnet!"
+                    );
                 }
             }
         }
         function checkAvailableIPAddress(subnet, ip) {
             var validIP = true;
             let subnetmask = getSubnetMask();
+
             let broadcastID = getBroadcastID(subnet.subnetID, subnetmask);
             var currentUnavailableAddress = [subnet.gatewayRouterIP, subnet.subnetID, broadcastID];
 
@@ -871,6 +881,7 @@ const networkController = (function() {
             getSubnetMask:getSubnetMask,
             getSupernetMask:getSupernetMask,
             checkIPAddressInput:checkIPAddressInput,
+            checkAvailableIPAddress:checkAvailableIPAddress,
             toJSON:toJSON,
         };   
     }

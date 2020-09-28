@@ -18,6 +18,7 @@ export default function Button(name, compType, imgPath, imgAlt) {
         init: () => {
             state.img.addClass('componentImg');
             state.img.parent(state.li);
+            state.img.attribute('draggable', 'false');
             state.li.style('display', 'inline-block');
             state.li.hide();
             return Object.assign(

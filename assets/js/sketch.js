@@ -92,7 +92,7 @@ window.app = new p5(function(p5) {
 
         var folder = "/assets/components";
 
-
+        // Loads all component devices into the components bar.
         $.ajax({
             url : folder,
             success: function (data) {

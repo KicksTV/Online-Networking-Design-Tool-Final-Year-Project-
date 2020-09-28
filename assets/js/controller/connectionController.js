@@ -290,6 +290,7 @@ const connectionController = (function() {
             selectConnectionForComp:selectConnectionForComp,
             getDrawConnection: getDrawConnection,
             setDrawConnection: setDrawConnection,
+            addComponentToConnection:addComponentToConnection,
             drawConnetions:drawConnetions,
             deleteConnection:deleteConnection,
             endConnection:endConnection,

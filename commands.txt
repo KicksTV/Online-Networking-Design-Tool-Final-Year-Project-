@@ -1,3 +1,7 @@
+# Push project to heroku
+
+
+
 # Bundling libraries together.
 browserify -r dat.gui -r socket.io-client -r p5 > bundle.js
 
@@ -10,3 +14,9 @@ browserify -r dat.gui -r socket.io-client -r p5 -r bootstrap -r jquery -r rfdc >
 // test bundle
 
 browserify -r chai-as-promised > test_bundle.js
+
+# Useful stuff to remember
+
+// Devlop Console import
+import('/assets/js/collections/allSubnets.js').then(m => module = m)
+module.default.getInstance().getAll()

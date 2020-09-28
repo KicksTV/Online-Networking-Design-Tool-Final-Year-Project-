@@ -48,7 +48,11 @@ export default class Connection extends connectionMixin(Device) {
          * @returns        {Object}    An interface object for the index in the array.
     */
     getInterface(index)  {
-        return this._interfacePorts[index][0];
+        try {
+            return this._interfacePorts[index][0];
+        } catch(err) {
+            throw `Error: could not get interfacePorts - ${err}`;
+        }
     }
     /**
          * Returns an array containing the interface and port used to make a connection.

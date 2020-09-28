@@ -1,3 +1,5 @@
+// Controllers
+import componentController from '../controller/componentController.js';
 // Collections
 import allComponents from '../collections/allComponents.js';
 
@@ -51,6 +53,13 @@ const Graph = (function () {
         }
         function depthFirstSearchForHostDevices(start, searchCase, visited = new Set()) {
 
+            var component = allComponents.getInstance().getWithID(start);
+            //Check if starting node is a end device
+            if (componentController.getInstance().isEndDevice(component) && visited.size == 0) {
+                // console.log("Is end device");
+                return [component];
+            }
+
             // Resetting Search
             if (visited.size == 0) {
                 foundNodesFromSearch = [];
@@ -58,8 +67,6 @@ const Graph = (function () {
             visited.add(start);
 
             const destinations = _adjacencyList.get(start);
-
-
 
             for (const destination of destinations) {
 
