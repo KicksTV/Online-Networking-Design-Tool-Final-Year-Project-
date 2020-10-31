@@ -16,7 +16,7 @@ export default class InterfaceView {
         this.container.parent("canvasDiv");
     }
     show(x, y) {
-        console.log("showing");
+        // console.log("showing");
         console.log(x, y);
         var xPos = x +30;
         this.container.style('left', xPos + "px");
@@ -25,9 +25,9 @@ export default class InterfaceView {
         this.container.style('visibility', "visable");
     }
     hide() {
+        // console.log("hide");
         this.container.style('visibility', "hidden");
         //this.container.style('display', 'none');
-        console.log("hide");
     }
     create() {
         this.interfaces.forEach(i => {

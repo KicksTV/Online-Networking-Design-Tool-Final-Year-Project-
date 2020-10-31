@@ -457,39 +457,51 @@ const networkController = (function() {
                 for (let nextConnection of connections) {
                     var subnetHostSize = 0;
                     var searchingComp = null;
+                    var adjacentRouter = null;
 
                     var currSubnet = null;
-                    var foundSubnet = allSubnets.getInstance().toList().find(subnet => 
-                                                            subnet.gatewayRouterID == router.id && 
-                                                            subnet.connectionID == nextConnection.id
-                                                            );
+                    
                    
                     // console.log(allSubnets.getInstance().toList());
 
                     //console.log(foundSubnet);
 
+                    // Getting adjacent component to router
+                    nextConnection.getComponents().forEach( c => {
+                        if (c != router) {
+                            if (c.name != 'Router') {
+                                searchingComp = c;
+                            } else {
+                                adjacentRouter = c;
+                            }
+                        }
+                    })
+
+                    var foundSubnet = allSubnets.getInstance().toList().find(subnet => 
+                        subnet.gatewayRouterID.includes(router.id) && 
+                        subnet.connectionID == nextConnection.id || 
+                        adjacentRouter && subnet.gatewayRouterID.includes(adjacentRouter.id) && 
+                        subnet.connectionID == nextConnection.id
+                    );
+                    
                     // Creating or finding subnet object
                     if (foundSubnet == null) {
                         // console.log("new");
                         currSubnet = new Subnet();
-                        currSubnet.gatewayRouterID = router.id;
+                        currSubnet.gatewayRouterID.push(router.id);
                         currSubnet.connectionID = nextConnection.id;
                         allSubnets.getInstance().add(currSubnet);
-
                     }
                     else {
                         // console.log("old");
                         currSubnet = foundSubnet;
-                        currSubnet.gatewayRouterID = router.getID();
+                        if (!currSubnet.gatewayRouterID.includes(router.id)) { 
+                            currSubnet.gatewayRouterID.push(router.id) 
+                        }
+                        if (adjacentRouter && !currSubnet.gatewayRouterID.includes(adjacentRouter.id)) { 
+                            currSubnet.gatewayRouterID.push(adjacentRouter.id) 
+                        }
                         currSubnet.connectionID = nextConnection.getID();
-                    }
-
-                    // Getting adjacent component to router
-                    if (nextConnection.getComponent(0).name != 'Router') {
-                        searchingComp = nextConnection.getComponent(0);
-                    }
-                    else if (nextConnection.getComponent(1).name != 'Router') {
-                        searchingComp = nextConnection.getComponent(1);
                     }
 
                     // console.log(currSubnet);
@@ -754,7 +766,7 @@ const networkController = (function() {
                     // Calculate subnet ID & gateway IP
                     inter.portIPaddress[port] = IPaddressField;
                     
-                    const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID == routerComp.getID());
+                    const found = allSubnets.getInstance().toList().find(x => x.gatewayRouterID.includes(routerComp.id) && x.connectionID === connection.id);
                     found.gatewayRouterIP = IPaddressField;
 
                     // Setting Subnet ID

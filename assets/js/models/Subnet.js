@@ -1,8 +1,8 @@
 export default class Subnet {
     constructor() {
         this.subnetID = null;
-        this.gatewayRouterID = null;
-        this.gatewayRouterIP = null;
+        this.gatewayRouterID = [];
+        this.gatewayRouterIP = [];
         this.endDevices = [];
         this.unavailableAddresses = [];
 

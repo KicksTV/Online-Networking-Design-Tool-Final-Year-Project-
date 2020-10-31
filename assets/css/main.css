@@ -147,3 +147,10 @@ a>.card:hover {
 #connections-table {
     height: fit-content;
 }
+
+.qs_valid_ip_address {
+    color: green;
+}
+.qs_invalid_ip_address {
+    color: red;
+}

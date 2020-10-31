@@ -26,7 +26,7 @@ app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: fals
 
 app.get('/', function (req, res) {
     var pagedata = {
-        'title': 'Online Networking Design & Learning Tool',
+        'title': 'Build Networks Online',
         'navExpand': 'show',
     };
     res.render('frontpage', {pagedata:pagedata});

@@ -239,14 +239,14 @@ describe('networking calculation functions', function() {
 
     var subnet = allSubnets.getInstance().getWithConnectionID(connection.id);
     subnet.subnetID = "192.168.1.0";
-    subnet.gatewayRouterIP = "192.168.1.1";
+    subnet.gatewayRouterIP.push("192.168.1.1");
     console.log("Subnets", allSubnets.getInstance().getAll());
     
     $('#IP_address_field_0').html('192.168.1.');
     var e = jQuery.Event("keypress");
-    e.which = 53; // # Some key code value
+    e.which = 53; // # 53 == "5"
     e.keyCode = 53;
-    e.data
+    e.data;
     $("#IP_address_field_0").trigger(e);
 
     expect(subnet.unavailableAddresses).to.include("192.168.1.5");
@@ -261,6 +261,7 @@ describe('networking calculation functions', function() {
     expect(is_valid).to.equal(true);
   });
 
+  
   describe('Save / Load functions', () => {
     // before('setup of some components', async function () {
   
