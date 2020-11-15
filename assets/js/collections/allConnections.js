@@ -72,4 +72,4 @@ var allConnections = (function() {
     }
 })();
 
-export default allConnections;
+export default allConnections.getInstance();

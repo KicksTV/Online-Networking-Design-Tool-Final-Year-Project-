@@ -54,7 +54,7 @@ const ioController = (function() {
 
             socket.on('requestCanvasData', 
                 async function(data) {
-                    let json = await saveLoadController.getInstance().saveEventToJSON();
+                    let json = await saveLoadController.saveEventToJSON();
                     console.log("Requesting canvas data: ", json);
                     if (json != null) {
                         sendData('sentCanvasData',  json);
@@ -67,9 +67,9 @@ const ioController = (function() {
                 async function(data) {
                     console.log("Got canvas data", data.value);
 
-                    // let json = await saveLoadController.getInstance().saveEventToJSON();
+                    // let json = await saveLoadController.saveEventToJSON();
                     // console.log(json);
-                    saveLoadController.getInstance().loadProject(data.value);
+                    saveLoadController.loadProject(data.value);
                     // sendData('sentCanvasData', json);
                 }
             );
@@ -78,12 +78,12 @@ const ioController = (function() {
                 async function(data) {
                     console.log("Got:", data);
 
-                    let defaultComponent = await componentController.getInstance().createNewComponent(data.name);
+                    let defaultComponent = await componentController.createNewComponent(data.name);
 
                     var newcomp = Object.assign(defaultComponent, data);
 
                     // ADDS IT TO ARRAY OF ALL components
-                    allComponents.getInstance().add(newcomp);
+                    allComponents.add(newcomp);
 
                     // Adds component to graph
                     Graph.getInstance().addNode(newcomp.id);
@@ -92,7 +92,7 @@ const ioController = (function() {
             socket.on('componentMove',
                 async function(data) {
                     // console.log("Got:", data);
-                    var foundComponent = allComponents.getInstance().getAll().find(c => c.id == data.id);
+                    var foundComponent = allComponents.getAll().find(c => c.id == data.id);
                     if (foundComponent) {
                         foundComponent.move(data.x, data.y);
                     }
@@ -111,14 +111,14 @@ const ioController = (function() {
             );
             socket.on('componentChange',
                 function(data) {
-                    var foundComponent = allComponents.getInstance().getAll().find(c => c.id == data.id);
+                    var foundComponent = allComponents.getAll().find(c => c.id == data.id);
 
                     var newcomp = Object.assign(foundComponent, data);
 
                     newcomp.image.width = data.width;
                     newcomp.image.height = data.height;
 
-                    allComponents.getInstance().getAll().map(item => item.id === data.id ? newcomp : item);
+                    allComponents.getAll().map(item => item.id === data.id ? newcomp : item);
                 }
             );
         }

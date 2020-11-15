@@ -30,6 +30,17 @@ export default class Device {
     addInterface(inter) {
         this._interfaces.push(inter);
     }
+    /**
+         * Get a list of IP addresses assigned to device
+         * @returns            {Array}    Contains a list of all the IP addresses assigned to this device.
+    */
+    getIPaddresses() {
+        let ipaddresses = [];
+        this._interfaces.forEach(i => {
+            ipaddresses = [...i.portIPaddress];
+        });
+        return ipaddresses;
+    }
     getInterface(index) {
         return this._interfaces[index];
     } 
@@ -38,7 +49,7 @@ export default class Device {
     }
     hasAvailablePort() {
         var hasAvailablePort = false;
-        this._interfaces.forEach((i) => {
+        this._interfaces.forEach(i => {
             if (i.availablePorts > 0) {
                 hasAvailablePort = true;
             }

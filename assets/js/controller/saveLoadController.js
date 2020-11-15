@@ -2,7 +2,7 @@
 import connectionController from './connectionController.js';
 import componentController from './componentController.js';
 import networkController from './networkController.js';
-
+import p5Controller from './p5Controller.js';
 
 // Collections
 import allComponents from '../collections/allComponents.js';
@@ -27,7 +27,7 @@ const saveLoadController = (function() {
                 "subnets": [],
             };
             // Checking if anything exists on canvas
-            if (!allComponents.getInstance().isEmpty()) {
+            if (!allComponents.isEmpty()) {
 
                 var data = await getAllSaveData();
 
@@ -38,7 +38,7 @@ const saveLoadController = (function() {
 
                 // Saves json to file
                 // console.log(json);
-                return app.saveJSON(json, 'network_design_project.json');
+                return p5Controller.getCanvas().saveJSON(json, 'network_design_project.json');
             }else {
                 alert("Canvas is empty");
             }
@@ -53,7 +53,7 @@ const saveLoadController = (function() {
                 "subnets": [],
             };
             // Checking if anything exists on canvas
-            if (!allComponents.getInstance().isEmpty()) {
+            if (!allComponents.isEmpty()) {
 
                 var data = await getAllSaveData();
 
@@ -72,9 +72,9 @@ const saveLoadController = (function() {
 
         async function getAllSaveData() {
             var graphData = Graph.getInstance().toJSON();
-            var connectionData = connectionController.getInstance().toJSON();
-            var componentData = componentController.getInstance().toJSON();
-            var subnetData = networkController.getInstance().toJSON();
+            var connectionData = connectionController.toJSON();
+            var componentData = componentController.toJSON();
+            var subnetData = networkController.toJSON();
     
             return Promise.all([graphData, connectionData, componentData, subnetData]);
         }
@@ -133,7 +133,7 @@ const saveLoadController = (function() {
                     newSub = cloneObject(s, newSub);
                     let endDevices = [];
                     for (var id of s.endDevices) {
-                        let foundComp = allComponents.getInstance().getAll().find(comp => comp.id === id);
+                        let foundComp = allComponents.getAll().find(comp => comp.id === id);
                         endDevices.push(foundComp);
                     }
                     newSub.setEndDevices(endDevices);
@@ -145,20 +145,20 @@ const saveLoadController = (function() {
 
                 window.setTimeout(() => {
                     console.log("Check network event");
-                    networkController.getInstance().dispatchNetworkChangeEvent();
+                    networkController.dispatchNetworkChangeEvent();
                 }, 500);
             // }
         }
         async function loadComponents(array) {
             // LOADING COMPONENTS
             for (let comp of array.components) {
-                    var  newcomp = await componentController.getInstance().createNewComponent(comp.name);
+                    var  newcomp = await componentController.createNewComponent(comp.name);
                     newcomp = Object.assign(newcomp, comp);
 
                     // Setting size of the component
                     newcomp.image.resize(comp.width, comp.height);
 
-                    allComponents.getInstance().add(newcomp);
+                    allComponents.add(newcomp);
 
                     // Adds component to graph
                     Graph.getInstance().addNode(newcomp.id);
@@ -170,7 +170,7 @@ const saveLoadController = (function() {
             // LOADING CONNECTIONS
             for (let con of array.connections) {
                 // new connection
-                var newconnection = await connectionController.getInstance().createNewConnection(con.name);
+                var newconnection = await connectionController.createNewConnection(con.name);
                 newconnection.id = con.id;
                 newconnection.setMousePos(con.mousePos[0], con.mousePos[1]);
 
@@ -190,7 +190,7 @@ const saveLoadController = (function() {
                         // looping through all the components in the connection
                         for (let savedComp of con._components) {
                             
-                            let foundComp = allComponents.getInstance().getAll().find(nextComp => nextComp.id == savedComp);
+                            let foundComp = allComponents.getAll().find(nextComp => nextComp.id == savedComp);
                                 
                             // comp has a connection
                             foundComp.setHasConnection(true);
@@ -218,7 +218,7 @@ const saveLoadController = (function() {
                     newconnection.getComponent(1).id	
                 );
 
-                allConnections.getInstance().add(newconnection);
+                allConnections.add(newconnection);
             }
 
             return true;
@@ -250,4 +250,4 @@ const saveLoadController = (function() {
     }
 })();
 
-export default saveLoadController;
+export default saveLoadController.getInstance();

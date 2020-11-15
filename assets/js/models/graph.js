@@ -24,7 +24,7 @@ const Graph = (function () {
         function updateGraph() {
             for (const [key, value] of _adjacencyList.entries()) {
                 let exists = false;
-                let foundComp = allComponents.getInstance().getAll().find(comp => comp.id == key);
+                let foundComp = allComponents.getAll().find(comp => comp.id == key);
                 if (foundComp) {
                     exists = true;
                 }
@@ -53,9 +53,9 @@ const Graph = (function () {
         }
         function depthFirstSearchForHostDevices(start, searchCase, visited = new Set()) {
 
-            var component = allComponents.getInstance().getWithID(start);
+            var component = allComponents.getWithID(start);
             //Check if starting node is a end device
-            if (componentController.getInstance().isEndDevice(component) && visited.size == 0) {
+            if (componentController.isEndDevice(component) && visited.size == 0) {
                 // console.log("Is end device");
                 return [component];
             }
@@ -73,7 +73,7 @@ const Graph = (function () {
                 // Prevents from travelling up the graph
                 if (! destination.includes("Router")) {
                     // Retrieves component object
-                    var adjacentComp = allComponents.getInstance().getAll().find(nextComp => nextComp.id.toString() === destination.toString());
+                    var adjacentComp = allComponents.getAll().find(nextComp => nextComp.id.toString() === destination.toString());
                     if (adjacentComp) {
                         if (searchCase(adjacentComp) && ! visited.has(destination)) {
                             foundNodesFromSearch.push(adjacentComp);

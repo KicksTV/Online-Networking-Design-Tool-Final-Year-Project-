@@ -1,8 +1,10 @@
 // Controllers
 import ioController from './ioController.js';
+import p5Controller from './p5Controller.js';
 
 // Collections
 import allComponents from '../collections/allComponents.js';
+import allConnections from '../collections/allConnections.js';
 
 // Models
 import Component from '../models/component.js';
@@ -46,7 +48,7 @@ const componentController = (function() {
             // Wait for img to be loaded
             let promise = new Promise((resolve, reject) => {
                 // Loading component image
-                app.loadImage(defaultComponent.getImgPath(), img => {
+                p5Controller.getCanvas().loadImage(defaultComponent.getImgPath(), img => {
                     img.width = img.width/2;
                     img.height = img.height/2;
 
@@ -74,9 +76,9 @@ const componentController = (function() {
         }
         async function createNewComponentFromArray(array) {
             for (let d of array) {
-                let comp = await componentController.getInstance().createNewComponent(d)
+                let comp = await createNewComponent(d)
                 // ADDS IT TO ARRAY OF ALL components
-                allComponents.getInstance().add(comp);
+                allComponents.add(comp);
                 // Adds component to graph
                 Graph.getInstance().addNode(comp.id);
             }
@@ -100,7 +102,7 @@ const componentController = (function() {
             return newcomp;
         }
         function getNumberOfExistingCompType(name) {
-            const found = allComponents.getInstance().get().filter(comp => comp.name == name);
+            const found = allComponents.get().filter(comp => comp.name == name);
             return found.length;
         }
 
@@ -116,7 +118,7 @@ const componentController = (function() {
         async function createComponentPropertiesPanel() {
             
             
-            let comp = await componentController.getInstance().createNewComponent('pc');
+            let comp = await createNewComponent('pc');
 
             var displayName = compPropertiesPanel.add(comp, 'displayName').listen();
             var xPos = compPropertiesPanel.add(comp, 'x').listen();
@@ -248,7 +250,7 @@ const componentController = (function() {
 
         }
         function checkForSelectedComponent(mouseX, mouseY) {
-            let _components = allComponents.getInstance().get();
+            let _components = allComponents.get();
 
             let clickedComponent = null;
 
@@ -269,7 +271,7 @@ const componentController = (function() {
             return;
         }
         function displayAllComponents() {
-            let _components = allComponents.getInstance().get();
+            let _components = allComponents.get();
             if (_components.length > 0) {
                 _components.forEach((comp) => {
                     // Checks if undefined
@@ -284,6 +286,7 @@ const componentController = (function() {
                                 pop(); // Restore original state
                             }
                             comp.display();
+                            
                         }
                     } else {
                         console.log("comp undefined");
@@ -292,7 +295,7 @@ const componentController = (function() {
             }
         }
         function doesComponentExist(id) {
-            let _components = allComponents.getInstance().get();
+            let _components = allComponents.get();
             if (_components.length > 0) {
                 _components.forEach((comp) => {
                     // console.log(comp.getID());
@@ -307,12 +310,12 @@ const componentController = (function() {
             }
         }
         function removeComponent(comp) {
-            var index = allComponents.getInstance().get().findIndex(c => c === comp);
+            var index = allComponents.get().findIndex(c => c === comp);
             // creates a new list without the component.
-            var newlist = allComponents.getInstance().get().filter((value, i, arr) => {
+            var newlist = allComponents.get().filter((value, i, arr) => {
                 return i != index; 
             });
-            allComponents.getInstance().set(newlist);
+            allComponents.set(newlist);
         }
         function isEndDevice(comp) {
             var isEndDevice = false;
@@ -417,7 +420,7 @@ const componentController = (function() {
                         clonedComponent.setXpos(mouseX + xDifference);
                         clonedComponent.setYpos(mouseY + yDifference);
 
-                        allComponents.getInstance().add(clonedComponent);
+                        allComponents.add(clonedComponent);
                     }
                 }
                 copied = false;
@@ -430,7 +433,7 @@ const componentController = (function() {
                     let clonedComponent = cloneComponent(selectedComponent);
                     clonedComponent.setXpos(mouseX);
                     clonedComponent.setYpos(mouseY);
-                    allComponents.getInstance().add(clonedComponent);
+                    allComponents.add(clonedComponent);
                     copied = false;
                 }
                 else if (cut) {
@@ -463,7 +466,7 @@ const componentController = (function() {
         function toJSON() {
             var json = [];
             // looping through all components to get any that haven't got a connection
-            allComponents.getInstance().get().forEach((comp) => {
+            allComponents.get().forEach((comp) => {
                 json.push(comp.prepareForJson());
             });
             return json;
@@ -472,7 +475,7 @@ const componentController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve, reject) => {
-                app.loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
+                p5Controller.getCanvas().loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
                 });
             });
@@ -558,4 +561,4 @@ const componentController = (function() {
     }
 })();
 
-export default componentController;
+export default componentController.getInstance();

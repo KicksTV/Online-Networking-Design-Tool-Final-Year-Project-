@@ -48,7 +48,7 @@ export default class PanelView {
         if (dataArray.length > 0) {
             dataArray.forEach(data => {
 
-                var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+                var currentSelectedComp = componentController.getSelectedComponent();
                 var ConComponents = data._components;
                 var interfaces = data._interfacePorts;
                 var selectedCompInterface;
@@ -93,14 +93,14 @@ export default class PanelView {
 
                 var $IP_field = $(`#${ipfield.id}`);
 
-                if (componentController.getInstance().isEndDevice(currentSelectedComp) || currentSelectedComp.name == "Router") {
+                if (componentController.isEndDevice(currentSelectedComp) || currentSelectedComp.name == "Router") {
                     if (selectedCompInterface.portIPaddress[selectedCompInterfacePort]) {
                         ipfield.innerText = selectedCompInterface.portIPaddress[selectedCompInterfacePort];
                     }
                     ipfield.setAttribute("contenteditable", "true");
 
                     $IP_field.on('keypress', (e) => {
-                        networkController.getInstance().checkIPAddressInput(e, data);
+                        networkController.checkIPAddressInput(e, data);
                     });
                 }
 

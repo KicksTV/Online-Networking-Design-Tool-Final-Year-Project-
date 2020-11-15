@@ -56,4 +56,4 @@ var allComponents = (function() {
     }
 })();
 
-export default allComponents;
+export default allComponents.getInstance();

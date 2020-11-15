@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha -r esm",
     "start": "node app",
+    "build": "browserify -r dat.gui -r socket.io-client -r p5 -r bootstrap -r jquery -r rfdc -r lodash > assets/js/bundle.js -d",
     "dev": "nodemon app.js",
     "dev-debug": "nodemon --watch app.js --inspect app.js"
   },
@@ -20,7 +21,6 @@
     "nodemon": "^1.19.4"
   },
   "dependencies": {
-    "babel": "^6.23.0",
     "bootstrap": "^4.5.1",
     "bootstrap-icons": "^1.0.0-alpha5",
     "browserify": "^16.5.2",
@@ -30,6 +30,7 @@
     "express-session": "^1.17.1",
     "implement-js": "0.0.27",
     "jquery": "^3.5.0",
+    "lodash": "^4.17.20",
     "p5": "^1.1.9",
     "popper.js": "^1.16.1",
     "rfdc": "^1.1.4",

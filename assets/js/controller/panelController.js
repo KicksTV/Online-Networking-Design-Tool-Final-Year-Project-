@@ -44,7 +44,7 @@ const panelController = (function() {
         }
         function updatePanelWithData(comp) {
 
-            var data = allConnections.getInstance().getConnectionsRelatedToComp(comp);
+            var data = allConnections.getConnectionsRelatedToComp(comp);
             panelview.update(data);
         }
 

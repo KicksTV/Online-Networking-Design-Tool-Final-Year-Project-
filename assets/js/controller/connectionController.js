@@ -1,6 +1,7 @@
 // Controllers
 import networkController from './networkController.js';
 import componentController from './componentController.js';
+import p5Controller from './p5Controller.js';
 
 // Collections
 import allConnections from '../collections/allConnections.js';
@@ -28,24 +29,60 @@ const connectionController = (function() {
             return newcon;
         }
         function drawAllConnections() {
-            allConnections.getInstance().get().forEach((i) => {
-                if (getSelectingSecondConnection() && i == allConnections.getInstance().getSelectedConnection()) {
-                    i.compSelectDisplay();
+            allConnections.get().forEach((con) => {
+                if (getSelectingSecondConnection() && con == allConnections.getSelectedConnection()) {
+                    con.compSelectDisplay();
                 }else {
                     // Prevents displaying incomplete set connections
-                    if (i.getComponents()[0] && i.getComponents()[1]) {
-                        if (i.getComponents()[0].image && i.getComponents()[1].image) {
+                    if (con.getComponents()[0] && con.getComponents()[1]) {
+                        if (con.getComponents()[0].image && con.getComponents()[1].image) {
                             // Checks if linking component wishs to hide its connection
-                            if (!i.isHidden()) {
+                            if (!con.isHidden()) {
                                 push(); // Start a new drawing state
                                 strokeWeight(2);
-                                i.defaultDisplay();
+                                con.defaultDisplay();
                                 pop(); // Restore original state
+
+                                displayCompIPaddress(con)
                             }
                         }
                     }
                 }
             });
+        }
+        function displayCompIPaddress(connection) {
+            let comp1 = connection.getComponent(0);
+            let comp2 = connection.getComponent(1);
+
+            let ipaddresses = [connection.getIPaddress(0), connection.getIPaddress(1)]
+            if (!_.isEqual(ipaddresses, ["", ""])) {
+                for (var i=0;i<=1;i++) {
+                    // get x & y coords of both components
+                    let center1 = comp1.getCenterPos();
+                    let center2 = comp2.getCenterPos();
+
+                    let x1 = center1[0], 
+                        x2 = center2[0],
+                        y1 = center1[1], 
+                        y2 = center2[1];
+
+                    // Gets the position which is a quarter between the two components
+                    let quarterX = connection.getComponent(i) == comp1 ? lerp(x1, x2, 0.25) : lerp(x1, x2, 0.75);
+                    let quarterY = connection.getComponent(i) == comp1 ? lerp(y1, y2, 0.25) : lerp(y1, y2, 0.75);
+                    let d = dist(x1, y1, x2, y2);
+
+                    let angle = x1 < x2 ? atan2(y2 - y1, x2 - x1) : atan2(y1 - y2, x1 - x2);
+
+                    // Will only show if distance is greater than 250
+                    if (d > 250) {
+                        push();
+                        translate(quarterX, quarterY);
+                        rotate(angle);
+                        text(ipaddresses[i], 0, -5);
+                        pop();
+                    }
+                }
+            }
         }
         function getDrawConnection() {
             return drawConnection;
@@ -72,7 +109,7 @@ const connectionController = (function() {
 
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
-            var preComp = allConnections.getInstance().getSelectedConnection().getComponent(0);
+            var preComp = allConnections.getSelectedConnection().getComponent(0);
 
                 //print(checkValidConnection(true, comp, preComp));
                 if (checkValidConnection(true, comp, preComp)) {
@@ -91,7 +128,7 @@ const connectionController = (function() {
                     // print("ending connection");
 
                     // Deleting connection object
-                    allConnections.getInstance().removeConnection(allConnections.getInstance());
+                    allConnections.removeConnection(allConnections);
 
                     // End selection process
                     endConnection();
@@ -122,7 +159,7 @@ const connectionController = (function() {
                 } else {
                     endConnection();
                     // Deleting connection object
-                    allConnections.getInstance().removeConnection(allConnections.getInstance());
+                    allConnections.removeConnection(allConnections);
 
                     $('#warningConnectionToastAlert').toast('show');
                     $('#warningConnectionToastAlert .toast-body').text(
@@ -136,30 +173,30 @@ const connectionController = (function() {
 
         function addComponentToConnection(comp, interfaceValues) {
             // Adding component to connection object
-            let connection = allConnections.getInstance().getSelectedConnection();
+            let connection = allConnections.getSelectedConnection();
             connection.addComponent(comp);
             connection.addInterfacePort(interfaceValues);
         }
         function drawConnetions(xmouse, ymouse) {
             if (selectingSecondConnection == true) {
-                allConnections.getInstance().getSelectedConnection().setMousePos(xmouse, ymouse);
+                allConnections.getSelectedConnection().setMousePos(xmouse, ymouse);
             }
         }
         function deleteConnection(comp) {
-            var connectionsToDel = allConnections.getInstance().getConnectionsRelatedToComp(comp);
+            var connectionsToDel = allConnections.getConnectionsRelatedToComp(comp);
             connectionsToDel.forEach((con) => {
-                allConnections.getInstance().removeConnection(con);
+                allConnections.removeConnection(con);
                 let nextComp = con.getComponents().find(thisComp => thisComp.id !== comp.id);
                 // print("nextComp", nextComp);
                 let index = con.getComponents().indexOf(nextComp);
-                componentController.getInstance().makePortAvailable(nextComp, con.getInterfacePort(index));
+                componentController.makePortAvailable(nextComp, con.getInterfacePort(index));
             });
         }
         function checkValidConnection(hasSelectedBothComponents, comp, preComp) {
-            // print(allConnections.getInstance().getSelectedConnection());
+            // print(allConnections.getSelectedConnection());
             
             var isValidConnection = false;
-            var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
+            var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getSelectedConnection());
             
             // NEEDS TO BE PROPERLY FIXED
             if (preComp == null) {
@@ -167,7 +204,7 @@ const connectionController = (function() {
             }
             
             if (hasSelectedBothComponents) {
-                var isValidConnectionType2 = preComp.checkValidLinkingComponent(allConnections.getInstance().getSelectedConnection());
+                var isValidConnectionType2 = preComp.checkValidLinkingComponent(allConnections.getSelectedConnection());
                 if (allVRules.getInstance().isValidConnection(comp.name, preComp.name) && isValidConnectionType1 && isValidConnectionType2) {
                     isValidConnection = true;
                 }
@@ -189,7 +226,7 @@ const connectionController = (function() {
 
             $('#connectionCancel').on('click', function(event) {
                 // Deleting connection object
-                allConnections.getInstance().removeConnection(allConnections.getInstance());
+                allConnections.removeConnection(allConnections);
                 endConnection();
                 interfaceView.hide();
                 interfaceView.clear();
@@ -210,16 +247,16 @@ const connectionController = (function() {
                     selectingSecondConnection = true;
 
                     // adding connection to list of allCons
-                    allConnections.getInstance().add(allConnections.getInstance().getSelectedConnection());
+                    allConnections.add(allConnections.getSelectedConnection());
 
                 } else {
-                    allConnections.getInstance().getSelectedConnection().getInterface(0).subtractPossibleAvailablePort();
-                    allConnections.getInstance().getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
+                    allConnections.getSelectedConnection().getInterface(0).subtractPossibleAvailablePort();
+                    allConnections.getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
 
                     // Creating new Edge on graph
                     Graph.getInstance().addEdge(
-                        allConnections.getInstance().getSelectedConnection().getComponent(0).getID(), 
-                        allConnections.getInstance().getSelectedConnection().getComponent(1).getID()
+                        allConnections.getSelectedConnection().getComponent(0).getID(), 
+                        allConnections.getSelectedConnection().getComponent(1).getID()
                     );
 
                     endConnection();
@@ -240,7 +277,7 @@ const connectionController = (function() {
 
 
                 // Triggering networkChangeEvent
-                networkController.getInstance().dispatchNetworkChangeEvent();
+                networkController.dispatchNetworkChangeEvent();
                 //compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
 
                 if (preComp != null) {
@@ -256,14 +293,14 @@ const connectionController = (function() {
 
             drawConnection = false;
             selectingSecondConnection = false;
-            allConnections.getInstance().setSelectedConnection(null);
+            allConnections.setSelectedConnection(null);
             compAddConnectionCounter=0;
             //updateMouseCursor();
         }
 
         function toJSON() {
             var json = [];
-            allConnections.getInstance().get().forEach((con) => {
+            allConnections.get().forEach((con) => {
                 json.push(con.prepareForJson());
             });
             return json;
@@ -272,7 +309,7 @@ const connectionController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve, reject) => {
-                app.loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
+                p5Controller.getCanvas().loadXML(`/assets/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
                 });
             });
@@ -285,6 +322,7 @@ const connectionController = (function() {
         return {
             createNewConnection:createNewConnection,
             drawAllConnections:drawAllConnections,
+            displayCompIPaddress:displayCompIPaddress,
             getSelectingSecondConnection:getSelectingSecondConnection,
             isSelectingInterfacePort:isSelectingInterfacePort,
             selectConnectionForComp:selectConnectionForComp,
@@ -309,4 +347,4 @@ const connectionController = (function() {
     }
 })();
 
-export default connectionController;
+export default connectionController.getInstance();

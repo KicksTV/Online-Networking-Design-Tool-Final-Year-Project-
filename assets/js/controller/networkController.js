@@ -2,7 +2,7 @@
 import componentController from '../controller/componentController.js';
 
 // Collections
-import allComps from '../collections/allComponents.js';
+import allComponents from '../collections/allComponents.js';
 import allConnections from '../collections/allConnections.js';
 import allSubnets from '../collections/allSubnets.js';
 
@@ -207,7 +207,7 @@ const networkController = (function() {
         }
 
         function dispatchNetworkChangeEvent() {
-            componentController.getInstance().getGUI().domElement.dispatchEvent(networkChangeEvent);
+            componentController.getGUI().domElement.dispatchEvent(networkChangeEvent);
         }
 
         // network functions
@@ -350,8 +350,8 @@ const networkController = (function() {
         // Calculates all the host devices currently displayed on canvas
         function calculateAllHost() {
             var totalNumberOfHosts = 0;
-            allComps.getInstance().get().forEach((comp) => {
-                if (componentController.getInstance().isEndDevice(comp)) {
+            allComponents.get().forEach((comp) => {
+                if (componentController.isEndDevice(comp)) {
                     totalNumberOfHosts += 1;
                 }
             });
@@ -392,11 +392,11 @@ const networkController = (function() {
             var totalNumberOfSubnets = 0;
             var connections = [];
         
-            for (let comp of allComps.getInstance().getAll()) {
+            for (let comp of allComponents.getAll()) {
                 //print(comp.getComponentName());
-                //print(allConnections.getInstance().getConnectionsRelatedToComp(comp));
+                //print(allConnections.getConnectionsRelatedToComp(comp));
                 if (comp.name == "Router") {
-                    allConnections.getInstance().getConnectionsRelatedToComp(comp).forEach((con) => {
+                    allConnections.getConnectionsRelatedToComp(comp).forEach((con) => {
                         connections.push(con);
                     });
                 }
@@ -449,10 +449,10 @@ const networkController = (function() {
         function getLargestSubnet() {
             var largestSubnet = 0;
             //Get all routers
-            var allRouters = allComps.getInstance().get().filter(comp => comp.name == "Router");
+            var allRouters = allComponents.get().filter(comp => comp.name == "Router");
 
             for (let router of allRouters) {
-                let connections = allConnections.getInstance().getConnectionsRelatedToComp(router);
+                let connections = allConnections.getConnectionsRelatedToComp(router);
                 // console.log(connections);
                 for (let nextConnection of connections) {
                     var subnetHostSize = 0;
@@ -508,7 +508,7 @@ const networkController = (function() {
 
                     // if component exists, continue to find end devices.
                     if (searchingComp) {
-                        let result = Graph.getInstance().depthFirstSearchForHostDevices(searchingComp.id, componentController.getInstance().isEndDevice);
+                        let result = Graph.getInstance().depthFirstSearchForHostDevices(searchingComp.id, componentController.isEndDevice);
                         if (result != null) {
                             subnetHostSize = result.length;
                         }
@@ -709,12 +709,12 @@ const networkController = (function() {
 
         function checkIPAddressInput(event, connection) {
             var interfaceValues;
-            var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+            var currentSelectedComp = componentController.getSelectedComponent();
             var key = String.fromCharCode(event.keyCode)
 
             // console.log(event);
             // console.log(allSubnets.getInstance().getAll())
-            // console.log(allConnections.getInstance().getAll())
+            // console.log(allConnections.getAll())
 
 
             if (connection.getComponent(0) == currentSelectedComp) {
@@ -771,7 +771,7 @@ const networkController = (function() {
 
                     // Setting Subnet ID
                     let subnetmask = getSubnetMask();
-                    found.subnetID = networkController.getInstance().calculateSubnetID(found.gatewayRouterIP, subnetmask);
+                    found.subnetID = calculateSubnetID(found.gatewayRouterIP, subnetmask);
 
                 }
             } else {
@@ -788,7 +788,7 @@ const networkController = (function() {
 
                 if (foundSubnetforComp) {
 
-                    console.log(foundSubnetforComp);
+                    // console.log(foundSubnetforComp);
 
                     // Checks if router has been assigned an IP address first
                     if (foundSubnetforComp.gatewayRouterIP == null) {
@@ -801,10 +801,11 @@ const networkController = (function() {
 
                             let subnetmask = getSubnetMask();
 
-                            var subnetID = networkController.getInstance().calculateSubnetID(IPaddressField, subnetmask);
+                            var subnetID = calculateSubnetID(IPaddressField, subnetmask);
                             
                             // Check against existing assign IP addresses
                             if (subnetID == foundSubnetforComp.subnetID && checkAvailableIPAddress(foundSubnetforComp, IPaddressField)) {
+                                
                                 // Valid IP address for subnet
                                 ipfield.className = "qs_valid_ip_address";
                                 inter.portIPaddress[port] = IPaddressField;
@@ -812,6 +813,7 @@ const networkController = (function() {
                                 foundSubnetforComp.addAddressToSubnet(currentSelectedComp, IPaddressField);
 
                             } else {
+                                
                                 // Not valid IP address for subnet
 
                                 ipfield.className = "qs_invalid_ip_address";
@@ -845,7 +847,7 @@ const networkController = (function() {
             });
 
 
-            var currentSelectedComp = componentController.getInstance().getSelectedComponent();
+            var currentSelectedComp = componentController.getSelectedComponent();
 
             currentUnavailableAddress.forEach(takenAddress => {
                 //print(ip, takenAddress);
@@ -909,4 +911,4 @@ const networkController = (function() {
     }
 })();
 
-export default networkController;
+export default networkController.getInstance();

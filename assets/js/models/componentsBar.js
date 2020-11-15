@@ -109,22 +109,22 @@ export class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem
             // CREATES A NEW COMPONENT WHEN COMPONENT BUTTON IS CLICKED
             this.buttons[i].getIMG().mousePressed(async () => {
     
-                componentController.getInstance().setDraggingNewComponent(true);
+                componentController.setDraggingNewComponent(true);
 
                 // CREATES NEW COMPONENT
                 var name = this.buttons[i].getName();
-                let defaultComponent = await componentController.getInstance().createNewComponent(name);
+                let defaultComponent = await componentController.createNewComponent(name);
 
 
                 ioController.getInstance().sendData('createComponent', defaultComponent.prepareForJson());
 
                 // ADDS IT TO ARRAY OF ALL components
-                allComponents.getInstance().add(defaultComponent);
+                allComponents.add(defaultComponent);
 
                 // Adds component to graph
                 Graph.getInstance().addNode(defaultComponent.id);
 
-                networkController.getInstance().dispatchNetworkChangeEvent()
+                networkController.dispatchNetworkChangeEvent()
             });
         }
     }
@@ -152,9 +152,9 @@ export class ComponentBarConnections extends compBarGetSetMixin(ComponentsBarIte
     
             this.buttons[i].getIMG().mouseClicked(async () => {
                 let name = this.buttons[i].getName();
-                let c = await connectionController.getInstance().createNewConnection(name);
-                connectionController.getInstance().setDrawConnection(true);
-                allConnections.getInstance().setSelectedConnection(c);
+                let c = await connectionController.createNewConnection(name);
+                connectionController.setDrawConnection(true);
+                allConnections.setSelectedConnection(c);
 
                 
                 $('#startConnectionToastAlert').toast('show');

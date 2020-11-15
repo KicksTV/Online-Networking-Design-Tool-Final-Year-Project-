@@ -1,11 +1,13 @@
 'use strict';
 
 // Controllers
+import p5Controller from '../assets/js/controller/p5Controller.js';
 import connectionController from '../assets/js/controller/connectionController.js';
 import componentController from '../assets/js/controller/componentController.js';
 import networkController from '../assets/js/controller/networkController.js';
 import panelController from '../assets/js/controller/panelController.js';
 import saveLoadController from '../assets/js/controller/saveLoadController.js';
+
 
 // Collections
 import allComponents from '../assets/js/collections/allComponents.js';
@@ -21,51 +23,25 @@ import Graph from '../assets/js/models/graph.js';
 var assert = chai.assert;
 var expect = chai.expect;
 
-var p5 = require('p5')
-var GUI = require('dat.gui').GUI
-
 var chaiAsPromised = require("chai-as-promised")
 chai.use(chaiAsPromised);
 var should = chai.should();
 
-
-var gui;
-
-window.app = new p5(function(p5) {
-  p5.preload = function() {
-    
-    gui = new GUI({ autoPlace: false });
-    var con = document.getElementById("rightSidePanel");
-    con.appendChild(gui.domElement);
-    gui.width = 400;
-
-    networkController.getInstance().initGUI(gui);
-    componentController.getInstance().initGUI(gui);
-
-    networkController.getInstance().initNetworkListener(gui);
-
-  }
-  p5.setup = function() {
-    var canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight);
-    canvas.parent("canvasDiv");
-  }
-  p5.draw = function() {}
-});
-
+p5Controller.createNewCanvas();
 
 
 // describe lets you comment on what this block of code is for.
 describe('component functions', () => {
 
   before('setup of some components', async function () {
-    var pc = await componentController.getInstance().createNewComponent('PC')
-    var netswitch = await componentController.getInstance().createNewComponent('Switch')
-    var router = await componentController.getInstance().createNewComponent('Router')
+    var pc = await componentController.createNewComponent('PC')
+    var netswitch = await componentController.createNewComponent('Switch')
+    var router = await componentController.createNewComponent('Router')
 
     // ADDS IT TO ARRAY OF ALL components
-    allComponents.getInstance().add(pc);
-    allComponents.getInstance().add(netswitch);
-    allComponents.getInstance().add(router);
+    allComponents.add(pc);
+    allComponents.add(netswitch);
+    allComponents.add(router);
 
     // Adds component to graph
     Graph.getInstance().addNode(pc.id);
@@ -79,15 +55,15 @@ describe('component functions', () => {
 
 
   it('test if comps exist in collection', async () => {
-    const comps = allComponents.getInstance().getAll();
+    const comps = allComponents.getAll();
     comps.should.have.length(3);
   });
 
   it('test if default comp values have been loaded', async () => {
-    var defaultPC = await componentController.getInstance().createNewComponent('PC')
+    var defaultPC = await componentController.createNewComponent('PC')
 
     let promise = new Promise((resolve, reject) => {
-      app.loadXML(`/assets/components/${'pc'}.xml`, (xml) => {
+      p5Controller.getCanvas().loadXML(`/assets/components/${'pc'}.xml`, (xml) => {
           resolve(xml);
       });
     });
@@ -116,7 +92,7 @@ describe('component functions', () => {
   // it() lets you comment on what an individual test is about.
   it('Checking if a valid connection component returns true', async () => {
     
-    var pc = allComponents.getInstance().getAll().find(c => c.name == "PC" )
+    var pc = allComponents.getAll().find(c => c.name == "PC" )
     
     let valid = pc.checkValidLinkingComponent(connection1);
     // expect is the actual test.  This test checks if the var is a string.
@@ -125,7 +101,7 @@ describe('component functions', () => {
 
   it('Checking if a invalid connection component returns false', async () => {
     
-    var pc = allComponents.getInstance().getAll().find(c => c.name == "PC" )
+    var pc = allComponents.getAll().find(c => c.name == "PC" )
 
     let valid = pc.checkValidLinkingComponent(connection2);
     // expect is the actual test.  This test checks if the var is a string.
@@ -147,8 +123,8 @@ describe('networking calculation functions', function() {
 
 
   before('setup of some components', async function () {
-    allComponents.getInstance().clear();
-    allConnections.getInstance().clear();
+    allComponents.clear();
+    allConnections.clear();
     allSubnets.getInstance().clear();
 
     console.log("First Network Test");
@@ -158,84 +134,86 @@ describe('networking calculation functions', function() {
                    'Laptop', 'Printer', 'Server', 'PC', 'Switch', 'Switch', 
                    'Router', 'Laptop', 'Laptop', 'PC']
 
-    await componentController.getInstance().createNewComponentFromArray(devices);
+
+
+    await componentController.createNewComponentFromArray(devices);
 
     await setupNetwork();
 
-    networkController.getInstance().calculateAllNetworkProperties();
+    networkController.calculateAllNetworkProperties();
 
 
   });
 
   // it() lets you comment on what an individual test is about.
   it('Test #1 for calculating number of hosts', async () => {
-    hosts = networkController.getInstance().calculateAllHost();
+    hosts = networkController.calculateAllHost();
     expect(hosts).to.equal(9);
   });
 
   it('Test #1 for calculating number of subnets', async () => {
-    subnets = networkController.getInstance().calculateAllSubnets();
+    subnets = networkController.calculateAllSubnets();
     expect(subnets).to.equal(5);
   });
 
   it('Test #1 for calculating subnetmask', async () => {
-    subnetmask = networkController.getInstance().calculateSubnetMask();
+    subnetmask = networkController.calculateSubnetMask();
     expect(subnetmask).to.equal('255.255.255.248');
   });
  
   it('Test #1 for calculating supernetmask', async () => {
-    supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
+    supernetmask = networkController.calculateSupernetMask(subnets);
     expect(supernetmask).to.equal('255.255.255.240');
   });
 
   it('Test #1 for calculating max number of IP addresses', async () => {
-    var max_number_hosts = networkController.getInstance().calculateTotalIPAddresses(subnetmask);
+    var max_number_hosts = networkController.calculateTotalIPAddresses(subnetmask);
     expect(max_number_hosts).to.equal(6);
   });
 
   it('Test #1 for calculating max number of subnets', async () => {
-    var max_number_subnets = networkController.getInstance().calculateTotalNumberSubnets(supernetmask);
+    var max_number_subnets = networkController.calculateTotalNumberSubnets(supernetmask);
     expect(max_number_subnets).to.equal(14);
   });
 
   it('Test slash value to decimal conversion function', async () => {
-    var slashvalue_to_decimal = networkController.getInstance().calculateDecimalFromSlashValue("26");
+    var slashvalue_to_decimal = networkController.calculateDecimalFromSlashValue("26");
     expect(slashvalue_to_decimal).to.equal("255.255.255.192");
   });
 
   it('Test binary to decimal conversion function', async () => {
-    var IP_in_decimal = networkController.getInstance().binaryToDecimal("00001111.10100111.11111111.10000000");
+    var IP_in_decimal = networkController.binaryToDecimal("00001111.10100111.11111111.10000000");
     expect(IP_in_decimal).to.equal("15.167.255.128");
   });
 
   it('Test decimal to binary conversion function', async () => {
-    var IP_in_binary = networkController.getInstance().decimalToBinary("15.167.255.128");
+    var IP_in_binary = networkController.decimalToBinary("15.167.255.128");
     expect(IP_in_binary).to.equal("00001111.10100111.11111111.10000000");
   });
 
   it('Test #1 function for calculating subnetID', async () => {
-    var subnetID = networkController.getInstance().calculateSubnetID("192.168.1.6", "255.255.255.248");
+    var subnetID = networkController.calculateSubnetID("192.168.1.6", "255.255.255.248");
     expect(subnetID).to.equal("192.168.1.0");
   });
 
   it('Test #2 function for calculating subnetID', async () => {
-    var subnetID = networkController.getInstance().calculateSubnetID("192.168.1.150", "255.255.255.240");
+    var subnetID = networkController.calculateSubnetID("192.168.1.150", "255.255.255.240");
     expect(subnetID).to.equal("192.168.1.144");
   });
 
 
   it('Testing function for validating entered IP address', async () => {
-    var list_of_PCs = allComponents.getInstance().getAll().filter(c => c.name === 'PC');
+    var list_of_PCs = allComponents.getAll().filter(c => c.name === 'PC');
 
     var component = list_of_PCs[1];
-    var list_connection = allConnections.getInstance().getConnectionsRelatedToComp(component);
+    var list_connection = allConnections.getConnectionsRelatedToComp(component);
     var connection = list_connection[0];
-    componentController.getInstance().setSelectedComponent(component);
+    componentController.setSelectedComponent(component);
 
-    console.log(allConnections.getInstance().getAll());
+    console.log(allConnections.getAll());
     console.log("Connection", connection);
 
-    panelController.getInstance().updatePanelWithData(componentController.getInstance().getSelectedComponent());
+    panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
 
     var subnet = allSubnets.getInstance().getWithConnectionID(connection.id);
     subnet.subnetID = "192.168.1.0";
@@ -257,7 +235,7 @@ describe('networking calculation functions', function() {
   it('Test valid IP address function', async () => {
     var subnet = allSubnets.getInstance().get(0);
     subnet.subnetID = "192.168.1.0";
-    var is_valid = networkController.getInstance().checkAvailableIPAddress(subnet, "192.168.1.2");
+    var is_valid = networkController.checkAvailableIPAddress(subnet, "192.168.1.2");
     expect(is_valid).to.equal(true);
   });
 
@@ -267,7 +245,7 @@ describe('networking calculation functions', function() {
   
     // });
     it('test saving project to JSON', async () => {
-      // await saveLoadController.getInstance().saveEventToFile();
+      // await saveLoadController.saveEventToFile();
     });
     it('test loading project from JSON', async () => {
   
@@ -285,8 +263,8 @@ describe('networking calculation functions', function() {
 
 
     before('setup of some components', async function () {
-      allComponents.getInstance().clear();
-      allConnections.getInstance().clear();
+      allComponents.clear();
+      allConnections.clear();
       allSubnets.getInstance().clear();
 
       console.log("Second Network Test");
@@ -301,58 +279,58 @@ describe('networking calculation functions', function() {
                      'PC'
                     ]
   
-      await componentController.getInstance().createNewComponentFromArray(devices);
+      await componentController.createNewComponentFromArray(devices);
   
       await setupNetwork();
 
     });
 
     it('Test #2 for calculating number of hosts', async () => {
-      hosts = networkController.getInstance().calculateAllHost();
+      hosts = networkController.calculateAllHost();
       expect(hosts).to.equal(15);
     });
   
     it('Test #2 for calculating number of subnets', async () => {
-      subnets = networkController.getInstance().calculateAllSubnets();
+      subnets = networkController.calculateAllSubnets();
       expect(subnets).to.equal(15);
     });
     it('Test #2 for calculating subnetmask', async () => {
-      subnetmask = networkController.getInstance().calculateSubnetMask();
+      subnetmask = networkController.calculateSubnetMask();
       expect(subnetmask).to.equal('255.255.255.240');
     });
     it('Test #2 for calculating supernetmask', async () => {
-      supernetmask = networkController.getInstance().calculateSupernetMask(subnets);
+      supernetmask = networkController.calculateSupernetMask(subnets);
       expect(supernetmask).to.equal('255.255.255.224');
     });
     it('Test #2 for calculating max number of IP addresses', async () => {
-      var max_number_hosts = networkController.getInstance().calculateTotalIPAddresses(subnetmask);
+      var max_number_hosts = networkController.calculateTotalIPAddresses(subnetmask);
       expect(max_number_hosts).to.equal(14);
     });
   
     it('Test #2 for calculating max number of subnets', async () => {
-      var max_number_subnets = networkController.getInstance().calculateTotalNumberSubnets(supernetmask);
+      var max_number_subnets = networkController.calculateTotalNumberSubnets(supernetmask);
       expect(max_number_subnets).to.equal(30);
     });
   });
 
   // after('draw network',function () {
   //   app.draw = () => {
-  //     connectionController.getInstance().drawAllConnections();
-  //     componentController.getInstance().displayAllComponents();
+  //     connectionController.drawAllConnections();
+  //     componentController.displayAllComponents();
   //   }
   // });
 });
 
 async function setupNetwork() {
-  var list_of_routers = allComponents.getInstance().getAll().filter(c => c.name === 'Router');
-  var list_of_PCs = allComponents.getInstance().getAll().filter(c => c.name === 'PC');
+  var list_of_routers = allComponents.getAll().filter(c => c.name === 'Router');
+  var list_of_PCs = allComponents.getAll().filter(c => c.name === 'PC');
 
-  var netswitch = allComponents.getInstance().getAll().find(c => c.name === 'Switch');
+  var netswitch = allComponents.getAll().find(c => c.name === 'Switch');
 
   // Creates a connection between all routers
   for (let r in list_of_routers) {
     if (r != list_of_routers.length-1) {
-      var con = await connectionController.getInstance().createNewConnection("twisted_pair");
+      var con = await connectionController.createNewConnection("twisted_pair");
       
       let num = parseInt(r);
       var num2 = num+1;
@@ -389,12 +367,12 @@ async function setupNetwork() {
         list_of_routers[num2].id
       );
 
-      allConnections.getInstance().add(con);
+      allConnections.add(con);
     }
   }
 
   // Router_1  -> Switch_1
-  var connection1 = await connectionController.getInstance().createNewConnection("twisted_pair");
+  var connection1 = await connectionController.createNewConnection("twisted_pair");
   var interfaceValues1 = list_of_routers[0].getInterfaceFromString(`Fast_Ethernet 0`);
   var interfaceValues2 = netswitch.getInterfaceFromString("Fast_Ethernet 0");
   connection1.addComponent(list_of_routers[0]);
@@ -421,12 +399,12 @@ async function setupNetwork() {
     list_of_routers[0].id, 
     netswitch.id
   );
-  allConnections.getInstance().add(connection1);
+  allConnections.add(connection1);
 
   // Create a subnet between each router and pc execpt first router
   for (let i in list_of_routers) {
     if (i != 0) {
-      var con = await connectionController.getInstance().createNewConnection("twisted_pair");
+      var con = await connectionController.createNewConnection("twisted_pair");
       // con._components = [list_of_routers[i], list_of_PCs[i]];
 
       var interfaceValues1 = list_of_routers[i].getInterfaceFromString(`Fast_Ethernet 3`);
@@ -457,11 +435,11 @@ async function setupNetwork() {
         list_of_PCs[i].id
       );
 
-      allConnections.getInstance().add(con);
+      allConnections.add(con);
     }
   }
 
-  var list_of_end_devices = allComponents.getInstance()
+  var list_of_end_devices = allComponents
                                           .getAll().filter(c => 
                                                           c.name === 'Laptop' ||
                                                           c.name === 'Printer' ||
@@ -471,7 +449,7 @@ async function setupNetwork() {
     var index = list_of_end_devices.indexOf(endDevice);
     // index = 0 is already taken by connection with router
     if (index == 0) index++;
-    var con = await connectionController.getInstance().createNewConnection("twisted_pair");
+    var con = await connectionController.createNewConnection("twisted_pair");
 
     // endDevice.getInterface(0).portInUse(0);
     // endDevice.getInterface(0).portIPaddress[0] = `192.168.1.${list_of_end_devices.indexOf(endDevice)+1}`;
@@ -502,8 +480,8 @@ async function setupNetwork() {
       netswitch.getID(), 
       endDevice.getID()
     );
-    allConnections.getInstance().add(con);
+    allConnections.add(con);
   }
 
-  networkController.getInstance().dispatchNetworkChangeEvent();
+  networkController.dispatchNetworkChangeEvent();
 }
