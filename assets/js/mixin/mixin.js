@@ -22,13 +22,14 @@ export const compBarGetSetMixin = superclass => class extends superclass {
     }
 };
 export const componentMixin = superclass => class extends superclass {
-    display() {
-        image(this.image, this.x, this.y);
-        noStroke();
-        textSize(this.textSize);
-        text(this.displayName, this.x, this.y + this.image.height, this.image.width, 30);
-        textAlign(CENTER, CENTER);
-    }
+    // Replaced now
+    // display() {
+    //     image(this.image, this.x, this.y);
+    //     noStroke();
+    //     textSize(this.textSize);
+    //     text(this.displayName, this.x, this.y + this.image.height, this.image.width, 30);
+    //     textAlign(CENTER, CENTER);
+    // }
 
     applyAspectRatio() {
         this.image.height = this.image.width * (this.image.height / this.width);
@@ -84,29 +85,30 @@ export const componentMixin = superclass => class extends superclass {
 };
 
 export const connectionMixin = superclass => class extends superclass {
-    compSelectDisplay()  {
-        let centerPos = this._components[0].getCenterPos();
-        let x = centerPos[0];
-        let y = centerPos[1];
-        push();
-        stroke('black');
-        strokeWeight(2);
-        line(x, y, this.mousePos[0], this.mousePos[1]);
-        pop();
-    }
-    defaultDisplay()  {
-        let centerPos1 = this._components[0].getCenterPos();
-        let centerPos2 = this._components[1].getCenterPos();
-        let x1 = centerPos1[0];
-        let y1 = centerPos1[1];
-        let x2 = centerPos2[0];
-        let y2 = centerPos2[1];
+    // Replaced now
+    // compSelectDisplay()  {
+    //     let centerPos = this._components[0].getCenterPos();
+    //     let x = centerPos[0];
+    //     let y = centerPos[1];
+    //     push();
+    //     stroke('black');
+    //     strokeWeight(2);
+    //     line(x, y, this.mousePos[0], this.mousePos[1]);
+    //     pop();
+    // }
+    // defaultDisplay()  {
+    //     let centerPos1 = this._components[0].getCenterPos();
+    //     let centerPos2 = this._components[1].getCenterPos();
+    //     let x1 = centerPos1[0];
+    //     let y1 = centerPos1[1];
+    //     let x2 = centerPos2[0];
+    //     let y2 = centerPos2[1];
 
-        push();
-        stroke('black');
-        line(x1, y1, x2, y2);
-        pop();
-    }
+    //     push();
+    //     stroke('black');
+    //     line(x1, y1, x2, y2);
+    //     pop();
+    // }
     isHidden()  {
         let comp1 = this._components[0];
         let comp2 = this._components[1];

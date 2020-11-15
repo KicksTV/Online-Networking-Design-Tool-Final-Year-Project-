@@ -8,9 +8,10 @@
         <% include partials/canvasView %>
 
 
-        <script>
-            var room_ID = "<%= pagedata.room_ID %>";
-            console.log(room_ID);
+        <script type="module">
+            import ioController from '/assets/js/controller/ioController.js';
+            ioController.setRoomID("<%= pagedata.room_ID %>");
+            console.log(ioController.getRoomID());
         </script>
 
         <% include partials/scripts %>

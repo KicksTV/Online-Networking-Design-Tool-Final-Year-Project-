@@ -18,6 +18,21 @@ const saveLoadController = (function() {
     var instance;
     
     function init() {
+
+        function init() {
+            var canvasLoadProject = document.getElementById("canvasLoadProject");
+            var canvasSaveProject = document.getElementById("canvasSaveProject");
+
+            // LOAD
+            var input = document.getElementById("upload_input");
+            canvasLoadProject.addEventListener("click", () => {
+                input.click();
+            });
+            input.onchange = loadEvent;
+            // SAVE
+            canvasSaveProject.addEventListener("click", saveEventToFile);
+        }
+
         async function saveEventToFile() {
             // Setup of json format
             var json = {
@@ -233,6 +248,7 @@ const saveLoadController = (function() {
         }
         
         return {
+            init:init,
             saveEventToFile:saveEventToFile,
             saveEventToJSON:saveEventToJSON,
             loadEvent:loadEvent,

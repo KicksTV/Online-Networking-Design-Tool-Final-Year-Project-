@@ -9,14 +9,14 @@ import ioController from './ioController.js';
 // Collections
 import allTabs from '../collections/allComponentBarTabs.js';
 import allVRules from '../collections/allValidationRules.js';
+import allComponents from '../collections/allComponents.js';
 
 // Models
 import {componentsBarTab, ComponentBarComponents, ComponentBarConnections} from '../models/componentsBar.js';
 import Button from '../models/button.js';
 import validationRule from '../models/validationRule.js';
 import Graph from '../models/graph.js';
-
-var compContrInstance = componentController;
+import allConnections from '../collections/allConnections.js';
 
 var GUI = require('dat.gui').GUI;
 var p5 = require('p5');
@@ -119,7 +119,7 @@ const p5Controller = (function() {
                     // print(gui)
             
                     networkController.initGUI(gui);
-                    compContrInstance.initGUI(gui);
+                    componentController.initGUI(gui);
                 
                     networkController.initNetworkListener(gui);
                 
@@ -132,23 +132,14 @@ const p5Controller = (function() {
                 }
                 p5.setup = function() {
                     frameRate(60);
-            
                     let canvas = createCanvas((windowWidth-20), windowHeight);
                     canvas.parent("canvasDiv");
-            
-                    if (typeof room_ID != 'undefined' && room_ID != '') {
-                        console.log(room_ID);
-                        ioController.getInstance().initIO(room_ID);
-                    } else {
-                        ioController.getInstance().initIO(null);
-                    }
-                    
                 }
                 p5.draw = function() {
                     clear();
                     
-                    connectionController.drawAllConnections();
-                    componentController.displayAllComponents();
+                    drawAllConnections();
+                    displayAllComponents();
                     //updateMouseCursor();
             
                     checkForCopyAndPastEvent();
@@ -156,21 +147,21 @@ const p5Controller = (function() {
                 
                 }
                 p5.mousePressed = function() {
-                    let multiSelect = compContrInstance.checkForMultiSelect();
-                    compContrInstance.checkForSelectedComponent(mouseX, mouseY);
+                    let multiSelect = componentController.checkForMultiSelect();
+                    componentController.checkForSelectedComponent(mouseX, mouseY);
                 
-                    if (compContrInstance.isCurrentlyClickingComp() != null) {
-                        if (!compContrInstance.hasClickedSelectedComponent() && !multiSelect) {
+                    if (componentController.isCurrentlyClickingComp() != null) {
+                        if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
                             // print("clear select list");
-                            compContrInstance.clearSelectList();
+                            componentController.clearSelectList();
                         }
                         
                         if (multiSelect) {
-                            if (!compContrInstance.hasClickedSelectedComponent()) {
-                                if (compContrInstance.isSelectListEmpty()) {
-                                    compContrInstance.initMultiSelectList();
+                            if (!componentController.hasClickedSelectedComponent()) {
+                                if (componentController.isSelectListEmpty()) {
+                                    componentController.initMultiSelectList();
                                 } else {
-                                    compContrInstance.addSelectList(compContrInstance.isCurrentlyClickingComp());
+                                    componentController.addSelectList(componentController.isCurrentlyClickingComp());
                                 }
                             }
                         }
@@ -178,18 +169,18 @@ const p5Controller = (function() {
                         // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
                         //print(connectionController.isSelectingInterfacePort());
                         if (! connectionController.isSelectingInterfacePort()) {
-                            compContrInstance.setSelectedComponent(compContrInstance.getSelectedComponent());
+                            componentController.setSelectedComponent(componentController.getSelectedComponent());
                 
                             // apply seleceted comp values to gui
-                            compContrInstance.applyGUIValues();
+                            componentController.applyGUIValues();
                 
-                            panelController.getInstance().updatePanelWithData(compContrInstance.getSelectedComponent());
+                            panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
                             
                             checkComponentDeleteEvent();
                 
                             // Checks if users is selecting two components to make a connection
                             if (connectionController.getDrawConnection()) {
-                                connectionController.selectConnectionForComp(compContrInstance.getSelectedComponent());
+                                connectionController.selectConnectionForComp(componentController.getSelectedComponent());
                             }
                         }
                 
@@ -197,21 +188,21 @@ const p5Controller = (function() {
                     }else {
                         // checking if the user is clicking the bin icon, if so then dont clear select list.
                         if (mouseX > 104 && mouseY > 39) {
-                            if (!compContrInstance.hasClickedSelectedComponent() && !multiSelect) {
+                            if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
                                 // print("clear select list");
-                                compContrInstance.clearSelectList();
+                                componentController.clearSelectList();
                             }
-                            if (!compContrInstance.hasCopiedComponent()) {
-                                compContrInstance.clearSelectList();
+                            if (!componentController.hasCopiedComponent()) {
+                                componentController.clearSelectList();
                             }
                         }
                     }
                 }
                 p5.mouseMoved = function() {
-                    if (compContrInstance.isCurrentlyClickingComp() != null) {
-                        compContrInstance.setComponentHover(true);
+                    if (componentController.isCurrentlyClickingComp() != null) {
+                        componentController.setComponentHover(true);
                     }else {
-                        compContrInstance.setComponentHover(false);
+                        componentController.setComponentHover(false);
                     }
                     
                     if (connectionController.getDrawConnection()) {
@@ -223,46 +214,46 @@ const p5Controller = (function() {
                     //console.log(event.movementY);
             
                     // MULTI MOVE COMPONENTS
-                    if (compContrInstance.getSelectList().length > 1) {
+                    if (componentController.getSelectList().length > 1) {
                         // console.log("multi move");
-                        compContrInstance.getSelectList().forEach((c) => {
+                        componentController.getSelectList().forEach((c) => {
                             c.multiMove(event.movementX, event.movementY);
                         });
-                        compContrInstance.setComponentDrag(true);
+                        componentController.setComponentDrag(true);
                     }
                     // STANDARD MOVE EVENT
-                    else if (compContrInstance.isCurrentlyClickingComp() != null) {
+                    else if (componentController.isCurrentlyClickingComp() != null) {
                         // console.log("default move");
                         
-                        compContrInstance.getSelectedComponent().move(mouseX, mouseY);
+                        componentController.getSelectedComponent().move(mouseX, mouseY);
                         
-                        compContrInstance.setComponentDrag(true);
+                        componentController.setComponentDrag(true);
             
                         // SENDING DATA TO OTHER USERS
-                        ioController.getInstance().sendData('componentMove', compContrInstance.getSelectedComponent().prepareForJson());
+                        ioController.sendData('componentMove', componentController.getSelectedComponent().prepareForJson());
                     }
             
                     // DRAGGING NEWLY CREATED COMPONENTS
-                    if (compContrInstance.getDraggingNewComponent()) {
+                    if (componentController.getDraggingNewComponent()) {
             
                         // Catching expected error when dragging component before it has been created
                         try {
-                            compContrInstance.getNewlyCreatedComp().move(mouseX, mouseY);
+                            componentController.getNewlyCreatedComp().move(mouseX, mouseY);
                         } catch (error) {
                             // console.error(error);
                             // expected output: ReferenceError: nonExistentFunction is not defined
                             // Note - error messages will vary depending on browser
                         }
-                        compContrInstance.setComponentDrag(true);
+                        componentController.setComponentDrag(true);
                     }
                 }
                 p5.mouseReleased = function() {
-                    if (compContrInstance.isCurrentlyClickingComp()) {
-                        compContrInstance.getSelectedComponent().setIsClicked(false);
+                    if (componentController.isCurrentlyClickingComp()) {
+                        componentController.getSelectedComponent().setIsClicked(false);
                     }
-                    compContrInstance.setDraggingNewComponent(false);
-                    compContrInstance.setNewlyCreatedComp(null);
-                    compContrInstance.setComponentDrag(false);
+                    componentController.setDraggingNewComponent(false);
+                    componentController.setNewlyCreatedComp(null);
+                    componentController.setComponentDrag(false);
                 }
             
                 
@@ -275,8 +266,123 @@ const p5Controller = (function() {
             
                 
             });
-            
-            
+
+            function displayAllComponents() {
+                let _components = allComponents.getAll();
+                if (_components.length > 0) {
+                    _components.forEach((comp) => {
+                        // Checks if undefined
+                        if (typeof comp !== 'undefined') {
+                            // Check if hideComponent is true or false
+                            if (!comp.getHideComponent() && comp.image) {
+                                if (componentController.isSelectedComp(comp)) {
+                                    push(); // Start a new drawing state
+                                    stroke(color(0, 0, 255));
+                                    strokeWeight(1);
+                                    rect(comp.getXpos()-20, comp.getYpos()-20, comp.getWidth()+40, comp.getHeight()+40);
+                                    pop(); // Restore original state
+                                }
+                                displayComponent(comp);
+                                
+                            }
+                        } else {
+                            throw {name : "ComponentUndefined", message : "Component in components list is undefined!!"}; 
+                        }
+                    });
+                }
+            }
+
+            function drawAllConnections() {
+                allConnections.get().forEach((con) => {
+                    if (connectionController.getSelectingSecondConnection() && con == allConnections.getSelectedConnection()) {
+                        connectionSelectDisplay(con);
+                    }else {
+                        // Prevents displaying incomplete set connections
+                        let comp1 = con.getComponent(0),
+                            comp2 = con.getComponent(1);
+                        if (comp1 && comp2) {
+                            if (comp1.image && comp2.image) {
+                                // Checks if linking component wishs to hide its connection
+                                if (!con.isHidden()) {
+                                    push(); // Start a new drawing state
+                                    strokeWeight(2);
+                                    connectionDefaultDisplay(con);
+                                    pop(); // Restore original state
+    
+                                    displayCompIPaddress(con)
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function displayComponent(comp) {
+                image(comp.image, comp.x, comp.y);
+                noStroke();
+                textSize(comp.textSize);
+                text(comp.displayName, comp.x, comp.y + comp.image.height, comp.image.width, 30);
+                textAlign(CENTER, CENTER);
+            }
+
+            function connectionSelectDisplay(con)  {
+                let centerPos = con._components[0].getCenterPos();
+                let x = centerPos[0];
+                let y = centerPos[1];
+                push();
+                stroke('black');
+                strokeWeight(2);
+                line(x, y, con.mousePos[0], con.mousePos[1]);
+                pop();
+            }
+            function connectionDefaultDisplay(con)  {
+                let centerPos1 = con._components[0].getCenterPos();
+                let centerPos2 = con._components[1].getCenterPos();
+                let x1 = centerPos1[0];
+                let y1 = centerPos1[1];
+                let x2 = centerPos2[0];
+                let y2 = centerPos2[1];
+        
+                push();
+                stroke('black');
+                line(x1, y1, x2, y2);
+                pop();
+            }
+
+            function displayCompIPaddress(connection) {
+                let comp1 = connection.getComponent(0);
+                let comp2 = connection.getComponent(1);
+    
+                let ipaddresses = [connection.getIPaddress(0), connection.getIPaddress(1)]
+                if (!_.isEqual(ipaddresses, ["", ""])) {
+                    for (var i=0;i<=1;i++) {
+                        // get x & y coords of both components
+                        let center1 = comp1.getCenterPos();
+                        let center2 = comp2.getCenterPos();
+    
+                        let x1 = center1[0], 
+                            x2 = center2[0],
+                            y1 = center1[1], 
+                            y2 = center2[1];
+    
+                        // Gets the position which is a quarter between the two components
+                        let quarterX = connection.getComponent(i) == comp1 ? lerp(x1, x2, 0.25) : lerp(x1, x2, 0.75);
+                        let quarterY = connection.getComponent(i) == comp1 ? lerp(y1, y2, 0.25) : lerp(y1, y2, 0.75);
+                        let d = dist(x1, y1, x2, y2);
+    
+                        let angle = x1 < x2 ? atan2(y2 - y1, x2 - x1) : atan2(y1 - y2, x1 - x2);
+    
+                        // Will only show if distance is greater than 250
+                        if (d > 250) {
+                            push();
+                            translate(quarterX, quarterY);
+                            rotate(angle);
+                            text(ipaddresses[i], 0, -5);
+                            pop();
+                        }
+                    }
+                }
+            }
             
             // function updateMouseCursor() {
             //     if (compContrInstance.getComponentDrag()) {
@@ -296,7 +402,7 @@ const p5Controller = (function() {
             
                 // COPY
                 if (keyIsDown(17) && keyIsDown(67)) {
-                    compContrInstance.copySelectedComponents()
+                    componentController.copySelectedComponents()
             
                     $('#copyToastAlert').toast('show');
                     $('#copyToastAlert .toast-body').text(
@@ -305,7 +411,7 @@ const p5Controller = (function() {
                 }
                 // CUT 
                 if (keyIsDown(17) && keyIsDown(88)) {
-                    compContrInstance.cutSelectedComponents()
+                    componentController.cutSelectedComponents()
             
                     $('#cutToastAlert').toast('show');
                     $('#cutToastAlert .toast-body').text(
@@ -313,8 +419,8 @@ const p5Controller = (function() {
                     );
                 }
                 // PASTE
-                if (keyIsDown(17) && keyIsDown(86) && compContrInstance.hasPastedComponent() == false) {
-                    compContrInstance.pasteSelectedComponents()
+                if (keyIsDown(17) && keyIsDown(86) && componentController.hasPastedComponent() == false) {
+                    componentController.pasteSelectedComponents()
             
                     $('#pasteToastAlert').toast('show');
                     $('#pasteToastAlert .toast-body').text(
@@ -329,35 +435,35 @@ const p5Controller = (function() {
             function checkComponentDeleteEvent() {
                 // Checks if user has pressed the delete canvas button
             
-                if (compContrInstance.getSelectCompForDelete()) {
+                if (componentController.getSelectCompForDelete()) {
                     
-                    // print("IsSelectListEmpty: " + compContrInstance.isSelectListEmpty());
+                    // print("IsSelectListEmpty: " + componentController.isSelectListEmpty());
             
-                    // print("List: " + compContrInstance.getSelectList());
+                    // print("List: " + componentController.getSelectList());
             
-                    if (! compContrInstance.isSelectListEmpty()) {
+                    if (! componentController.isSelectListEmpty()) {
                         console.log("multi select delete");
-                        var list = compContrInstance.getSelectList();
+                        var list = componentController.getSelectList();
             
                         list.forEach((comp) => {
-                            compContrInstance.removeComponent(comp);
+                            componentController.removeComponent(comp);
                             // Delete related connections
                             connectionController.deleteConnection(comp);
                         });
-                        gui.removeFolder(compContrInstance.getPropertiesPanel());
+                        gui.removeFolder(componentController.getPropertiesPanel());
                     } 
-                    else if (compContrInstance.getSelectedComponent() != null) {
-                        var comp = compContrInstance.getSelectedComponent();
-                        compContrInstance.removeComponent(comp);
+                    else if (componentController.getSelectedComponent() != null) {
+                        var comp = componentController.getSelectedComponent();
+                        componentController.removeComponent(comp);
                         // Delete related connections
                         connectionController.deleteConnection(comp);
             
                         $('#deleteToastAlert').toast('show');
                         $('#deleteToastAlert .toast-body').text(
-                            compContrInstance.getSelectedComponent().displayName + " has been deleted."
+                            componentController.getSelectedComponent().displayName + " has been deleted."
                         );
             
-                        gui.removeFolder(compContrInstance.getPropertiesPanel());
+                        gui.removeFolder(componentController.getPropertiesPanel());
             
                     }
                     Graph.getInstance().updateGraph();
@@ -365,7 +471,7 @@ const p5Controller = (function() {
                     // Triggering networkChangeEvent
                     networkController.dispatchNetworkChangeEvent();
             
-                    compContrInstance.setSelectCompForDelete(false);
+                    componentController.setSelectCompForDelete(false);
                 }
             }
 
@@ -373,18 +479,9 @@ const p5Controller = (function() {
             _allCanvases.push(newP5);
             currentCanvas = newP5;
         }
-
-        function updatePanelWithData(comp) {
-
-            var data = allConnections.getConnectionsRelatedToComp(comp);
-            panelview.update(data);
-        }
-
-        
         return {
             getCanvas:getCanvas,
             createNewCanvas:createNewCanvas,
-            updatePanelWithData:updatePanelWithData,
         };   
     }
     return {

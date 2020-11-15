@@ -3,38 +3,62 @@ import saveLoadController from './saveLoadController.js';
 import allComponents from '../collections/allComponents.js';
 import Graph from '../models/graph.js';
 
+var io = require('socket.io-client')
 
 const ioController = (function() {
     var instance;
     
     function init() {
      
-        var io = require('socket.io-client')
-        var socket = io.connect();     
+        var socket = null;     
         var room_ID = null;
+        var createRoomButton = null;
+
+        async function init() {
+            createRoomButton = document.getElementById("createRoom");
+            createRoomButton.addEventListener("click", async () => {
+                await initIO();
+                let socketID = socket.id;
+                sendData('createRoom', socketID);
+                                
+                // Hide create room button
+                createRoomButton.style.display = "none";
+            });;
 
 
+            // Instantly join room if you room_ID exists
+            if (typeof room_ID != 'undefined' && room_ID != '' && room_ID != null) {
+                console.log(room_ID);
+                await initIO(room_ID);
+            }
 
-        async function initIO(rid) {
+        }
+
+        async function initIO(rid = null) {
             // We make a named event called 'createComponent' and write an
             // anonymous callback function
+
+            socket = await io.connect()
+
+
+            // User has joined an already existing room
+            if (rid != null) {
+                alert(`You have joined a room: ${rid}`);
+                createRoomButton.style.display = "none";
+            }
            
             socket.on('connection', 
                 async function(data) {
                     console.log("You have connected");
                     
-                    if (rid != null) {
-                        room_ID = rid;
-                        console.log("rid", rid);
-        
-                    } else {
+                    if (rid == null) {
                         room_ID = socket.id;
                         console.log("socket.id", socket.id);
                     }
                     if (room_ID != null) {
                         console.log(`You have connected to ${room_ID}`);
                         // console.log('room_ID', room_ID);
-                        ioController.getInstance().sendData('joinRoom', null);
+                        sendData('joinRoom');
                     }
                 }
             );
@@ -127,22 +151,35 @@ const ioController = (function() {
             return socket;
         }
 
-        function sendData(event , data) {
-            // Send that object to the socket
-            // console.log("Sending Data");
-            // console.log("socket", socket);
+        function setRoomID(id) {
+            room_ID = id;
+        }
 
+        function getRoomID() {
+            return room_ID;
+        }
+
+        function sendData(event , data = null) {
+            // Send that object to the socket
             data = {value: data, room: room_ID}
 
-            // console.log(event, data);
-            socket.emit(event, data);
+            // Checks if a room has been created
+            // If it hasn't then don't be sending any data
+            if (socket != null) {
+                // console.log("Sending Data");
+                // console.log("socket", socket);
+                socket.emit(event, data);
+            } 
         }
 
         
         
         return {
+            init:init,
             initIO:initIO,
             getSocket:getSocket,
+            setRoomID:setRoomID,
+            getRoomID:getRoomID,
             sendData:sendData,
         };   
     }
@@ -157,4 +194,4 @@ const ioController = (function() {
     }
 })();
 
-export default ioController;
+export default ioController.getInstance();

@@ -8,6 +8,7 @@ var allComponents = (function() {
         function getAll() {
             return _components;
         }
+        // Will eventually get component by index
         function get() {
             return _components;
         }

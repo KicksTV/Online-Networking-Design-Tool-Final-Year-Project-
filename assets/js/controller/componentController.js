@@ -38,6 +38,14 @@ const componentController = (function() {
         var guiProperties = [];
         var compPropertiesPanel = null;
 
+        function init() {
+            var canvasDeleteButton = document.getElementById("canvasDeleteButton");
+            // DELETE COMPONENT
+            canvasDeleteButton.addEventListener("click", () => {
+                setSelectCompForDelete(true);
+            });
+        }
+
 
         async function createNewComponent(name) {
             // Getting the default values for component attributes from xml files 
@@ -143,7 +151,7 @@ const componentController = (function() {
                 property.onChange(function(value) {
                     // Fires on every change, drag, keypress, etc.
                     // print(value);
-                    ioController.getInstance().sendData('componentChange', selectedComponent.prepareForJson());
+                    ioController.sendData('componentChange', selectedComponent.prepareForJson());
                 });
             }
         }
@@ -269,30 +277,6 @@ const componentController = (function() {
                 selectedComponent = currentClick;
             }
             return;
-        }
-        function displayAllComponents() {
-            let _components = allComponents.get();
-            if (_components.length > 0) {
-                _components.forEach((comp) => {
-                    // Checks if undefined
-                    if (typeof comp !== 'undefined') {
-                        // Check if hideComponent is true or false
-                        if (!comp.getHideComponent() && comp.image) {
-                            if (isSelectedComp(comp)) {
-                                push(); // Start a new drawing state
-                                stroke(color(0, 0, 255));
-                                strokeWeight(1);
-                                rect(comp.getXpos()-20, comp.getYpos()-20, comp.getWidth()+40, comp.getHeight()+40);
-                                pop(); // Restore original state
-                            }
-                            comp.display();
-                            
-                        }
-                    } else {
-                        console.log("comp undefined");
-                    }
-                });
-            }
         }
         function doesComponentExist(id) {
             let _components = allComponents.get();
@@ -504,6 +488,7 @@ const componentController = (function() {
         }
 
         return {
+            init:init,
             createNewComponent:createNewComponent,
             createNewComponentFromArray:createNewComponentFromArray,
             cloneComponent:cloneComponent,
@@ -527,7 +512,6 @@ const componentController = (function() {
             hasClickedSelectedComponent:hasClickedSelectedComponent,
             isSelectedComp:isSelectedComp,
             checkForSelectedComponent:checkForSelectedComponent,
-            displayAllComponents:displayAllComponents,
             applyGUIValues:applyGUIValues,
             doesComponentExist:doesComponentExist,
             removeComponent:removeComponent,

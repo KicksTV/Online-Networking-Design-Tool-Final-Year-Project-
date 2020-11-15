@@ -116,7 +116,7 @@ export class ComponentBarComponents extends compBarGetSetMixin(ComponentsBarItem
                 let defaultComponent = await componentController.createNewComponent(name);
 
 
-                ioController.getInstance().sendData('createComponent', defaultComponent.prepareForJson());
+                ioController.sendData('createComponent', defaultComponent.prepareForJson());
 
                 // ADDS IT TO ARRAY OF ALL components
                 allComponents.add(defaultComponent);

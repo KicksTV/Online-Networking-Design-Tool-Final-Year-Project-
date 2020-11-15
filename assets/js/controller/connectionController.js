@@ -28,62 +28,6 @@ const connectionController = (function() {
 
             return newcon;
         }
-        function drawAllConnections() {
-            allConnections.get().forEach((con) => {
-                if (getSelectingSecondConnection() && con == allConnections.getSelectedConnection()) {
-                    con.compSelectDisplay();
-                }else {
-                    // Prevents displaying incomplete set connections
-                    if (con.getComponents()[0] && con.getComponents()[1]) {
-                        if (con.getComponents()[0].image && con.getComponents()[1].image) {
-                            // Checks if linking component wishs to hide its connection
-                            if (!con.isHidden()) {
-                                push(); // Start a new drawing state
-                                strokeWeight(2);
-                                con.defaultDisplay();
-                                pop(); // Restore original state
-
-                                displayCompIPaddress(con)
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        function displayCompIPaddress(connection) {
-            let comp1 = connection.getComponent(0);
-            let comp2 = connection.getComponent(1);
-
-            let ipaddresses = [connection.getIPaddress(0), connection.getIPaddress(1)]
-            if (!_.isEqual(ipaddresses, ["", ""])) {
-                for (var i=0;i<=1;i++) {
-                    // get x & y coords of both components
-                    let center1 = comp1.getCenterPos();
-                    let center2 = comp2.getCenterPos();
-
-                    let x1 = center1[0], 
-                        x2 = center2[0],
-                        y1 = center1[1], 
-                        y2 = center2[1];
-
-                    // Gets the position which is a quarter between the two components
-                    let quarterX = connection.getComponent(i) == comp1 ? lerp(x1, x2, 0.25) : lerp(x1, x2, 0.75);
-                    let quarterY = connection.getComponent(i) == comp1 ? lerp(y1, y2, 0.25) : lerp(y1, y2, 0.75);
-                    let d = dist(x1, y1, x2, y2);
-
-                    let angle = x1 < x2 ? atan2(y2 - y1, x2 - x1) : atan2(y1 - y2, x1 - x2);
-
-                    // Will only show if distance is greater than 250
-                    if (d > 250) {
-                        push();
-                        translate(quarterX, quarterY);
-                        rotate(angle);
-                        text(ipaddresses[i], 0, -5);
-                        pop();
-                    }
-                }
-            }
-        }
         function getDrawConnection() {
             return drawConnection;
         }
@@ -321,8 +265,6 @@ const connectionController = (function() {
 
         return {
             createNewConnection:createNewConnection,
-            drawAllConnections:drawAllConnections,
-            displayCompIPaddress:displayCompIPaddress,
             getSelectingSecondConnection:getSelectingSecondConnection,
             isSelectingInterfacePort:isSelectingInterfacePort,
             selectConnectionForComp:selectConnectionForComp,
