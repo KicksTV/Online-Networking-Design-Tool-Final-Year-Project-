@@ -111,6 +111,18 @@ describe('component functions', () => {
     
 });
 
+describe('Save / Load functions', () => {
+  // before('setup of some components', async function () {
+
+  // });
+  it('test saving project to JSON', async () => {
+    // await saveLoadController.saveEventToFile();
+  });
+  it('test loading project from JSON', async () => {
+
+  });
+});
+
 // FIRST SETS OF TESTS FOR NETWORKING FUNCTIONS
 
 describe('networking calculation functions', function() {
@@ -240,17 +252,7 @@ describe('networking calculation functions', function() {
   });
 
   
-  describe('Save / Load functions', () => {
-    // before('setup of some components', async function () {
   
-    // });
-    it('test saving project to JSON', async () => {
-      // await saveLoadController.saveEventToFile();
-    });
-    it('test loading project from JSON', async () => {
-  
-    });
-  });
   
   
   // SECOND SETS OF TESTS FOR NETWORKING FUNCTIONS

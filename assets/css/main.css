@@ -1,8 +1,12 @@
+/* BASE */
 /* NAVBAR CUSTOM CLASSES */
 
 .navbar-nav .nav-link {
     padding-right: .5rem;
     padding-left: .5rem;
+}
+.navbar-brand {
+    font-weight: 300;
 }
 
 a>.card:hover {
@@ -42,9 +46,6 @@ a>.card:hover {
     vertical-align: top;
     padding: 5px;
 
-}
-#componentsNav {
-    width: 1470px !important;
 }
 .canvasButtonContainer {
     position: absolute;

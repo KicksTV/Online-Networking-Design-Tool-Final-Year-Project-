@@ -26,11 +26,11 @@ app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: fals
 
 app.get('/', function (req, res) {
     var pagedata = {
-        'title': 'Build Networks Online',
-        'navExpand': 'show',
+        'title': 'Build Networks Online'
     };
-    res.render('frontpage', {pagedata:pagedata});
+    res.render('index', {pagedata:pagedata});
 });
+
 app.get('/projects', function (req, res) {
     var success = req.session.success;
     var user;
