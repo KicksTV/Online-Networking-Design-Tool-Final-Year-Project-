@@ -66,7 +66,9 @@ const p5Controller = (function() {
                     $.ajax({
                         url : folder,
                         success: function (data) {
+                            console.log(data)
                             var some = $(data).find("a").attr("href", function (i, val) {
+                                console.log(val)
                                 if( val.match(/\.(xml)$/) ) { 
                                     let xml = p5.loadXML(val, () => {
                                         //print("done");

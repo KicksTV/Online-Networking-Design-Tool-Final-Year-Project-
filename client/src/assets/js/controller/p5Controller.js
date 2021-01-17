@@ -5,13 +5,12 @@ import networkController from './networkController.js';
 import ioController from './ioController.js';
 
 // Collections
-import allTabs from '../collections/allComponentBarTabs.js';
+// import allTabs from '../collections/allComponentBarTabs.js';
 import allVRules from '../collections/allValidationRules.js';
 import allComponents from '../collections/allComponents.js';
 
 // Models
-import {componentsBarTab, ComponentBarComponents, ComponentBarConnections} from '../models/componentsBar.js';
-import Button from '../models/button.js';
+// import {componentsBarTab, ComponentBarComponents, ComponentBarConnections} from '../models/componentsBar.js';
 import validationRule from '../models/validationRule.js';
 import Graph from '../models/graph.js';
 import allConnections from '../collections/allConnections.js';
@@ -32,8 +31,8 @@ const p5Controller = (function() {
         var gui = null;
 
         // Panels or Bars
-        var compBar;
-        var compConnectionBar;
+        // var compBar;
+        // var compConnectionBar;
 
         //EVENTS
         // var componentCslickEvent = new CustomEvent('componentClickEvent');
@@ -48,60 +47,60 @@ const p5Controller = (function() {
             var newP5 = new p5(function(p5) {
                 p5.preload = function() {
             
-                    compBar = componentsBarTab("Components", 500, 50, new ComponentBarComponents("Components"));
-                    compBar.init();
+                    // compBar = componentsBarTab("Components", 500, 50, new ComponentBarComponents("Components"));
+                    // compBar.init();
                 
-                    allTabs.getInstance().setVisableCurrent(compBar);
-                    allTabs.getInstance().add(compBar);
+                    // allTabs.getInstance().setVisableCurrent(compBar);
+                    // allTabs.getInstance().add(compBar);
                 
-                    compConnectionBar = componentsBarTab("Connections", 500, 50, new ComponentBarConnections("Connections"));
-                    compConnectionBar.init();
-                    allTabs.getInstance().add(compConnectionBar);
+                    // compConnectionBar = componentsBarTab("Connections", 500, 50, new ComponentBarConnections("Connections"));
+                    // compConnectionBar.init();
+                    // allTabs.getInstance().add(compConnectionBar);
             
             
-                    var folder = "../components";
+                    // var folder = "/components";
             
-                    // Loads all component devices into the components bar.
-                    $.ajax({
-                        url : folder,
-                        success: function (data) {
-                            console.log(data)
-                            var some = $(data).find("a").attr("href", function (i, val) {
-                                console.log(some)
-                                console.log(val)
-                                if( val.match(/\.(xml)$/) ) { 
-                                    console.log(val)
-                                    let xml = p5.loadXML(val, () => {
-                                        console.log("done");
+                    // // Loads all component devices into the components bar.
+                    // $.ajax({
+                    //     url : folder,
+                    //     success: function (data) {
+                    //         console.log(data)
+                    //         var some = $(data).find("a").attr("href", function (i, val) {
+                    //             console.log(some)
+                    //             console.log(val)
+                    //             if( val.match(/\.(xml)$/) ) { 
+                    //                 console.log(val)
+                    //                 let xml = p5.loadXML(val, () => {
+                    //                     console.log("done");
             
-                                        let name = xml.getChild('name').getContent();
-                                        let type = xml.getChild('type').getContent();
-                                        let imgPath = xml.getChild('image').getString('path');
-                                        let imgAlt = xml.getChild('image').getString('alt');
+                    //                     let name = xml.getChild('name').getContent();
+                    //                     let type = xml.getChild('type').getContent();
+                    //                     let imgPath = xml.getChild('image').getString('path');
+                    //                     let imgAlt = xml.getChild('image').getString('alt');
             
-                                        console.log(name, type, imgPath, imgAlt);
+                    //                     console.log(name, type, imgPath, imgAlt);
             
             
-                                        var btn = Button(name, type, imgPath, imgAlt).init();
+                    //                     var btn = Button(name, type, imgPath, imgAlt).init();
             
-                                        if (type == "Device") {
-                                            compBar.getBar().add(btn);
-                                        }
-                                        else if (type == "Cable") {
-                                            compConnectionBar.getBar().add(btn);
-                                        }
-                                        if (i == some.length-1) {
-                                            compBar.getBar().displayAllButtons();
-                                        }
-                                    });
-                                } 
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            var errorMessage = xhr.status + ': ' + xhr.statusText
-                            console.log('Error - ' + errorMessage, status, error);
-                        }
-                    });
+                    //                     if (type == "Device") {
+                    //                         compBar.getBar().add(btn);
+                    //                     }
+                    //                     else if (type == "Cable") {
+                    //                         compConnectionBar.getBar().add(btn);
+                    //                     }
+                    //                     if (i == some.length-1) {
+                    //                         compBar.getBar().displayAllButtons();
+                    //                     }
+                    //                 });
+                    //             } 
+                    //         });
+                    //     },
+                    //     error: function(xhr, status, error) {
+                    //         var errorMessage = xhr.status + ': ' + xhr.statusText
+                    //         console.log('Error - ' + errorMessage, status, error);
+                    //     }
+                    // });
             
                     var validationRules1 = validationRule("Server","Smartphone", false, "Connection is not allowed!");
                     var validationRules2 = validationRule("Access Point","Cloud", false, "Connection is not allowed!");
