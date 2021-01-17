@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+    <name>Router</name>
+    <type>Device</type>
+    <image path="../img/router.svg" alt="Router icon"></image>
+    <interfaces>
+        <interface portType="Fast_Ethernet" numberOfPorts="4"></interface>
+        <interface portType="Serial" numberOfPorts="2"></interface>
+    </interfaces>
+    <validLinkingComponents>
+        <linkingComponent>Twisted_Pair</linkingComponent>
+        <linkingComponent>Serial</linkingComponent>
+        <linkingComponent>Fibre</linkingComponent>
+    </validLinkingComponents>
+</component>

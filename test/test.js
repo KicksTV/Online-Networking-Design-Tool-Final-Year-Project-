@@ -125,7 +125,7 @@ describe('Save / Load functions', () => {
 
 // FIRST SETS OF TESTS FOR NETWORKING FUNCTIONS
 
-describe('networking calculation functions', function() {
+describe('#1 networking calculation functions', function() {
   this.timeout(20000);
   var hosts;
   var subnets;
@@ -222,9 +222,6 @@ describe('networking calculation functions', function() {
     var connection = list_connection[0];
     componentController.setSelectedComponent(component);
 
-    console.log(allConnections.getAll());
-    console.log("Connection", connection);
-
     panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
 
     var subnet = allSubnets.getInstance().getWithConnectionID(connection.id);
@@ -236,7 +233,8 @@ describe('networking calculation functions', function() {
     var e = jQuery.Event("keypress");
     e.which = 53; // # 53 == "5"
     e.keyCode = 53;
-    e.data;
+    e.key = '5';
+    console.log(e);
     $("#IP_address_field_0").trigger(e);
 
     expect(subnet.unavailableAddresses).to.include("192.168.1.5");
@@ -244,76 +242,76 @@ describe('networking calculation functions', function() {
   });
   
 
-  it('Test valid IP address function', async () => {
+  it('Test "checkAvailableIPAddress" function', async () => {
     var subnet = allSubnets.getInstance().get(0);
     subnet.subnetID = "192.168.1.0";
     var is_valid = networkController.checkAvailableIPAddress(subnet, "192.168.1.2");
     expect(is_valid).to.equal(true);
   });
 
-  
-  
+});
+
   
   
   // SECOND SETS OF TESTS FOR NETWORKING FUNCTIONS
 
-  describe('Overriding setup network', function() {
-    var hosts;
-    var subnets;
-    var subnetmask;
-    var supernetmask;
+describe('#2 networking calculation functions', function() {
+  var hosts;
+  var subnets;
+  var subnetmask;
+  var supernetmask;
 
 
-    before('setup of some components', async function () {
-      allComponents.clear();
-      allConnections.clear();
-      allSubnets.getInstance().clear();
+  before('setup of some components', async function () {
+    allComponents.clear();
+    allConnections.clear();
+    allSubnets.getInstance().clear();
 
-      console.log("Second Network Test");
+    console.log("Second Network Test");
 
-      // Must be same number of PCs and Routers
-      var devices = [
-                     'Laptop', 'Printer', 'Server', 'Switch',
-                     'Router', 'Router', 'Router', 'Router',
-                     'Router', 'Router', 'Router', 'Router', 
-                     'Laptop', 'Laptop', 'Laptop', 'Laptop',
-                     'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 
-                     'PC'
-                    ]
-  
-      await componentController.createNewComponentFromArray(devices);
-  
-      await setupNetwork();
+    // Must be same number of PCs and Routers
+    var devices = [
+                    'Laptop', 'Printer', 'Server', 'Switch',
+                    'Router', 'Router', 'Router', 'Router',
+                    'Router', 'Router', 'Router', 'Router', 
+                    'Laptop', 'Laptop', 'Laptop', 'Laptop',
+                    'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 
+                    'PC'
+                  ]
 
-    });
+    await componentController.createNewComponentFromArray(devices);
 
-    it('Test #2 for calculating number of hosts', async () => {
-      hosts = networkController.calculateAllHost();
-      expect(hosts).to.equal(15);
-    });
-  
-    it('Test #2 for calculating number of subnets', async () => {
-      subnets = networkController.calculateAllSubnets();
-      expect(subnets).to.equal(15);
-    });
-    it('Test #2 for calculating subnetmask', async () => {
-      subnetmask = networkController.calculateSubnetMask();
-      expect(subnetmask).to.equal('255.255.255.240');
-    });
-    it('Test #2 for calculating supernetmask', async () => {
-      supernetmask = networkController.calculateSupernetMask(subnets);
-      expect(supernetmask).to.equal('255.255.255.224');
-    });
-    it('Test #2 for calculating max number of IP addresses', async () => {
-      var max_number_hosts = networkController.calculateTotalIPAddresses(subnetmask);
-      expect(max_number_hosts).to.equal(14);
-    });
-  
-    it('Test #2 for calculating max number of subnets', async () => {
-      var max_number_subnets = networkController.calculateTotalNumberSubnets(supernetmask);
-      expect(max_number_subnets).to.equal(30);
-    });
+    await setupNetwork();
+
   });
+
+  it('Test #2 for calculating number of hosts', async () => {
+    hosts = networkController.calculateAllHost();
+    expect(hosts).to.equal(15);
+  });
+
+  it('Test #2 for calculating number of subnets', async () => {
+    subnets = networkController.calculateAllSubnets();
+    expect(subnets).to.equal(15);
+  });
+  it('Test #2 for calculating subnetmask', async () => {
+    subnetmask = networkController.calculateSubnetMask();
+    expect(subnetmask).to.equal('255.255.255.240');
+  });
+  it('Test #2 for calculating supernetmask', async () => {
+    supernetmask = networkController.calculateSupernetMask(subnets);
+    expect(supernetmask).to.equal('255.255.255.224');
+  });
+  it('Test #2 for calculating max number of IP addresses', async () => {
+    var max_number_hosts = networkController.calculateTotalIPAddresses(subnetmask);
+    expect(max_number_hosts).to.equal(14);
+  });
+
+  it('Test #2 for calculating max number of subnets', async () => {
+    var max_number_subnets = networkController.calculateTotalNumberSubnets(supernetmask);
+    expect(max_number_subnets).to.equal(30);
+  });
+});
 
   // after('draw network',function () {
   //   app.draw = () => {
@@ -321,7 +319,6 @@ describe('networking calculation functions', function() {
   //     componentController.displayAllComponents();
   //   }
   // });
-});
 
 async function setupNetwork() {
   var list_of_routers = allComponents.getAll().filter(c => c.name === 'Router');
