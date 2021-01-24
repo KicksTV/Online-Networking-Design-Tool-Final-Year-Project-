@@ -75,7 +75,6 @@
     
   </div>
 </template>
-
 <script>
   
 import componentController from '@/assets/js/controller/componentController.js';
@@ -99,6 +98,5 @@ export default {
     },
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

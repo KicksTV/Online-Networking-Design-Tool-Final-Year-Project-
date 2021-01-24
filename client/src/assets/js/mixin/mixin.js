@@ -1,5 +1,10 @@
 const p5 = require('p5')
 
+var dist;
+new p5(function(p5o) {
+    dist = p5o.dist;
+});
+
 // Components Bar Component and Connection Mixin 
 export const compBarGetSetMixin = superclass => class extends superclass {
     init() {
@@ -38,17 +43,7 @@ export const componentMixin = superclass => class extends superclass {
         this.width = this.image.width;
     }
     
-    move(x, y) {
-        x = x - (this.image.width/2);
-        y = y - (this.image.height/2);
-        
-        if ((p5.windowWidth) > (x + this.image.width) && 0 < x) {
-            this.x = x;
-        }
-        if (p5.windowHeight > (y + this.image.height) && 0 < y) {
-            this.y = y;
-        }
-    }
+    
     multiMove(x, y) {
         if ((p5.windowWidth) > (x + this.image.width) && 0 < (x + this.x)) {
             this.x += x;
@@ -59,12 +54,13 @@ export const componentMixin = superclass => class extends superclass {
     }
     
     clicked(mouseX, mouseY) {
-        var d = p5.dist(this.x + (this.image.width/2), this.y + (this.image.height/2), mouseX, mouseY);
+        var d = dist(this.x + (this.image.width/2), this.y + (this.image.height/2), mouseX, mouseY);
         if (d < (this.image.width/2)) {
             this.isClicked = true;
         }else {
             this.isClicked = false;
         }
+        console.log(this.isClicked)
         return this.isClicked;
     }
     prepareForJson() {

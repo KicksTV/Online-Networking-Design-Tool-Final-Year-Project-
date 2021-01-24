@@ -81,10 +81,10 @@ const connectionController = (function() {
                     endConnection();
 
                     // display error message
-                    $('#warningConnectionToastAlert').toast('show');
-                    $('#warningConnectionToastAlert .toast-body').text(
-                        "Connection not possible!"
-                    );
+                    // $('#warningConnectionToastAlert').toast('show');
+                    // $('#warningConnectionToastAlert .toast-body').text(
+                    //     "Connection not possible!"
+                    // );
                 }               
             } 
             else if (compAddConnectionCounter == 1) {
@@ -98,20 +98,20 @@ const connectionController = (function() {
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                         selectingInterface = true;
                     } else {
-                        $('#warningConnectionToastAlert').toast('show');
-                        $('#warningConnectionToastAlert .toast-body').text(
-                            "No Available Ports!"
-                        );
+                        // $('#warningConnectionToastAlert').toast('show');
+                        // $('#warningConnectionToastAlert .toast-body').text(
+                        //     "No Available Ports!"
+                        // );
                     }
                 } else {
                     endConnection();
                     // Deleting connection object
                     allConnections.removeConnection(allConnections);
 
-                    $('#warningConnectionToastAlert').toast('show');
-                    $('#warningConnectionToastAlert .toast-body').text(
-                        "Connection not possible!"
-                    );
+                    // $('#warningConnectionToastAlert').toast('show');
+                    // $('#warningConnectionToastAlert .toast-body').text(
+                    //     "Connection not possible!"
+                    // );
                 }
             }
             
@@ -228,10 +228,10 @@ const connectionController = (function() {
                 //compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
 
                 if (preComp != null) {
-                    $('#finishedConnectionToastAlert').toast('show');
-                    $('#finishedConnectionToastAlert .toast-body').text(
-                        "Now linked " + preComp.displayName + "  ---->  " + comp.displayName + "."
-                    );
+                    // $('#finishedConnectionToastAlert').toast('show');
+                    // $('#finishedConnectionToastAlert .toast-body').text(
+                    //     "Now linked " + preComp.displayName + "  ---->  " + comp.displayName + "."
+                    // );
                 }
             });
         }

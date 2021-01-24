@@ -16,7 +16,7 @@ import Graph from '../models/graph.js';
 import allConnections from '../collections/allConnections.js';
 
 const GUI = require('dat.gui').GUI;
-const p5 = require('p5');
+import p5 from 'p5';
 const $ = require('jquery');
 const _ = require('lodash');
 
@@ -46,7 +46,7 @@ const p5Controller = (function() {
         function createNewCanvas() {
             var newP5 = new p5(function(p5) {
                 p5.preload = function() {
-            
+
                     // compBar = componentsBarTab("Components", 500, 50, new ComponentBarComponents("Components"));
                     // compBar.init();
                 
@@ -101,7 +101,7 @@ const p5Controller = (function() {
                     //         console.log('Error - ' + errorMessage, status, error);
                     //     }
                     // });
-            
+
                     var validationRules1 = validationRule("Server","Smartphone", false, "Connection is not allowed!");
                     var validationRules2 = validationRule("Access Point","Cloud", false, "Connection is not allowed!");
                     var validationRules3 = validationRule("Smartphone","Switch", false, "Connection is not allowed!");
@@ -214,8 +214,8 @@ const p5Controller = (function() {
                     }
                 }
                 p5.mouseDragged = function(event) {
-                    //console.log(event.movementX);
-                    //console.log(event.movementY);
+                    // console.log(event.movementX);
+                    // console.log(event.movementY);
             
                     // MULTI MOVE COMPONENTS
                     if (componentController.getSelectList().length > 1) {
@@ -227,9 +227,11 @@ const p5Controller = (function() {
                     }
                     // STANDARD MOVE EVENT
                     else if (componentController.isCurrentlyClickingComp() != null) {
-                        // console.log("default move");
+                        console.log("default move");
                         
-                        componentController.getSelectedComponent().move(p5.mouseX, p5.mouseY);
+                        var comp = componentController.getSelectedComponent();
+
+                        moveComponent(comp, p5.mouseX, p5.mouseY);
                         
                         componentController.setComponentDrag(true);
             
@@ -242,7 +244,9 @@ const p5Controller = (function() {
             
                         // Catching expected error when dragging component before it has been created
                         try {
-                            componentController.getNewlyCreatedComp().move(p5.mouseX, p5.mouseY);
+                            console.log("move new")
+                            comp = componentController.getSelectedComponent();
+                            moveComponent(comp, p5.mouseX, p5.mouseY);
                         } catch (error) {
                             // console.error(error);
                             // expected output: ReferenceError: nonExistentFunction is not defined
@@ -324,6 +328,18 @@ const p5Controller = (function() {
                     p5.textSize(comp.textSize);
                     p5.text(comp.displayName, comp.x, comp.y + comp.image.height, comp.image.width, 30);
                     p5.textAlign(p5.CENTER, p5.CENTER);
+                }
+
+                function moveComponent(comp, x, y) {
+                    x = x - (comp.image.width/2);
+                    y = y - (comp.image.height/2);
+                    
+                    if ((p5.windowWidth) > (x + comp.image.width) && 0 < x) {
+                        comp.x = x;
+                    }
+                    if (p5.windowHeight > (y + comp.image.height) && 0 < y) {
+                        comp.y = y;
+                    }
                 }
     
                 function connectionSelectDisplay(con)  {
