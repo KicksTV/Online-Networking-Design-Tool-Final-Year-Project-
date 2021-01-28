@@ -227,12 +227,9 @@ const p5Controller = (function() {
                     }
                     // STANDARD MOVE EVENT
                     else if (componentController.isCurrentlyClickingComp() != null) {
-                        console.log("default move");
-                        
+                        // console.log("default move");
                         var comp = componentController.getSelectedComponent();
-
                         moveComponent(comp, p5.mouseX, p5.mouseY);
-                        
                         componentController.setComponentDrag(true);
             
                         // SENDING DATA TO OTHER USERS

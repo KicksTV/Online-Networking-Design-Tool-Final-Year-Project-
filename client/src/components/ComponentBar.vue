@@ -90,10 +90,7 @@
             },
             createNewLinkingComponent: async (e) => {
                 var src = e.target.src;
-                console.log(src)
-
                 var name = src.match(/\/\w+-cable\.|\/\w+-\w+-cable\./)[0].match(/\w+-\w+/)[0];
-                console.log(name)
                 let c = await connectionController.createNewConnection(name);
                 connectionController.setDrawConnection(true);
                 allConnections.setSelectedConnection(c);
