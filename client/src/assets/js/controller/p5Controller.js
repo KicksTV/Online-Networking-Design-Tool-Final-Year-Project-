@@ -15,8 +15,12 @@ import validationRule from '../models/validationRule.js';
 import Graph from '../models/graph.js';
 import allConnections from '../collections/allConnections.js';
 
+// View
+import InterfaceView from '../views/InterfaceView.js';
+
 const GUI = require('dat.gui').GUI;
 import p5 from 'p5';
+import 'bootstrap';
 const $ = require('jquery');
 const _ = require('lodash');
 
@@ -39,6 +43,7 @@ const p5Controller = (function() {
 
         var _allCanvases = [];
         var currentCanvas = null;
+        var selectedInterfaceView = null;
 
         function getCanvas() {
             return currentCanvas;
@@ -184,6 +189,7 @@ const p5Controller = (function() {
                 
                             // Checks if users is selecting two components to make a connection
                             if (connectionController.getDrawConnection()) {
+                                console.log("Making connection")
                                 connectionController.selectConnectionForComp(componentController.getSelectedComponent());
                             }
                         }
@@ -241,7 +247,7 @@ const p5Controller = (function() {
             
                         // Catching expected error when dragging component before it has been created
                         try {
-                            console.log("move new")
+                            // console.log("move new")
                             comp = componentController.getSelectedComponent();
                             moveComponent(comp, p5.mouseX, p5.mouseY);
                         } catch (error) {
@@ -548,14 +554,23 @@ const p5Controller = (function() {
                         componentController.setSelectCompForDelete(false);
                     }
                 }
+
+                p5.createInterfaceView = function(interfaces) {
+                    var interfaceView = new InterfaceView(interfaces);
+                    interfaceView.create();
+                    interfaceView.show(p5.winMouseX, p5.winMouseY);
+
+                    selectedInterfaceView = interfaceView;
+                }
+                p5.clearInterfaceView = function() {
+                    selectedInterfaceView.clear();
+                }
+                p5.hideInterfaceView = function() {
+                    selectedInterfaceView.hide();
+                }
                 
             });
 
-            
-
-            
-
-            
             // function updateMouseCursor() {
             //     if (componentController.getComponentDrag()) {
             //         document.body.style.cursor = "grabbing";

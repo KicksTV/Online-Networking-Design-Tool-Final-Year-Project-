@@ -1,16 +1,13 @@
-const p5 = require('p5')
-
 export default class InterfaceView {
     constructor(interfaces) {
-        this.container = p5.createDiv();
+        this.container = createDiv();
         this.title = "Interfaces";
         this.interfaces = interfaces;
 
 
-        var titleContainer = p5.createDiv(this.title);
+        var titleContainer = createDiv(this.title);
         titleContainer.id('interfaceTitleContainer');
         titleContainer.parent(this.container);
-
 
 
         // applying styles
@@ -33,11 +30,11 @@ export default class InterfaceView {
     }
     create() {
         this.interfaces.forEach(i => {
-            var div = p5.createDiv(i.name);
+            var div = createDiv(i.name);
             div.parent(this.container);
             div.class('interfaceTitleContainer');
             for (var p=0; p<i.availablePorts;p++) {
-                var button = p5.createButton(i.name + " " + p, i.name + " " + p);
+                var button = createButton(i.name + " " + p, i.name + " " + p);
                 //print("Port" + i.portAvailability[p]);
                 
                 button.class('portButton');
@@ -54,7 +51,7 @@ export default class InterfaceView {
             div.id('portContainer');
         });
 
-        var cancelButton = p5.createButton("Cancel", "Cancel");
+        var cancelButton = createButton("Cancel", "Cancel");
 
         cancelButton.id('connectionCancel');
         cancelButton.parent(this.container);

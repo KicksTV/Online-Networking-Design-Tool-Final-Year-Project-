@@ -8,7 +8,7 @@
         <interface portType="Serial" numberOfPorts="2"></interface>
     </interfaces>
     <validLinkingComponents>
-        <linkingComponent>Twisted_Pair</linkingComponent>
+        <linkingComponent>Twisted-Pair</linkingComponent>
         <linkingComponent>Serial</linkingComponent>
         <linkingComponent>Fibre</linkingComponent>
     </validLinkingComponents>

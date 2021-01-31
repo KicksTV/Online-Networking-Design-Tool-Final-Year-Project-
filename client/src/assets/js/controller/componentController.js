@@ -179,7 +179,7 @@ const componentController = (function() {
             guiProperties = [displayName, xPos, yPos, textSize, width, height, applyAspectRatio, 
                 hide, hideConnections];
 
-            initGuiControllerEvents();
+            // initGuiControllerEvents();
 
         }
         function getPropertiesPanel() {

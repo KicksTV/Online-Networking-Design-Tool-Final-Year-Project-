@@ -11,10 +11,6 @@ import allVRules from '../collections/allValidationRules.js';
 import Connection from '../models/connection.js';
 import Graph from '../models/graph.js';
 
-// Views
-import InterfaceView from '../views/InterfaceView.js';
-
-const p5 = require('p5');
 const $ = require('jquery');
 
 const connectionController = (function() {
@@ -27,8 +23,8 @@ const connectionController = (function() {
         var selectingInterface = false;
 
         function createNewConnection(name) {
+            console.log("New Connection")
             let newcon = getDefaultComponentData(name);
-
             return newcon;
         }
         function getDrawConnection() {
@@ -81,13 +77,14 @@ const connectionController = (function() {
                     endConnection();
 
                     // display error message
-                    // $('#warningConnectionToastAlert').toast('show');
-                    // $('#warningConnectionToastAlert .toast-body').text(
-                    //     "Connection not possible!"
-                    // );
+                    $('#warningConnectionToastAlert').toast('show');
+                    $('#warningConnectionToastAlert .toast-body').text(
+                        "Connection not possible!"
+                    );
                 }               
             } 
             else if (compAddConnectionCounter == 1) {
+                console.log("check valid", checkValidConnection(false, comp, null))
                 if (checkValidConnection(false, comp, null)) {
                     // print("connecting first component");
                     //print(comp.hasAvailablePort());
@@ -98,20 +95,20 @@ const connectionController = (function() {
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                         selectingInterface = true;
                     } else {
-                        // $('#warningConnectionToastAlert').toast('show');
-                        // $('#warningConnectionToastAlert .toast-body').text(
-                        //     "No Available Ports!"
-                        // );
+                        $('#warningConnectionToastAlert').toast('show');
+                        $('#warningConnectionToastAlert .toast-body').text(
+                            "No Available Ports!"
+                        );
                     }
                 } else {
                     endConnection();
                     // Deleting connection object
                     allConnections.removeConnection(allConnections);
 
-                    // $('#warningConnectionToastAlert').toast('show');
-                    // $('#warningConnectionToastAlert .toast-body').text(
-                    //     "Connection not possible!"
-                    // );
+                    $('#warningConnectionToastAlert').toast('show');
+                    $('#warningConnectionToastAlert .toast-body').text(
+                        "Connection not possible!"
+                    );
                 }
             }
             
@@ -144,6 +141,8 @@ const connectionController = (function() {
             
             var isValidConnection = false;
             var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getSelectedConnection());
+
+            console.log("Valid linking component", isValidConnectionType1);
             
             // NEEDS TO BE PROPERLY FIXED
             if (preComp == null) {
@@ -165,9 +164,7 @@ const connectionController = (function() {
             return isValidConnection;
         }
         function waitForSelectedPort(interfaces, comp, preComp) {
-            var interfaceView = new InterfaceView(interfaces);
-            interfaceView.create();
-            interfaceView.show(p5.winMouseX, p5.winMouseY);
+            p5Controller.getCanvas().createInterfaceView(interfaces);
 
             selectingSecondConnection = false;
 
@@ -175,8 +172,7 @@ const connectionController = (function() {
                 // Deleting connection object
                 allConnections.removeConnection(allConnections);
                 endConnection();
-                interfaceView.hide();
-                interfaceView.clear();
+                
 
                 selectingInterface = false;
             });
@@ -211,7 +207,7 @@ const connectionController = (function() {
 
                 selectingInterface = false;
 
-                interfaceView.hide();
+                p5Controller.getCanvas().hideInterfaceView();
 
                 // get the interface.
                 var inter= interfaceValues[0];
@@ -220,7 +216,7 @@ const connectionController = (function() {
                 // port is now in use and cannot be selected.
                 inter.portInUse(port);
 
-                interfaceView.clear();
+                p5Controller.getCanvas().clearInterfaceView();
 
 
                 // Triggering networkChangeEvent
