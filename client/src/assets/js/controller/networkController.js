@@ -789,6 +789,10 @@ const networkController = (function() {
                     }
                 });
 
+                console.log(foundSubnetforComp)
+                console.log(allSubnets.getInstance().toList())
+
+
 
                 if (foundSubnetforComp) {
 

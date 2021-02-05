@@ -16,32 +16,7 @@ const panelController = (function() {
         // var networkPropertiesPanel = null;
         var panelview =  new PanelView();
 
-        function createNewPanel(title, width, height, pos) {
-            let newpanel = new positionPanel(title, width, height, pos);
-            let newpanelview = new PanelView(newpanel);
-
-            newpanelview.show();
-
-            allPanels.add(newpanel);
-            return newpanel;
-        }
-        function createNewInfoPanel(title, width, height, pos) {
-            let newpanel = new InformationPanel(title, width, height, pos);
-            let newpanelview = new InformationPanelView(newpanel);
-
-            newpanelview.createTable();
-
-            let parentPanel = allPanels.getAll().find(p => p.position == "bottom" && p instanceof positionPanel);
-
-            parentPanel.addInformationPanel(newpanel);
-
-            newpanelview.container.parent(bottomPanel.contentContainer);
-
-            newpanelview.show();
-            allPanels.add(newpanel);
-
-            return newpanel;
-        }
+        
         function updatePanelWithData(comp) {
 
             var data = allConnections.getConnectionsRelatedToComp(comp);
@@ -50,8 +25,6 @@ const panelController = (function() {
 
         
         return {
-            createNewPanel:createNewPanel,
-            createNewInfoPanel:createNewInfoPanel,
             updatePanelWithData:updatePanelWithData,
         };   
     }

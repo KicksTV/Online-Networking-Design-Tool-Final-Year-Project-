@@ -302,11 +302,11 @@ const componentController = (function() {
         }
         function isEndDevice(comp) {
             var isEndDevice = false;
-            if (comp.name == "PC" || 
-                comp.name == "Laptop" || 
-                comp.name == "Printer" || 
-                comp.name == "Smartphone" ||
-                comp.name == "Server") {
+            if (comp.name.toLowerCase() == "PC".toLowerCase() || 
+                comp.name.toLowerCase() == "Laptop".toLowerCase() || 
+                comp.name.toLowerCase() == "Printer".toLowerCase() || 
+                comp.name.toLowerCase() == "Smartphone".toLowerCase() ||
+                comp.name.toLowerCase() == "Server".toLowerCase()) {
 
                     isEndDevice = true;
             }

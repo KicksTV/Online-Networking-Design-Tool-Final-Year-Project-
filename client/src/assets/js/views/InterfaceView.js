@@ -1,11 +1,11 @@
 export default class InterfaceView {
-    constructor(interfaces) {
-        this.container = createDiv();
+    constructor(p5, interfaces) {
+        this.container = p5.createDiv();
         this.title = "Interfaces";
         this.interfaces = interfaces;
 
 
-        var titleContainer = createDiv(this.title);
+        var titleContainer = p5.createDiv(this.title);
         titleContainer.id('interfaceTitleContainer');
         titleContainer.parent(this.container);
 
@@ -28,13 +28,13 @@ export default class InterfaceView {
         this.container.style('visibility', "hidden");
         //this.container.style('display', 'none');
     }
-    create() {
+    create(p5) {
         this.interfaces.forEach(i => {
-            var div = createDiv(i.name);
+            var div = p5.createDiv(i.name);
             div.parent(this.container);
             div.class('interfaceTitleContainer');
             for (var p=0; p<i.availablePorts;p++) {
-                var button = createButton(i.name + " " + p, i.name + " " + p);
+                var button = p5.createButton(i.name + " " + p, i.name + " " + p);
                 //print("Port" + i.portAvailability[p]);
                 
                 button.class('portButton');
@@ -51,7 +51,7 @@ export default class InterfaceView {
             div.id('portContainer');
         });
 
-        var cancelButton = createButton("Cancel", "Cancel");
+        var cancelButton = p5.createButton("Cancel", "Cancel");
 
         cancelButton.id('connectionCancel');
         cancelButton.parent(this.container);

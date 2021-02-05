@@ -2,6 +2,8 @@
 import componentController from '../controller/componentController.js';
 import networkController from '../controller/networkController.js';
 
+const $ = require('jquery');
+
 export default class PanelView {
     constructor() {
         this.mainContainer = document.getElementById("bottomPanel");
@@ -93,7 +95,7 @@ export default class PanelView {
 
                 var $IP_field = $(`#${ipfield.id}`);
 
-                if (componentController.isEndDevice(currentSelectedComp) || currentSelectedComp.name == "Router") {
+                if (componentController.isEndDevice(currentSelectedComp) || currentSelectedComp.name.toLowerCase() == "Router".toLowerCase()) {
                     if (selectedCompInterface.portIPaddress[selectedCompInterfacePort]) {
                         ipfield.innerText = selectedCompInterface.portIPaddress[selectedCompInterfacePort];
                     }

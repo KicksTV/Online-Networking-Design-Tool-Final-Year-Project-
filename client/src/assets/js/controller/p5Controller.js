@@ -3,6 +3,7 @@ import componentController from './componentController.js';
 import connectionController from './connectionController.js';
 import networkController from './networkController.js';
 import ioController from './ioController.js';
+import panelController from './panelController.js';
 
 // Collections
 // import allTabs from '../collections/allComponentBarTabs.js';
@@ -20,8 +21,8 @@ import InterfaceView from '../views/InterfaceView.js';
 
 const GUI = require('dat.gui').GUI;
 import p5 from 'p5';
-import 'bootstrap';
 const $ = require('jquery');
+require('bootstrap');
 const _ = require('lodash');
 
 
@@ -133,6 +134,8 @@ const p5Controller = (function() {
                     componentController.initGUI(gui);
                 
                     networkController.initNetworkListener(gui);
+
+                    panelController.getInstance();
                 
             
                     // Old way to load pre built projects
@@ -184,6 +187,8 @@ const p5Controller = (function() {
                             // apply seleceted comp values to gui
                             componentController.applyGUIValues();
                 
+                            // Adds connection data to table
+                            panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
                             
                             checkComponentDeleteEvent();
                 
@@ -355,6 +360,7 @@ const p5Controller = (function() {
                     p5.line(x, y, con.mousePos[0], con.mousePos[1]);
                     p5.pop();
                 }
+
                 function connectionDefaultDisplay(con)  {
                     let centerPos1 = con._components[0].getCenterPos();
                     let centerPos2 = con._components[1].getCenterPos();
@@ -556,8 +562,8 @@ const p5Controller = (function() {
                 }
 
                 p5.createInterfaceView = function(interfaces) {
-                    var interfaceView = new InterfaceView(interfaces);
-                    interfaceView.create();
+                    var interfaceView = new InterfaceView(p5, interfaces);
+                    interfaceView.create(p5);
                     interfaceView.show(p5.winMouseX, p5.winMouseY);
 
                     selectedInterfaceView = interfaceView;
