@@ -23,7 +23,6 @@ const connectionController = (function() {
         var selectingInterface = false;
 
         function createNewConnection(name) {
-            console.log("New Connection")
             let newcon = getDefaultComponentData(name);
             return newcon;
         }
@@ -84,7 +83,7 @@ const connectionController = (function() {
                 }               
             } 
             else if (compAddConnectionCounter == 1) {
-                console.log("check valid", checkValidConnection(false, comp, null))
+                // console.log("check valid", checkValidConnection(false, comp, null))
                 if (checkValidConnection(false, comp, null)) {
                     // print("connecting first component");
                     //print(comp.hasAvailablePort());
@@ -142,7 +141,7 @@ const connectionController = (function() {
             var isValidConnection = false;
             var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getSelectedConnection());
 
-            console.log("Valid linking component", isValidConnectionType1);
+            // console.log("Valid linking component", isValidConnectionType1);
             
             // NEEDS TO BE PROPERLY FIXED
             if (preComp == null) {

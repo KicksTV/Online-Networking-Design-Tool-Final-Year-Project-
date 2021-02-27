@@ -118,9 +118,6 @@ export default class Component extends mixin.componentMixin(Device) {
     }
     checkValidLinkingComponent(comp) {
         var isValid = false;
-        console.log(comp)
-        console.log(this.validLinkingComponents)
-
         this.validLinkingComponents.forEach((c)=> {
             if (comp.name.toLowerCase() == c.toLowerCase()) {
                 isValid = true;

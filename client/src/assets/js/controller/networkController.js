@@ -303,6 +303,8 @@ const networkController = (function() {
             // Calculate the subnet mask representation in decimal notation.
             var decimalNotationOfSubnetmask = calculateDecimalFromSlashValue(slashValue);
 
+            // console.log(decimalNotationOfSubnetmask)
+
             return decimalNotationOfSubnetmask;
         }
 
@@ -451,7 +453,7 @@ const networkController = (function() {
         function getLargestSubnet() {
             var largestSubnet = 0;
             //Get all routers
-            var allRouters = allComponents.get().filter(comp => comp.name == "Router");
+            var allRouters = allComponents.get().filter(comp => comp.name.toLowerCase() == "router");
 
             for (let router of allRouters) {
                 let connections = allConnections.getConnectionsRelatedToComp(router);
@@ -523,7 +525,7 @@ const networkController = (function() {
                 }
 
             }  
-            // print("largest Subnet: " + largestSubnet);
+            // console.log("largest Subnet: " + largestSubnet);
             return largestSubnet;       
         }
         function binaryToDecimal(IPaddress) {
@@ -732,7 +734,7 @@ const networkController = (function() {
             var port = interfaceValues[1];
 
             var routerComp = null;
-            if (currentSelectedComp.name == "Router") {
+            if (currentSelectedComp.name.toLowerCase() == "router") {
                 routerComp = currentSelectedComp;
             }
 

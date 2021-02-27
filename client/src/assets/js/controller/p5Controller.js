@@ -49,6 +49,9 @@ const p5Controller = (function() {
         function getCanvas() {
             return currentCanvas;
         }
+        function useFunc(func) {
+            return currentCanvas[func];
+        }
         function createNewCanvas() {
             var newP5 = new p5(function(p5) {
                 p5.preload = function() {
@@ -596,7 +599,9 @@ const p5Controller = (function() {
             _allCanvases.push(newP5);
             currentCanvas = newP5;
         }
+
         return {
+            useFunc:useFunc,
             getCanvas:getCanvas,
             createNewCanvas:createNewCanvas,
         };   

@@ -14,9 +14,6 @@ import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
 import Interface from '../models/Interface.js';
 
-const p5 = require('p5')
-
-
 const saveLoadController = (function() {
     var instance;
     
@@ -104,8 +101,9 @@ const saveLoadController = (function() {
                     // user didnt select file
                 }else {
                     var files = result.files;
+
                     // loops all selected files or file
-                    for (var i=0; i < files.length-1; i++) {
+                    for (var i=0; i <= files.length-1; i++) {
                         var f = files[i];
                         var reader = new FileReader();
 
@@ -118,8 +116,7 @@ const saveLoadController = (function() {
                         // Closure to capture the file information.
                         reader.onload = (function() {
                             return function(e) {
-                                console.log("running loadJSON");
-                                p5.loadJSON(e.target.result, loadProject);
+                                p5Controller.useFunc("loadJSON")(e.target.result, loadProject);
                             };
                         })(f);
 
@@ -215,10 +212,6 @@ const saveLoadController = (function() {
                             foundComp.setHasConnection(true);
                             // add comps interfaces
 
-                            console.log("index", con._components.indexOf(savedComp));
-                            console.log("interface ports", newconnection._interfacePorts);
-                            console.log(newconnection.id);
-
                             foundComp.injectInterfaceSavedData(newconnection.getInterface(con._components.indexOf(savedComp)));
                             newconnection.addComponent(foundComp);
 
@@ -229,7 +222,6 @@ const saveLoadController = (function() {
                     resolve(loadCompsToConnection(newconnection));
                 });
                 newconnection = await promise;
-                console.log("adding saved connection");
 
                 // Creating new Edge on graph	
                 Graph.getInstance().addEdge(	
