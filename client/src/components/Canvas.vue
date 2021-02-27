@@ -188,7 +188,9 @@
             </div>
         </div>
     </div>
-    
+    <b-tooltip target="canvasDeleteButton" placement="bottom">
+        Hello World!
+    </b-tooltip>
   </div>
 </template>
 

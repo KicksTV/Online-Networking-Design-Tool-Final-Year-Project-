@@ -12,9 +12,6 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
-// Vue.use(bootstrap)
-
-
 Vue.config.productionTip = false
 
 new Vue({

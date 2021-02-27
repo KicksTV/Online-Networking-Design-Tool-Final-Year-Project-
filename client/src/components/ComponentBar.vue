@@ -10,46 +10,82 @@
         <div class="collapse component-list show shadow" id="componentList">
             <nav id="componentsNav" class="navbar navbar-expand-lg">
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="PC icon" src="@/assets/img/pc.svg" class="componentImg" draggable="false">
+                    <img id="pcIcon" @mousedown="createNewComponent" alt="PC icon" src="@/assets/img/pc.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Laptop icon" src="@/assets/img/laptop.svg" class="componentImg" draggable="false">
+                    <img id="laptopIcon" @mousedown="createNewComponent" alt="Laptop icon" src="@/assets/img/laptop.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Smart Phone icon" src="@/assets/img/smartphone.svg" class="componentImg" draggable="false">
+                    <img id="spIcon" @mousedown="createNewComponent" alt="Smart Phone icon" src="@/assets/img/smartphone.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Printer icon" src="@/assets/img/printer.svg" class="componentImg" draggable="false">
+                    <img id="printerIcon" @mousedown="createNewComponent" alt="Printer icon" src="@/assets/img/printer.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Server icon" src="@/assets/img/server.svg" class="componentImg" draggable="false">
+                    <img id="serverIcon" @mousedown="createNewComponent" alt="Server icon" src="@/assets/img/server.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Switch icon" src="@/assets/img/switch.svg" class="componentImg" draggable="false">
+                    <img id="switchIcon" @mousedown="createNewComponent" alt="Switch icon" src="@/assets/img/switch.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Router icon" src="@/assets/img/router.svg" class="componentImg" draggable="false">
+                    <img id="routerIcon" @mousedown="createNewComponent" alt="Router icon" src="@/assets/img/router.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Cloud icon" src="@/assets/img/cloud.svg" class="componentImg" draggable="false">
+                    <img id="cloudIcon" @mousedown="createNewComponent" alt="Cloud icon" src="@/assets/img/cloud.svg" class="componentImg" draggable="false">
                 </li>
                 <li class="d-inline-block">
-                    <img @mousedown="createNewComponent" alt="Wireless Access Point icon" src="@/assets/img/wireless-access-point.svg" class="componentImg" draggable="false">
+                    <img id="apIcon" @mousedown="createNewComponent" alt="Wireless Access Point icon" src="@/assets/img/wireless-access-point.svg" class="componentImg" draggable="false">
                 </li>
                
             </nav>
         </div>
         <div class="collapse component-list shadow" id="linkingComponentList">
             <li class="d-inline-block">
-                <img @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/twisted-pair-cable.svg" class="componentImg" draggable="false">
+                <img id="tpIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/twisted-pair-cable.svg" class="componentImg" draggable="false">
             </li>
             <li class="d-inline-block">
-                <img @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/fibre-cable.svg" class="componentImg" draggable="false">
+                <img id="fibreIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/fibre-cable.svg" class="componentImg" draggable="false">
             </li>
             <li class="d-inline-block">
-                <img @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/coaxial-cable.svg" class="componentImg" draggable="false">
+                <img id="coaxialIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/coaxial-cable.svg" class="componentImg" draggable="false">
             </li>
         </div>
+        <b-tooltip target="pcIcon" placement="bottom">
+            Personal Computer
+        </b-tooltip>
+        <b-tooltip target="laptopIcon" placement="bottom">
+            Laptop
+        </b-tooltip>
+        <b-tooltip target="spIcon" placement="bottom">
+            Smartphone
+        </b-tooltip>
+        <b-tooltip target="printerIcon" placement="bottom">
+            Printer
+        </b-tooltip>
+        <b-tooltip target="serverIcon" placement="bottom">
+            Server
+        </b-tooltip>
+        <b-tooltip target="switchIcon" placement="bottom">
+            Switch
+        </b-tooltip>
+        <b-tooltip target="routerIcon" placement="bottom">
+            Router
+        </b-tooltip>
+        <b-tooltip target="cloudIcon" placement="bottom">
+            Cloud
+        </b-tooltip>
+        <b-tooltip target="apIcon" placement="bottom">
+            Access Point
+        </b-tooltip>
+        <b-tooltip target="tpIcon" placement="bottom">
+            Twisted Pair Cable
+        </b-tooltip>
+        <b-tooltip target="fibreIcon" placement="bottom">
+            Fibre Cable
+        </b-tooltip>
+        <b-tooltip target="coaxialIcon" placement="bottom">
+            Coaxial Cable
+        </b-tooltip>
     </div>
 </template>
 

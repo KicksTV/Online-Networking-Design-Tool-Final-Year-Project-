@@ -28,7 +28,6 @@ const _ = require('lodash');
 
 const p5Controller = (function() {
     var instance;
-
     
     function init() {
 
@@ -55,61 +54,6 @@ const p5Controller = (function() {
         function createNewCanvas() {
             var newP5 = new p5(function(p5) {
                 p5.preload = function() {
-
-                    // compBar = componentsBarTab("Components", 500, 50, new ComponentBarComponents("Components"));
-                    // compBar.init();
-                
-                    // allTabs.getInstance().setVisableCurrent(compBar);
-                    // allTabs.getInstance().add(compBar);
-                
-                    // compConnectionBar = componentsBarTab("Connections", 500, 50, new ComponentBarConnections("Connections"));
-                    // compConnectionBar.init();
-                    // allTabs.getInstance().add(compConnectionBar);
-            
-            
-                    // var folder = "/components";
-            
-                    // // Loads all component devices into the components bar.
-                    // $.ajax({
-                    //     url : folder,
-                    //     success: function (data) {
-                    //         console.log(data)
-                    //         var some = $(data).find("a").attr("href", function (i, val) {
-                    //             console.log(some)
-                    //             console.log(val)
-                    //             if( val.match(/\.(xml)$/) ) { 
-                    //                 console.log(val)
-                    //                 let xml = p5.loadXML(val, () => {
-                    //                     console.log("done");
-            
-                    //                     let name = xml.getChild('name').getContent();
-                    //                     let type = xml.getChild('type').getContent();
-                    //                     let imgPath = xml.getChild('image').getString('path');
-                    //                     let imgAlt = xml.getChild('image').getString('alt');
-            
-                    //                     console.log(name, type, imgPath, imgAlt);
-            
-            
-                    //                     var btn = Button(name, type, imgPath, imgAlt).init();
-            
-                    //                     if (type == "Device") {
-                    //                         compBar.getBar().add(btn);
-                    //                     }
-                    //                     else if (type == "Cable") {
-                    //                         compConnectionBar.getBar().add(btn);
-                    //                     }
-                    //                     if (i == some.length-1) {
-                    //                         compBar.getBar().displayAllButtons();
-                    //                     }
-                    //                 });
-                    //             } 
-                    //         });
-                    //     },
-                    //     error: function(xhr, status, error) {
-                    //         var errorMessage = xhr.status + ': ' + xhr.statusText
-                    //         console.log('Error - ' + errorMessage, status, error);
-                    //     }
-                    // });
 
                     var validationRules1 = validationRule("Server","Smartphone", false, "Connection is not allowed!");
                     var validationRules2 = validationRule("Access Point","Cloud", false, "Connection is not allowed!");
@@ -148,7 +92,7 @@ const p5Controller = (function() {
                 }
                 p5.setup = function() {
                     p5.frameRate(60);
-                    let canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight);
+                    let canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight-203);
                     canvas.parent("canvasDiv");
                 }
                 p5.draw = function() {
@@ -280,7 +224,7 @@ const p5Controller = (function() {
                 // dynamically adjust the canvas to the window
                 p5.windowResized = function() {
                     // print("resize window");
-                    p5.resizeCanvas((p5.windowWidth-20), p5.windowHeight);
+                    p5.resizeCanvas((p5.windowWidth-20), p5.windowHeight-203);
                 }
                 
                 function displayAllComponents() {
