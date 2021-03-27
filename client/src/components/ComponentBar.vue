@@ -2,8 +2,8 @@
     <div id="components-container" class="">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <ul id="navbar-component-links" class="navbar-nav mr-auto">
-                <li class="nav-item active"><a class="nav-link" data-toggle="collapse" href=".component-list" role="button" aria-expanded="false" aria-controls="componentList linkingComponentList">Components</a></li>
-                <li class="nav-item active"><a class="nav-link" data-toggle="collapse" href=".component-list" role="button" aria-expanded="false" aria-controls="componentList linkingComponentList">Connections</a></li>
+                <li class="nav-item active"><a class="nav-link" data-toggle="collapse" href="#componentList" role="button" aria-expanded="false" aria-controls="componentList">Components</a></li>
+                <li class="nav-item active"><a class="nav-link" data-toggle="collapse" href="#linkingComponentList" role="button" aria-expanded="false" aria-controls="linkingComponentList">Connections</a></li>
             </ul>
         </nav>
         <div id="rightSidePanel"></div>
@@ -136,4 +136,12 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.componentImg {
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select:none; 
+    user-select:none;
+    -o-user-select:none;
+}
+</style>

@@ -21,8 +21,6 @@ import InterfaceView from '../views/InterfaceView.js';
 
 const GUI = require('dat.gui').GUI;
 import p5 from 'p5';
-const $ = require('jquery');
-require('bootstrap');
 const _ = require('lodash');
 
 
@@ -32,7 +30,7 @@ const p5Controller = (function() {
     function init() {
 
         // dat.GUI
-        var gui = null;
+        var gui = null
 
         // Panels or Bars
         // var compBar;
@@ -41,9 +39,11 @@ const p5Controller = (function() {
         //EVENTS
         // var componentCslickEvent = new CustomEvent('componentClickEvent');
 
-        var _allCanvases = [];
-        var currentCanvas = null;
-        var selectedInterfaceView = null;
+        var _allCanvases = []
+        var _pressed_keys = []
+        var currentCanvas = null
+        var selectedInterfaceView = null
+
 
         function getCanvas() {
             return currentCanvas;
@@ -102,7 +102,6 @@ const p5Controller = (function() {
                     displayAllComponents();
                     //updateMouseCursor();
             
-                    checkForCopyAndPastEvent();
                     checkComponentDeleteEvent();
                 
                 }
@@ -218,8 +217,32 @@ const p5Controller = (function() {
                     componentController.setNewlyCreatedComp(null);
                     componentController.setComponentDrag(false);
                 }
-            
-                
+
+                p5.keyPressed = function() {
+                    _pressed_keys.push(p5.keyCode)
+
+                     // COPY
+                    if (_pressed_keys[0] === 17  && _pressed_keys[1] === 67) {
+                        componentController.copySelectedComponents()
+                        window.$vue.makeToast("Copied Components", "The selected componets have been copied!", true)
+                    }
+                    // CUT 
+                    if (_pressed_keys[0] === 17 && _pressed_keys[1] === 88) {
+                        componentController.cutSelectedComponents()
+                        window.$vue.makeToast("Cut Components", "The selected componets have been cut!", true)
+                    }
+                    // PASTE
+                    if (_pressed_keys[0] === 17 && _pressed_keys[1] === 86 && componentController.hasPastedComponent() == false) {
+                        pasteSelectedComponents();
+                        window.$vue.makeToast("Paste Components", "The selected componets have been pasted!", true)
+
+                        // Triggering networkChangeEvent
+                        networkController.dispatchNetworkChangeEvent();
+                    }
+                }
+                p5.keyReleased = function() {
+                    _pressed_keys = _.remove(_pressed_keys, k => k != p5.keyCode)
+                }
                 
                 // dynamically adjust the canvas to the window
                 p5.windowResized = function() {
@@ -356,44 +379,9 @@ const p5Controller = (function() {
                         }
                     }
                 }
-    
-                function checkForCopyAndPastEvent() {
-                
-                    // COPY
-                    if (p5.keyIsDown(17) && p5.keyIsDown(67)) {
-                        componentController.copySelectedComponents()
-                
-                        $('#copyToastAlert').toast('show');
-                        $('#copyToastAlert .toast-body').text(
-                            "Successfully copied."
-                        );
-                    }
-                    // CUT 
-                    if (p5.keyIsDown(17) && p5.keyIsDown(88)) {
-                        componentController.cutSelectedComponents()
-                
-                        $('#cutToastAlert').toast('show');
-                        $('#cutToastAlert .toast-body').text(
-                            "Successfully cut."
-                        );
-                    }
-                    // PASTE
-                    if (p5.keyIsDown(17) && p5.keyIsDown(86) && componentController.hasPastedComponent() == false) {
-                        pasteSelectedComponents();
-                
-                        $('#pasteToastAlert').toast('show');
-                        $('#pasteToastAlert .toast-body').text(
-                            "Successfully pasted."
-                        );
-                
-                        // Triggering networkChangeEvent
-                        networkController.dispatchNetworkChangeEvent();
-                    }
-                }
-    
-                function pasteSelectedComponents() {
+                async function pasteSelectedComponents() {
                     if (! componentController.isSelectListEmpty()) {
-                        print("multi select paste");
+                        console.log("multi select paste");
                         var list = componentController.getSelectList();
                         for (var i=0; i<list.length;i++) {
                             
@@ -422,23 +410,26 @@ const p5Controller = (function() {
                             }
         
                             if (componentController.getCopy()) {
-                                var clonedComponent = componentController.cloneComponent(list[i]);
-            
-                                clonedComponent.setXpos(p5.mouseX + xDifference);
-                                clonedComponent.setYpos(p5.mouseY + yDifference);
+                                let clonedComponent = _.cloneDeep(list[i])
+                                clonedComponent.displayName += '_copy'
+                                clonedComponent.resetID()
+                                clonedComponent.setXpos(p5.mouseX + xDifference)
+                                clonedComponent.setYpos(p5.mouseY + yDifference)
         
-                                allComponents.add(clonedComponent);
+                                allComponents.add(clonedComponent)
                             }
                         }
-                        componentController.setCopied(false);
-                        componentController.setPaste(true);
-                        print("paste"); 
+                        componentController.setCopied(false)
+                        componentController.setPasted(true)
+                        console.log("paste")
                     }
                     
                     if (componentController.getSelectedComponent()) {
                         var selectedComponent = componentController.getSelectedComponent();
                         if (componentController.getCopy()) {
-                            let clonedComponent = componentController.cloneComponent(selectedComponent);
+                            let clonedComponent = _.cloneDeep(selectedComponent)
+                            clonedComponent.resetID()
+                            clonedComponent.displayName += '_copy'
                             clonedComponent.setXpos(p5.mouseX);
                             clonedComponent.setYpos(p5.mouseY);
                             allComponents.add(clonedComponent);
@@ -450,8 +441,8 @@ const p5Controller = (function() {
                             comp.setYpos(p5.mouseY);
                             componentController.setCut(false);
                         }
-                        componentController.setPaste(true);
-                        print("paste"); 
+                        componentController.setPasted(true);
+                        console.log("paste"); 
                     }
                     componentController.clearSelectList();
                 }
@@ -491,10 +482,10 @@ const p5Controller = (function() {
                             // Delete related connections
                             connectionController.deleteConnection(comp);
                 
-                            $('#deleteToastAlert').toast('show');
-                            $('#deleteToastAlert .toast-body').text(
-                                componentController.getSelectedComponent().displayName + " has been deleted."
-                            );
+                            // $('#deleteToastAlert').toast('show');
+                            // $('#deleteToastAlert .toast-body').text(
+                            //     componentController.getSelectedComponent().displayName + " has been deleted."
+                            // );
                 
                             gui.removeFolder(componentController.getPropertiesPanel());
                 

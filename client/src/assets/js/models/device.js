@@ -21,6 +21,10 @@ export default class Device {
     setID(val) {
         this.id = val;
     }
+    resetID() {
+        let val = Math.floor(1000 + Math.random() * 900000);
+        this.id = `${this.name}${val}`;
+    }
     getType() {
         return this.type;
     }

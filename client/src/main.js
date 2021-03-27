@@ -1,20 +1,33 @@
-import Vue from 'vue'
 import App from './App.vue'
-import router from './router'
+import {router, newVue} from './router'
 
 import PortalVue from 'portal-vue'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
-Vue.use(PortalVue)
+newVue.use(PortalVue)
 
 // Make BootstrapVue available throughout your project
-Vue.use(BootstrapVue)
+newVue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
+newVue.use(IconsPlugin)
 
-Vue.config.productionTip = false
+newVue.config.productionTip = false
 
-new Vue({
+
+const vue = new newVue({
   router,
-  render: h => h(App)
+  render: h => h(App),
+
+  methods: {
+    makeToast(title, msg, append = false) {
+      this.$root.$bvToast.toast(msg, {
+        title: title,
+        autoHideDelay: 5000,
+        appendToast: append
+      })
+    }
+  },
 }).$mount('#app')
+
+window.$vue = vue
+

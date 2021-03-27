@@ -90,24 +90,6 @@ const componentController = (function() {
                 Graph.getInstance().addNode(comp.id);
             }
         }
-        function cloneComponent(obj) {
-            let newcomp = createNewComponent(null, obj.name, obj.type, obj.imgPath, obj.image)
-            // attributes we wish to copy
-            let attributes = ["type", "imgPath", "image", "hide", "hideConnections", 
-                              "displayName", "textSize", "validLinkingComponents", "width",
-                              "height"]
-            // goes through all attributes of obj and copies its value
-            for (let key in obj) {
-                for (let att in attributes) {
-                    if (key == att) {
-                        newcomp[key] = obj[key] 
-                    }
-                }
-            }
-            newcomp.setComponentName(newcomp.displayname + " - copy");
-        
-            return newcomp;
-        }
         function getNumberOfExistingCompType(name) {
             const found = allComponents.get().filter(comp => comp.name == name);
             return found.length;
@@ -436,7 +418,6 @@ const componentController = (function() {
             init:init,
             createNewComponent:createNewComponent,
             createNewComponentFromArray:createNewComponentFromArray,
-            cloneComponent:cloneComponent,
             initGUI:initGUI,
             getGUI:getGUI,
             getPropertiesPanel:getPropertiesPanel,
