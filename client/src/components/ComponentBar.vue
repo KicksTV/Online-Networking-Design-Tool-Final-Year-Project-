@@ -2,12 +2,12 @@
     <div id="components-container" class="">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <ul id="navbar-component-links" class="navbar-nav mr-auto">
-                <li class="nav-item active"><a class="nav-link" data-toggle="collapse" href="#componentList" role="button" aria-expanded="false" aria-controls="componentList">Components</a></li>
-                <li class="nav-item active"><a class="nav-link" data-toggle="collapse" href="#linkingComponentList" role="button" aria-expanded="false" aria-controls="linkingComponentList">Connections</a></li>
+                <li class="nav-item active"><b v-b-toggle.componentList.linkingComponentList class="nav-link">Components</b></li>
+                <li class="nav-item active"><b v-b-toggle.linkingComponentList.componentList class="nav-link">Connections</b></li>
             </ul>
         </nav>
         <div id="rightSidePanel"></div>
-        <div class="collapse component-list show shadow" id="componentList">
+        <b-collapse visible  class="shadow" id="componentList">
             <nav id="componentsNav" class="navbar navbar-expand-lg">
                 <li class="d-inline-block">
                     <img id="pcIcon" @mousedown="createNewComponent" alt="PC icon" src="@/assets/img/pc.svg" class="componentImg" draggable="false">
@@ -38,18 +38,20 @@
                 </li>
                
             </nav>
-        </div>
-        <div class="collapse component-list shadow" id="linkingComponentList">
-            <li class="d-inline-block">
-                <img id="tpIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/twisted-pair-cable.svg" class="componentImg" draggable="false">
-            </li>
-            <li class="d-inline-block">
-                <img id="fibreIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/fibre-cable.svg" class="componentImg" draggable="false">
-            </li>
-            <li class="d-inline-block">
-                <img id="coaxialIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/coaxial-cable.svg" class="componentImg" draggable="false">
-            </li>
-        </div>
+        </b-collapse>
+        <b-collapse class="shadow" id="linkingComponentList">
+            <nav id="componentsNav" class="navbar navbar-expand-lg">
+                <li class="d-inline-block">
+                    <img id="tpIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/twisted-pair-cable.svg" class="componentImg" draggable="false">
+                </li>
+                <li class="d-inline-block">
+                    <img id="fibreIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/fibre-cable.svg" class="componentImg" draggable="false">
+                </li>
+                <li class="d-inline-block">
+                    <img id="coaxialIcon" @mousedown="createNewLinkingComponent" alt="" src="@/assets/img/coaxial-cable.svg" class="componentImg" draggable="false">
+                </li>
+            </nav>
+        </b-collapse>
         <b-tooltip target="pcIcon" placement="bottom">
             Personal Computer
         </b-tooltip>
@@ -143,5 +145,15 @@
     -ms-user-select:none; 
     user-select:none;
     -o-user-select:none;
+}
+.nav-link {
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select:none; 
+    user-select:none;
+    -o-user-select:none;
+}
+.nav-link:focus {
+    outline: none;
 }
 </style>

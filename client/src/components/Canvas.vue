@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div id="canvasContainer" class="">
-        <div id="canvasRow" class="">
-            <div class="canvasButtonContainer">
-                <span id="canvasLoadProject" style="margin-left: 15px" class="canvasButton fas fa-file-upload fa-lg" data-toggle="tooltip" data-placement="bottom" title="Load Project"></span>
-                <input id="upload_input" type="file" name="project_upload" class="upload_input" />
-                <span id="canvasSaveProject" class="canvasButton fas fa-save fa-lg" data-toggle="tooltip" data-placement="bottom" title="Save Project"></span>
-                <span id="canvasDeleteButton" class="canvasButton fas fa-trash-alt fa-lg" data-toggle="tooltip" data-placement="bottom" title="Delete Component"></span>
+    <div id="canvasContainer">
+        <div id="canvasRow">
+            <div id="projectDetails">
+                <div class="canvasButtonContainer row">
+                    <span id="canvasLoadProject" style="margin-left: 15px" class="canvasButton fas fa-file-upload fa-lg" data-toggle="tooltip" data-placement="bottom" title="Load Project"></span>
+                    <input id="upload_input" type="file" name="project_upload" class="upload_input" />
+                    <span id="canvasSaveProject" class="canvasButton fas fa-save fa-lg" data-toggle="tooltip" data-placement="bottom" title="Save Project"></span>
+                    <span id="canvasDeleteButton" class="canvasButton fas fa-trash-alt fa-lg" data-toggle="tooltip" data-placement="bottom" title="Delete Component"></span>
+                </div>
+                <h4 class="mt-2 ml-2">New Project</h4>
             </div>
             <div id="canvasDiv">
                 <div id="p5_loading" class="loadingclass">Loading....</div>
@@ -156,14 +159,15 @@ export default {
         padding: 5px;
 
     }
-    .canvasButtonContainer {
+    #projectDetails {
         position: absolute;
         overflow: hidden;
-        height: 50px;
+        height: 80px;
         z-index: 100;
+        margin-left: 20px;
     }
     .canvasButton {
-        margin: 15px 8px 0 5px;
+        padding: 15px 8px 0 8px;
     }
     .canvasButton:hover {
         opacity: 0.7;
