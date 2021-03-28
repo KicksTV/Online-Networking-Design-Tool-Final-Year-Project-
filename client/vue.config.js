@@ -38,7 +38,7 @@ module.exports = {
     },
     test: {
        // entry for the page
-       entry: 'src/main.js',
+       entry: 'src/test.js',
        // the source template
        template: 'public/test.html',
        // output as dist/index.html
