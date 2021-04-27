@@ -26,11 +26,8 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/test-utils": "^1.0.3",
     "babel-eslint": "^10.1.0",
-    "chai": "^4.1.2",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "mocha": "^6.2.3",
-    "mochapack": "^1.1.15",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

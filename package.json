@@ -42,7 +42,8 @@
     "chai-as-promised": "^7.1.1",
     "esm": "^3.2.25",
     "mocha": "^8.3.0",
-    "nodemon": "^1.19.4"
+    "nodemon": "^1.19.4",
+    "puppeteer": "^9.0.0"
   },
   "bugs": {
     "url": "https://github.com/KicksTV/Online-Networking-Design-Tool-Final-Year-Project-/issues"

@@ -11,15 +11,134 @@
       </style>
     </head>
   <body>
-    <% include partials/header %>
+    <nav class="navbar navbar-dark bg-dark" style="justify-content: space-between;">
+      <a class="navbar-brand" href="/">
+          <img src="/assets/img/logos/Symbol/logo-icon-noborder-white.svg" width="44px" height="37.5px" alt="" loading="lazy">
+          Build Networks Online
+      </a>
+      <div class="form-inline">
+          <button class="navbar-toggler" style="padding: .25rem .5rem;font-size: .875rem;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+      </div>
+      
+      <div class="collapse navbar-collapse <%= pagedata.navExpand %>" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto" style="flex-direction: row;">
+              <li class="nav-item active">
+                  <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link disabled" href="#">How to use</a>
+              </li>
+              <!-- <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Dropdown
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                  </div>
+              </li> -->
+              <!-- <li class="nav-item">
+                  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+              </li> -->
+          </ul>
+      </div>
+  </nav>
 
     <div id="mocha"></div>
 
 
-    <% include partials/canvasView %>
+    <div id="components-container" class="">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <ul id="navbar-component-links" class="navbar-nav mr-auto">
+          </ul>
+      </nav>
+      <div id="rightSidePanel"></div>
+      <nav id="componentsNav" class="navbar navbar-expand-lg shadow"></nav>
+  </div>
+  
+  <div id="canvasContainer" class="">
+      <div id="canvasRow" class="">
+          <div class="canvasButtonContainer">
+              <span id="canvasLoadProject" style="margin-left: 15px" class="canvasButton fas fa-file-upload fa-lg" data-toggle="tooltip" data-placement="bottom" title="Load Project"></span>
+              <input id="upload_input" type="file" name="project_upload" class="upload_input" />
+              <span id="canvasSaveProject" class="canvasButton fas fa-save fa-lg" data-toggle="tooltip" data-placement="bottom" title="Save Project"></span>
+              <span id="canvasDeleteButton" class="canvasButton fas fa-trash-alt fa-lg" data-toggle="tooltip" data-placement="bottom" title="Delete Component"></span>
+          </div>
+          <div id="canvasDiv">
+              <div id="p5_loading" class="loadingclass">Loading....</div>
+              <% include toasts.ejs %>
+          </div>
+      </div>
+  </div>
+  
+  
+  <div id="bottomPanel" class="container-fluid">
+      <div class="row">
+          <div id="bottomPanelTitleContainer" class="container-fluid" >
+              <div class="row">
+                  <div class="col">
+                      <ul class="nav nav-tabs">
+                          <li class="nav-item">
+                              <a class="nav-link active" href="#">Connections</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" href="#">Console</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" href="#">Link</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                          </li>
+  
+                          
+                      </ul>
+                  </div>
+                  <div class="col">
+                      <ul class="nav justify-content-end nav-tabs" >
+                          <li class="nav-item">
+                              <a href="#" id="createRoom" class="nav-link">Create Room</a>
+                          </li>
+                          <li class="nav-item">
+                              <a href="/projects/leave-room" id="createRoom" class="nav-link">Leave Room</a>
+                          </li>
+                      </ul>
+                  </div>
+              </div>  
+          </div>
+      </div>
+      <div class="row">
+          <div id="bottomPanelContentContainer">
+              <table id="connections-table" class="table table-sm">
+                  <thead>
+                      <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">1st_Device</th>
+                          <th scope="col">→</th>
+                          <th scope="col">2nd_Device</th>
+                          <th scope="col">Media_Type</th>
+                          <th scope="col">IP_Address</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <th>No Connections</th>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
 
 
-    <% include partials/scripts %>
+  <script src="/assets/jquery.min.js"></script>
+  <script src="/assets/bootstrap.min.js"></script>
+  <script src="/assets/js/bundle.js"></script>
+  <script src="https://kit.fontawesome.com/96eb25bbd8.js" crossorigin="anonymous"></script>
 
     <script src="/assets/js/test_bundle.js"></script>
 
