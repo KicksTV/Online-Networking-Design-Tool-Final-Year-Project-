@@ -26,6 +26,15 @@ const connectionController = (function() {
             let newcon = getDefaultComponentData(name);
             return newcon;
         }
+        function getAll() {
+            return allConnections.getAll()
+        }
+        function add(con) {
+            return allConnections.add(con)
+        }
+        function clear() {
+            allConnections.clear()
+        }
         function getDrawConnection() {
             return drawConnection;
         }
@@ -262,6 +271,10 @@ const connectionController = (function() {
         }
 
         return {
+            getAll:getAll,
+            add:add,
+            clear:clear,
+            toJSON:toJSON,
             createNewConnection:createNewConnection,
             getSelectingSecondConnection:getSelectingSecondConnection,
             isSelectingInterfacePort:isSelectingInterfacePort,
@@ -272,7 +285,6 @@ const connectionController = (function() {
             drawConnetions:drawConnetions,
             deleteConnection:deleteConnection,
             endConnection:endConnection,
-            toJSON:toJSON,
         };   
     }
 

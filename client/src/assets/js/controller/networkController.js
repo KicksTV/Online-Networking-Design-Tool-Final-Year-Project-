@@ -1,5 +1,7 @@
 // Controllers
 import componentController from '../controller/componentController.js';
+import connectionController from '../controller/connectionController.js';
+
 
 // Collections
 import allComponents from '../collections/allComponents.js';
@@ -881,6 +883,171 @@ const networkController = (function() {
             return validIP;
         }
 
+        async function setupNetwork() {
+            console.log("setup network")
+          
+            var list_of_routers = componentController.getAll().filter(c => c.name === 'Router');
+            var list_of_PCs = componentController.getAll().filter(c => c.name === 'PC');
+          
+            var netswitch = componentController.getAll().find(c => c.name === 'Switch');
+          
+            // Creates a connection between all routers
+            for (let r in list_of_routers) {
+              if (r != list_of_routers.length-1) {
+                var con = await connectionController.createNewConnection("twisted-pair");
+                
+                let num = parseInt(r);
+                var num2 = num+1;
+          
+          
+                let interfaceValues1 = list_of_routers[num].getInterfaceFromString(`Fast_Ethernet 1`);
+                let interfaceValues2 = list_of_routers[num2].getInterfaceFromString("Fast_Ethernet 0");
+          
+                // var intface1 = list_of_routers[r].getInterface(0);
+                // var intface2 = list_of_routers[r++].getInterface(0);
+                con.addComponent(list_of_routers[num]);
+                con.addComponent(list_of_routers[num2]);
+                con.addInterfacePort(interfaceValues1);
+                con.addInterfacePort(interfaceValues2);
+                // con._interfaces = [[intface1, 0], [intface2, 0]];
+          
+                // get the interface.
+                let inter1 = interfaceValues1[0];
+                // get the port of that interface.
+                let port1 = interfaceValues1[1];
+                // port is now in use and cannot be selected.
+                inter1.portInUse(port1);
+          
+                // get the interface.
+                let inter2 = interfaceValues2[0];
+                // get the port of that interface.
+                let port2 = interfaceValues2[1];
+                // port is now in use and cannot be selected.
+                inter2.portInUse(port2);
+                 
+                // Creating new Edge on graph
+                Graph.getInstance().addEdge(
+                  list_of_routers[num].id, 
+                  list_of_routers[num2].id
+                );
+          
+                connectionController.add(con);
+              }
+            }
+          
+            // Router_1  -> Switch_1
+            let connection1 = await connectionController.createNewConnection("twisted-pair");
+            let interfaceValues1 = list_of_routers[0].getInterfaceFromString(`Fast_Ethernet 0`);
+            let interfaceValues2 = netswitch.getInterfaceFromString("Fast_Ethernet 0");
+            connection1.addComponent(list_of_routers[0]);
+            connection1.addComponent(netswitch);
+            connection1.addInterfacePort(interfaceValues1);
+            connection1.addInterfacePort(interfaceValues2);
+          
+            // get the interface.
+            let inter1 = interfaceValues1[0];
+            // get the port of that interface.
+            let port1 = interfaceValues1[1];
+            // port is now in use and cannot be selected.
+            inter1.portInUse(port1);
+          
+            // get the interface.
+            let inter2 = interfaceValues2[0];
+            // get the port of that interface.
+            let port2 = interfaceValues2[1];
+            // port is now in use and cannot be selected.
+            inter2.portInUse(port2);
+            
+            // Creating new Edge on graph
+            Graph.getInstance().addEdge(
+              list_of_routers[0].id, 
+              netswitch.id
+            );
+            connectionController.add(connection1);
+          
+            // Create a subnet between each router and pc execpt first router
+            for (let i in list_of_routers) {
+              if (i != 0) {
+                let con = await connectionController.createNewConnection("twisted-pair");
+                // con._components = [list_of_routers[i], list_of_PCs[i]];
+          
+                let interfaceValues1 = list_of_routers[i].getInterfaceFromString(`Fast_Ethernet 3`);
+                let interfaceValues2 = list_of_PCs[i].getInterfaceFromString("Fast_Ethernet 0");
+          
+                con.addComponent(list_of_routers[i]);
+                con.addComponent(list_of_PCs[i]);
+                con.addInterfacePort(interfaceValues1);
+                con.addInterfacePort(interfaceValues2);
+          
+                // get the interface.
+                let inter1 = interfaceValues1[0];
+                // get the port of that interface.
+                let port1 = interfaceValues1[1];
+                // port is now in use and cannot be selected.
+                inter1.portInUse(port1);
+          
+                // get the interface.
+                let inter2 = interfaceValues2[0];
+                // get the port of that interface.
+                let port2 = interfaceValues2[1];
+                // port is now in use and cannot be selected.
+                inter2.portInUse(port2);
+          
+                // Creating new Edge on graph
+                Graph.getInstance().addEdge(
+                  list_of_routers[i].id, 
+                  list_of_PCs[i].id
+                );
+          
+                connectionController.add(con);
+              }
+            }
+          
+            let list_of_end_devices = componentController.getAll().filter(c => 
+                                                                    c.name === 'Laptop' ||
+                                                                    c.name === 'Printer' ||
+                                                                    c.name === 'Server');
+          
+            for (let endDevice of list_of_end_devices) {
+                let index = list_of_end_devices.indexOf(endDevice);
+              // index = 0 is already taken by connection with router
+              if (index == 0) index++;
+              let con = await connectionController.createNewConnection("twisted-pair");
+          
+              // endDevice.getInterface(0).portInUse(0);
+              // endDevice.getInterface(0).portIPaddress[0] = `192.168.1.${list_of_end_devices.indexOf(endDevice)+1}`;
+              let interfaceValues1 = endDevice.getInterfaceFromString("Fast_Ethernet 0");
+              let interfaceValues2 = netswitch.getInterfaceFromString(`Fast_Ethernet ${index}`);
+          
+              con.addComponent(endDevice);
+              con.addComponent(netswitch);
+              con.addInterfacePort(interfaceValues1);
+              con.addInterfacePort(interfaceValues2);
+          
+              // get the interface.
+              let inter1 = interfaceValues1[0];
+              // get the port of that interface.
+              let port1 = interfaceValues1[1];
+              // port is now in use and cannot be selected.
+              inter1.portInUse(port1);
+          
+              // get the interface.
+              let inter2 = interfaceValues2[0];
+              // get the port of that interface.
+              let port2 = interfaceValues2[1];
+              // port is now in use and cannot be selected.
+              inter2.portInUse(port2);
+          
+              // Creating new Edge on graph
+              Graph.getInstance().addEdge(
+                netswitch.getID(), 
+                endDevice.getID()
+              );
+              connectionController.add(con);
+            }
+            dispatchNetworkChangeEvent();
+        }
+
         function toJSON() {
             // Saving all subnets
             var json = allSubnets.getInstance().toJSON();
@@ -906,6 +1073,7 @@ const networkController = (function() {
             getSupernetMask:getSupernetMask,
             checkIPAddressInput:checkIPAddressInput,
             checkAvailableIPAddress:checkAvailableIPAddress,
+            setupNetwork:setupNetwork,
             toJSON:toJSON,
         };   
     }

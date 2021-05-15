@@ -16,8 +16,6 @@
             </div>
         </div>
     </div>
-
-
     <div id="bottomPanel" class="container-fluid">
         <div class="row">
             <div id="bottomPanelTitleContainer" class="container-fluid" >
@@ -36,8 +34,6 @@
                             <li class="nav-item">
                                 <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                             </li>
-
-                            
                         </ul>
                     </div>
                     <div class="col">
@@ -92,6 +88,18 @@ import componentController from '@/assets/js/controller/componentController.js';
 import ioController from '@/assets/js/controller/ioController.js';
 import p5Controller from '@/assets/js/controller/p5Controller.js';
 import saveLoadController from '@/assets/js/controller/saveLoadController.js';
+import connectionController from '@/assets/js/controller/connectionController.js';
+import networkController from '@/assets/js/controller/networkController.js';
+import panelController from '@/assets/js/controller/panelController.js';
+
+
+import allSubnets from '@/assets/js/collections/allSubnets.js';
+import allComponents from '@/assets/js/collections/allComponents.js';
+import allConnections from '@/assets/js/collections/allConnections.js';
+
+
+import graph from '@/assets/js/models/graph.js';
+
 
 window.onload = function() {
     saveLoadController.init();
@@ -102,6 +110,97 @@ window.onload = function() {
 export default {
     name: 'Canvas',
     props: {
+        componentController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return componentController
+            }
+        },
+        ioController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return ioController
+            }
+        },
+        p5Controller: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return p5Controller
+            }
+        },
+        saveLoadController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return saveLoadController
+            }
+        },
+        connectionController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return connectionController
+            }
+        },
+        networkController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return networkController
+            }
+        },
+        panelController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return panelController
+            }
+        },
+        allComponents: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return allComponents
+            }
+        },
+        allConnections: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return allConnections
+            }
+        },
+        allSubnets: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return allSubnets
+            }
+        },
+        graph: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return graph
+            }
+        },
+    },
+    methods: {
+       
     },
     mounted() {
         p5Controller.createNewCanvas();

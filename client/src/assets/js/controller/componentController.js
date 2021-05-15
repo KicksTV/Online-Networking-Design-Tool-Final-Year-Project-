@@ -90,6 +90,12 @@ const componentController = (function() {
                 Graph.getInstance().addNode(comp.id);
             }
         }
+        function getAll() {
+            return allComponents.getAll()
+        }
+        function clear() {
+            allComponents.clear()
+        }
         function getNumberOfExistingCompType(name) {
             const found = allComponents.get().filter(comp => comp.name == name);
             return found.length;
@@ -416,10 +422,12 @@ const componentController = (function() {
 
         return {
             init:init,
-            createNewComponent:createNewComponent,
-            createNewComponentFromArray:createNewComponentFromArray,
+            getAll:getAll,
+            clear:clear,
             initGUI:initGUI,
             getGUI:getGUI,
+            createNewComponent:createNewComponent,
+            createNewComponentFromArray:createNewComponentFromArray,
             getPropertiesPanel:getPropertiesPanel,
             isCurrentlyClickingComp:isCurrentlyClickingComp,
             getSelectedComponent:getSelectedComponent,
