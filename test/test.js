@@ -20,12 +20,12 @@ describe('My app', () => {
       this.timeout(20000);
       // Launch Puppeteer and navigate to the Express server
       browser = await puppeteer.launch({ 
-        headless: true, 
+        headless: false, 
         slowMo: 250,
         args: [`--window-size=1800,1200`], // new option
         defaultViewport: {
           width:1800,
-          height:1200
+          height:800
         }
       });
       page = await browser.newPage();
@@ -223,11 +223,9 @@ describe('My app', () => {
 
     it('Testing function for validating entered IP address', async () => {
 
-      const fieldHandle = await page.$('#IP_address_field_0');
+      
 
-      console.log(fieldHandle)
-
-      let data = await page.evaluate(async (ip_field) => {
+      let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
 
         var list_of_PCs = app.allComponents.getAll().filter(c => c.name === 'PC');
@@ -237,32 +235,38 @@ describe('My app', () => {
         var connection = list_connection[0];
         app.componentController.setSelectedComponent(component);
     
-        app.panelController.getInstance().updatePanelWithData(app.componentController.getSelectedComponent());
-    
+        app.panelController.getInstance().updatePanelWithData(app.componentController.getSelectedComponent())
+           
         var subnet = app.allSubnets.getInstance().getWithConnectionID(connection.id);
         subnet.subnetID = "192.168.1.0";
         subnet.gatewayRouterIP.push("192.168.1.1");
         console.log("Subnets", app.allSubnets.getInstance().getAll());
 
-
-        
-        ip_field.html('192.168.1.');
-
-        page.keyboard.press('5');
-
-        // var e = jQuery.Event("keypress");
-        e.which = 53; // # 53 == "5"
-        e.keyCode = 53;
-        e.key = '5';
-        console.log(e);
-        ip_field.trigger(e);
-
-
         return {
           'unavailableAddresses': subnet.unavailableAddresses,
           '_interfacePorts': connection._interfacePorts,
         }
-      }, fieldHandle)
+      })
+
+      const fieldHandle = await page.$eval('#IP_address_field_0', (ip_field) => {
+
+        console.log(ip_field)
+        ip_field.html('192.168.1.');
+
+        // page.keyboard.press('5');
+
+        // // var e = jQuery.Event("keypress");
+        // e.which = 53; // # 53 == "5"
+        // e.keyCode = 53;
+        // e.key = '5';
+        // console.log(e);
+        // ip_field.trigger(e);
+        return ip_field
+      });
+
+      console.log(fieldHandle)
+
+
       expect(data.unavailableAddresses).to.include("192.168.1.5");
       expect(data._interfacePorts[1][0].portIPaddress).to.include("192.168.1.5");
     });
