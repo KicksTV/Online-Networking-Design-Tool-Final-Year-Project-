@@ -246,16 +246,16 @@ describe('My app', () => {
 
 
         
-        ip_field.html('192.168.1.');
+        ip_field.innerHTML = '192.168.1.'
 
         page.keyboard.press('5');
 
         // var e = jQuery.Event("keypress");
-        e.which = 53; // # 53 == "5"
-        e.keyCode = 53;
-        e.key = '5';
-        console.log(e);
-        ip_field.trigger(e);
+        // e.which = 53; // # 53 == "5"
+        // e.keyCode = 53;
+        // e.key = '5';
+        // console.log(e);
+        // ip_field.trigger(e);
 
 
         return {
