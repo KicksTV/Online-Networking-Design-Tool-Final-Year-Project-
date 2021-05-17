@@ -9,6 +9,16 @@ var chaiAsPromised = require("chai-as-promised");
 
 chai.use(chaiAsPromised);
 
+/* 
+***************************************************
+*                     NOTES                       *
+***************************************************
+*/
+/*
+
+❌ Passing arrow functions to Mocha is discouraged.
+
+*/
 
 // describe lets you comment on what this block of code is for.
 describe('My app', () => {
@@ -20,12 +30,12 @@ describe('My app', () => {
       this.timeout(20000);
       // Launch Puppeteer and navigate to the Express server
       browser = await puppeteer.launch({ 
-        headless: true, 
+        headless: false, 
         slowMo: 250,
         args: [`--window-size=1800,1200`], // new option
         defaultViewport: {
           width:1800,
-          height:1200
+          height:800
         }
       });
       page = await browser.newPage();
@@ -73,6 +83,7 @@ describe('My app', () => {
     var supernetmask;
 
     before(async function() {
+      this.timeout(60000); // A very long environment setup.
       await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
 
@@ -88,7 +99,7 @@ describe('My app', () => {
 
         await app.componentController.createNewComponentFromArray(devices);
 
-        console.log("#1 networking calculation functions")
+        // console.log("#1 networking calculation functions")
 
         await app.networkController.setupNetwork();
         app.networkController.calculateAllNetworkProperties();
@@ -98,7 +109,7 @@ describe('My app', () => {
     it('test dummy network has been created', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
-        console.log(app.componentController.getAll())
+        // console.log(app.componentController.getAll())
         return {
           'length': app.componentController.getAll().length,
         }
@@ -106,7 +117,7 @@ describe('My app', () => {
       expect(data.length).to.equal(16);
     });
 
-    it('Test #1 for calculating number of hosts', async () => {
+    it('Test #1 for calculating number of hosts', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -117,7 +128,7 @@ describe('My app', () => {
       expect(data.hosts).to.equal(9);
     });
 
-    it('Test #1 for calculating number of subnets', async () => {
+    it('Test #1 for calculating number of subnets', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -128,7 +139,7 @@ describe('My app', () => {
       expect(data.subnets).to.equal(5);
     });
 
-    it('Test #1 for calculating subnetmask', async () => {
+    it('Test #1 for calculating subnetmask', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -139,7 +150,7 @@ describe('My app', () => {
       expect(data.subnetmask).to.equal('255.255.255.248');
     });
 
-    it('Test #1 for calculating supernetmask', async () => {
+    it('Test #1 for calculating supernetmask', async function() {
       let data = await page.evaluate(async (subnets) => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -150,10 +161,10 @@ describe('My app', () => {
       expect(data.supernetmask).to.equal('255.255.255.240');
     });
 
-    it('Test #1 for calculating max number of IP addresses', async () => {
+    it('Test #1 for calculating max number of IP addresses', async function() {
       let data = await page.evaluate(async (subnetmask) => {
         var app = $vue.$children[0].$children[3].$children[1]
-        console.log(subnetmask)
+        // console.log(subnetmask)
         return {
           'max_number_hosts': app.networkController.calculateTotalIPAddresses(subnetmask)
         }
@@ -161,7 +172,7 @@ describe('My app', () => {
       expect(data.max_number_hosts).to.equal(6);
     });
 
-    it('Test #1 for calculating max number of subnets', async () => {
+    it('Test #1 for calculating max number of subnets', async function() {
       let data = await page.evaluate(async (supernetmask) => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -171,7 +182,7 @@ describe('My app', () => {
       expect(data.max_number_subnets).to.equal(14);
     });
 
-    it('Test slash value to decimal conversion function', async () => {
+    it('Test slash value to decimal conversion function', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -181,7 +192,7 @@ describe('My app', () => {
       expect(data.slashvalue_to_decimal).to.equal("255.255.255.192");
     });
 
-    it('Test binary to decimal conversion function', async () => {
+    it('Test binary to decimal conversion function', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -191,7 +202,7 @@ describe('My app', () => {
       expect(data.IP_in_decimal).to.equal("15.167.255.128");
     });
 
-    it('Test decimal to binary conversion function', async () => {
+    it('Test decimal to binary conversion function', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -201,7 +212,7 @@ describe('My app', () => {
       expect(data.IP_in_binary).to.equal("00001111.10100111.11111111.10000000");
     });
 
-    it('Test #1 function for calculating subnetID', async () => {
+    it('Test #1 function for calculating subnetID', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -211,7 +222,7 @@ describe('My app', () => {
       expect(data.subnetID).to.equal("192.168.1.0");
     });
 
-    it('Test #2 function for calculating subnetID', async () => {
+    it('Test #2 function for calculating subnetID', async function() {
       let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
         return {
@@ -221,13 +232,9 @@ describe('My app', () => {
       expect(data.subnetID).to.equal("192.168.1.144");
     });
 
-    it('Testing function for validating entered IP address', async () => {
-
-      const fieldHandle = await page.$('#IP_address_field_0');
-
-      console.log(fieldHandle)
-
-      let data = await page.evaluate(async (ip_field) => {
+    it('Testing function for validating entered IP address', async function() {
+      this.timeout(20000);
+      let data = await page.evaluate(async () => {
         var app = $vue.$children[0].$children[3].$children[1]
 
         var list_of_PCs = app.allComponents.getAll().filter(c => c.name === 'PC');
@@ -237,34 +244,48 @@ describe('My app', () => {
         var connection = list_connection[0];
         app.componentController.setSelectedComponent(component);
     
-        app.panelController.getInstance().updatePanelWithData(app.componentController.getSelectedComponent());
-    
+        app.panelController.getInstance().updatePanelWithData(app.componentController.getSelectedComponent())
+           
         var subnet = app.allSubnets.getInstance().getWithConnectionID(connection.id);
         subnet.subnetID = "192.168.1.0";
         subnet.gatewayRouterIP.push("192.168.1.1");
-        console.log("Subnets", app.allSubnets.getInstance().getAll());
+        // console.log("Subnets", app.allSubnets.getInstance().getAll());
 
+        return {
+          'connection': connection.id,
+        }
+      })
 
-        
-        ip_field.innerHTML = '192.168.1.'
+      await page.type('#IP_address_field_0', '192.168.1.5');
 
-        page.keyboard.press('5');
-
-        // var e = jQuery.Event("keypress");
-        // e.which = 53; // # 53 == "5"
-        // e.keyCode = 53;
-        // e.key = '5';
-        // console.log(e);
-        // ip_field.trigger(e);
-
-
+      let result = await page.evaluate(async (data) => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        var subnet = app.allSubnets.getInstance().getWithConnectionID(data.connection);
+        var connection = app.allConnections.getAll().find(c => c.id == data.connection);
         return {
           'unavailableAddresses': subnet.unavailableAddresses,
           '_interfacePorts': connection._interfacePorts,
         }
-      }, fieldHandle)
-      expect(data.unavailableAddresses).to.include("192.168.1.5");
-      expect(data._interfacePorts[1][0].portIPaddress).to.include("192.168.1.5");
+      }, data)
+
+      expect(result.unavailableAddresses).to.include("192.168.1.5");
+      expect(result._interfacePorts[1][0].portIPaddress).to.include("192.168.1.5");
+    });
+
+    it('Test "checkAvailableIPAddress" function', async function() {
+
+      let data = await page.evaluate(async () => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        var subnet = app.allSubnets.getInstance().get(0);
+        subnet.subnetID = "192.168.1.0";
+        var is_valid = app.networkController.checkAvailableIPAddress(subnet, "192.168.1.2");
+
+        return {
+          'is_valid': is_valid,
+        }
+
+      })
+      expect(data.is_valid).to.equal(true);
     });
 
   });
