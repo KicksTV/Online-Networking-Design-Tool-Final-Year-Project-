@@ -30,7 +30,7 @@ describe('My app', () => {
       this.timeout(20000);
       // Launch Puppeteer and navigate to the Express server
       browser = await puppeteer.launch({ 
-        headless: false, 
+        headless: true,
         slowMo: 250,
         args: [`--window-size=1800,1200`], // new option
         defaultViewport: {
@@ -288,5 +288,106 @@ describe('My app', () => {
       expect(data.is_valid).to.equal(true);
     });
 
+  });
+
+
+  // SECOND SETS OF TESTS FOR NETWORKING FUNCTIONS
+  describe('#2 networking calculation functions', function() {
+    var hosts;
+    var subnets;
+    var subnetmask;
+    var supernetmask;
+
+
+    before('setup of some components', async function () {
+      this.timeout(60000); // A very long environment setup.
+      await page.evaluate(async () => {
+        var app = $vue.$children[0].$children[3].$children[1]
+
+        // reset test enviroment
+        app.componentController.clear();
+        app.connectionController.clear();
+        app.allSubnets.getInstance().clear();
+
+        // Must be same number of PCs and Routers
+        var devices = [
+          'Laptop', 'Printer', 'Server', 'Switch',
+          'Router', 'Router', 'Router', 'Router',
+          'Router', 'Router', 'Router', 'Router', 
+          'Laptop', 'Laptop', 'Laptop', 'Laptop',
+          'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 'PC', 
+          'PC'
+        ]
+
+        await app.componentController.createNewComponentFromArray(devices);
+
+        // console.log("#1 networking calculation functions")
+
+        await app.networkController.setupNetwork();
+        app.networkController.calculateAllNetworkProperties();
+      })
+    });
+
+    it('Test #2 for calculating number of hosts', async () => {
+      let data = await page.evaluate(async () => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        return {
+          'hosts': app.networkController.calculateAllHost(),
+        }
+      })
+      hosts = data.hosts
+      expect(hosts).to.equal(15);
+    });
+
+    it('Test #2 for calculating number of subnets', async () => {
+      let data = await page.evaluate(async () => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        return {
+          'subnets': app.networkController.calculateAllSubnets(),
+        }
+      })
+      subnets = data.subnets
+      expect(subnets).to.equal(15);
+    });
+    it('Test #2 for calculating subnetmask', async () => {
+      let data = await page.evaluate(async () => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        return {
+          'subnetmask': app.networkController.calculateSubnetMask(),
+        }
+      })
+      subnetmask = data.subnetmask
+      expect(subnetmask).to.equal('255.255.255.240');
+    });
+    it('Test #2 for calculating supernetmask', async () => {
+      let data = await page.evaluate(async (subnets) => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        return {
+          'supernetmask': app.networkController.calculateSupernetMask(subnets),
+        }
+      })
+      supernetmask = data.supernetmask
+      expect(supernetmask).to.equal('255.255.255.224');
+    });
+    it('Test #2 for calculating max number of IP addresses', async () => {
+      let data = await page.evaluate(async (subnetmask) => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        // console.log(subnetmask)
+        return {
+          'max_number_hosts': app.networkController.calculateTotalIPAddresses(subnetmask)
+        }
+      }, subnetmask)
+      expect(data.max_number_hosts).to.equal(14);
+    });
+
+    it('Test #2 for calculating max number of subnets', async () => {
+      let data = await page.evaluate(async (supernetmask) => {
+        var app = $vue.$children[0].$children[3].$children[1]
+        return {
+          'max_number_subnets': app.networkController.calculateTotalNumberSubnets(supernetmask)
+        }
+      }, supernetmask)
+      expect(data.max_number_subnets).to.equal(30);
+    });
   });
 });

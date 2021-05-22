@@ -109,8 +109,6 @@ describe('component functions', () => {
     // expect is the actual test.  This test checks if the var is a string.
     expect(valid).to.equal(false);
   });
-
-    
 });
 
 describe('Save / Load functions', () => {

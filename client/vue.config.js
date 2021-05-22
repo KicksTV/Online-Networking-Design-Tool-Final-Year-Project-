@@ -22,7 +22,7 @@ module.exports = {
     config.module.rule('js').use('babel-loader')
   },
   // pages: {
-  //   index: {
+  //   project: {
   //     // entry for the page
   //     entry: 'src/main.js',
   //     // the source template
@@ -36,16 +36,16 @@ module.exports = {
   //     // extracted common chunks and vendor chunks.
   //     // chunks: ['chunk-vendors', 'chunk-common', 'index']
   //   },
-  //   test: {
+  //   home: {
   //      // entry for the page
-  //      entry: 'src/test.js',
+  //      entry: 'src/home.js',
   //      // the source template
-  //      template: 'public/test.html',
+  //      template: 'public/index.html',
   //      // output as dist/index.html
   //      filename: 'index.html',
   //      // when using title option,
   //      // template title tag needs to be <title><%= htmlWebpackPlugin.options.title %></title>
-  //      title: 'Test Page',
+  //      title: 'Home Page',
   //      // chunks to include on this page, by default includes
   //      // extracted common chunks and vendor chunks.
   //      // chunks: ['chunk-vendors', 'chunk-common', 'index']

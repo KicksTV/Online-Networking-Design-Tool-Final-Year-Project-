@@ -1,4 +1,6 @@
 import App from './App.vue'
+import Index from './Index.vue'
+
 import {router, newVue} from './router'
 
 import PortalVue from 'portal-vue'
@@ -16,8 +18,18 @@ newVue.config.productionTip = false
 
 const vue = new newVue({
   router,
-  render: h => h(App),
+  render: h => {
 
+    // Which templete to use
+    for (var r of router.options.routes) {
+      if (r.path == router.apps[0]._route.path) {
+        if (r.template == "App") 
+          return h(App)
+        else if (r.template == "Index") 
+          return h(Index)
+      }
+    }
+  },
   methods: {
     makeToast(title, msg, append = false) {
       this.$root.$bvToast.toast(msg, {
