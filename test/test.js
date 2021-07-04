@@ -57,7 +57,7 @@ describe('My app', () => {
     it('test creation of components and linking components', async function() {
       this.timeout(20000);
       let components = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         let device = await app.componentController.createNewComponent('PC')
         let tp_cable = await app.connectionController.createNewConnection('twisted-pair')
         /*
@@ -85,7 +85,7 @@ describe('My app', () => {
     before(async function() {
       this.timeout(60000); // A very long environment setup.
       await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
 
         // reset test enviroment
         app.componentController.clear();
@@ -108,7 +108,7 @@ describe('My app', () => {
 
     it('test dummy network has been created', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         // console.log(app.componentController.getAll())
         return {
           'length': app.componentController.getAll().length,
@@ -119,7 +119,7 @@ describe('My app', () => {
 
     it('Test #1 for calculating number of hosts', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'hosts': app.networkController.calculateAllHost(),
         }
@@ -130,7 +130,7 @@ describe('My app', () => {
 
     it('Test #1 for calculating number of subnets', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'subnets': app.networkController.calculateAllSubnets(),
         }
@@ -141,7 +141,7 @@ describe('My app', () => {
 
     it('Test #1 for calculating subnetmask', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'subnetmask': app.networkController.calculateSubnetMask(),
         }
@@ -152,7 +152,7 @@ describe('My app', () => {
 
     it('Test #1 for calculating supernetmask', async function() {
       let data = await page.evaluate(async (subnets) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'supernetmask': app.networkController.calculateSupernetMask(subnets),
         }
@@ -163,7 +163,7 @@ describe('My app', () => {
 
     it('Test #1 for calculating max number of IP addresses', async function() {
       let data = await page.evaluate(async (subnetmask) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         // console.log(subnetmask)
         return {
           'max_number_hosts': app.networkController.calculateTotalIPAddresses(subnetmask)
@@ -174,7 +174,7 @@ describe('My app', () => {
 
     it('Test #1 for calculating max number of subnets', async function() {
       let data = await page.evaluate(async (supernetmask) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'max_number_subnets': app.networkController.calculateTotalNumberSubnets(supernetmask)
         }
@@ -184,7 +184,7 @@ describe('My app', () => {
 
     it('Test slash value to decimal conversion function', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'slashvalue_to_decimal': app.networkController.calculateDecimalFromSlashValue("26")
         }
@@ -194,7 +194,7 @@ describe('My app', () => {
 
     it('Test binary to decimal conversion function', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'IP_in_decimal': app.networkController.binaryToDecimal("00001111.10100111.11111111.10000000")
         }
@@ -204,7 +204,7 @@ describe('My app', () => {
 
     it('Test decimal to binary conversion function', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'IP_in_binary': app.networkController.decimalToBinary("15.167.255.128")
         }
@@ -214,7 +214,7 @@ describe('My app', () => {
 
     it('Test #1 function for calculating subnetID', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'subnetID': app.networkController.calculateSubnetID("192.168.1.6", "255.255.255.248")
         }
@@ -224,7 +224,7 @@ describe('My app', () => {
 
     it('Test #2 function for calculating subnetID', async function() {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'subnetID': app.networkController.calculateSubnetID("192.168.1.150", "255.255.255.240")
         }
@@ -235,7 +235,7 @@ describe('My app', () => {
     it('Testing function for validating entered IP address', async function() {
       this.timeout(20000);
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
 
         var list_of_PCs = app.allComponents.getAll().filter(c => c.name === 'PC');
   
@@ -259,7 +259,7 @@ describe('My app', () => {
       await page.type('#IP_address_field_0', '192.168.1.5');
 
       let result = await page.evaluate(async (data) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         var subnet = app.allSubnets.getInstance().getWithConnectionID(data.connection);
         var connection = app.allConnections.getAll().find(c => c.id == data.connection);
         return {
@@ -275,7 +275,7 @@ describe('My app', () => {
     it('Test "checkAvailableIPAddress" function', async function() {
 
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         var subnet = app.allSubnets.getInstance().get(0);
         subnet.subnetID = "192.168.1.0";
         var is_valid = app.networkController.checkAvailableIPAddress(subnet, "192.168.1.2");
@@ -302,7 +302,7 @@ describe('My app', () => {
     before('setup of some components', async function () {
       this.timeout(60000); // A very long environment setup.
       await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
 
         // reset test enviroment
         app.componentController.clear();
@@ -330,7 +330,7 @@ describe('My app', () => {
 
     it('Test #2 for calculating number of hosts', async () => {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'hosts': app.networkController.calculateAllHost(),
         }
@@ -341,7 +341,7 @@ describe('My app', () => {
 
     it('Test #2 for calculating number of subnets', async () => {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'subnets': app.networkController.calculateAllSubnets(),
         }
@@ -351,7 +351,7 @@ describe('My app', () => {
     });
     it('Test #2 for calculating subnetmask', async () => {
       let data = await page.evaluate(async () => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'subnetmask': app.networkController.calculateSubnetMask(),
         }
@@ -361,7 +361,7 @@ describe('My app', () => {
     });
     it('Test #2 for calculating supernetmask', async () => {
       let data = await page.evaluate(async (subnets) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'supernetmask': app.networkController.calculateSupernetMask(subnets),
         }
@@ -371,7 +371,7 @@ describe('My app', () => {
     });
     it('Test #2 for calculating max number of IP addresses', async () => {
       let data = await page.evaluate(async (subnetmask) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         // console.log(subnetmask)
         return {
           'max_number_hosts': app.networkController.calculateTotalIPAddresses(subnetmask)
@@ -382,7 +382,7 @@ describe('My app', () => {
 
     it('Test #2 for calculating max number of subnets', async () => {
       let data = await page.evaluate(async (supernetmask) => {
-        var app = $vue.$children[0].$children[3].$children[1]
+        var app = $vue.$children[0].$children[1].$children[1]
         return {
           'max_number_subnets': app.networkController.calculateTotalNumberSubnets(supernetmask)
         }

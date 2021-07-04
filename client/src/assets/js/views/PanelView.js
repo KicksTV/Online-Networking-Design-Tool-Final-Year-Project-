@@ -62,7 +62,7 @@ export default class PanelView {
                 var index = 0;
 
                 for (let compindex in ConComponents) {
-                    if (ConComponents[compindex] == currentSelectedComp) {
+                    if (ConComponents[compindex].id == currentSelectedComp.id) {
                         index = compindex;
                     }
                 }
@@ -71,9 +71,10 @@ export default class PanelView {
                 selectedCompInterfacePort = interfaces[index][1];
 
                 var tr = document.createElement("tr");
-
+                
+                var table = document.getElementById("connections-table")
                 // Table body                
-                this.table.children[1].appendChild(tr);
+                table.children[1].appendChild(tr);
 
                 var allCol = [];
                 for (var i=0;i<6;i++) {
@@ -95,7 +96,7 @@ export default class PanelView {
 
                 var $IP_field = $(`#${ipfield.id}`);
 
-                if (componentController.isEndDevice(currentSelectedComp) || currentSelectedComp.name.toLowerCase() == "Router".toLowerCase()) {
+                if (componentController.isEndDevice(currentSelectedComp) || currentSelectedComp.name.toLowerCase() == "router") {
                     if (selectedCompInterface.portIPaddress[selectedCompInterfacePort]) {
                         ipfield.innerText = selectedCompInterface.portIPaddress[selectedCompInterfacePort];
                     }
@@ -108,9 +109,11 @@ export default class PanelView {
 
             });
         } else {
+            console.log("No connections")
             // Clearing Table body
             var tr = document.createElement("tr");
-            this.table.children[1].appendChild(tr);
+            var table = document.getElementById("connections-table")
+            table.children[1].appendChild(tr);
 
             var td = document.createElement("td");
             tr.appendChild(td);
@@ -119,6 +122,7 @@ export default class PanelView {
     }
     clear() {
         // Clearing Table body
-        this.table.children[1].innerHTML = '';
+        var table = document.getElementById("connections-table")
+        table.children[1].innerHTML = '';
     }
 }

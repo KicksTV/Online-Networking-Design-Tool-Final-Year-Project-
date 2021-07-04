@@ -37,6 +37,7 @@ var allSubnets = (function () {
                     "gatewayRouterIP": s.gatewayRouterIP,
                     "endDevices": null,
                     "unavailableAddresses": s.unavailableAddresses,
+                    "connectionID": s.connectionID,
                 }
                 for (var endDevice of s.endDevices) {
                     // console.log(endDevice.id);

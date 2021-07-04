@@ -24,14 +24,18 @@ export default class InterfaceView {
         this.container.style('visibility', "visable");
     }
     hide() {
-        // console.log("hide");
-        this.container.style('visibility', "hidden");
+        console.log("hide");
+        var container = document.getElementById('interfaceContainer')
+        console.log(container)
+        container.style.visibility="hidden"
         //this.container.style('display', 'none');
     }
     create(p5) {
+        console.log('create interface')
+        var container = document.getElementById('interfaceContainer')
         this.interfaces.forEach(i => {
             var div = p5.createDiv(i.name);
-            div.parent(this.container);
+            div.parent(container);
             div.class('interfaceTitleContainer');
             for (var p=0; p<i.availablePorts;p++) {
                 var button = p5.createButton(i.name + " " + p, i.name + " " + p);
@@ -45,7 +49,7 @@ export default class InterfaceView {
                     button.attribute('disabled', true);
                     button.addClass('disabledPortButton');
                 }
-                button.parent(this.container);
+                button.parent(container);
             }
 
             div.id('portContainer');
@@ -54,11 +58,14 @@ export default class InterfaceView {
         var cancelButton = p5.createButton("Cancel", "Cancel");
 
         cancelButton.id('connectionCancel');
-        cancelButton.parent(this.container);
+        cancelButton.parent(container);
         
         return this;
     }
     clear() {
-        this.container.html('');
+        console.log('clear')
+        var container = document.getElementById('interfaceContainer')
+        var canvas = document.getElementById('canvasDiv');
+        canvas.removeChild(container);
     }
 }

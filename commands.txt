@@ -17,6 +17,10 @@ browserify -r chai-as-promised > test_bundle.js
 
 # Useful stuff to remember
 
-// Devlop Console import
+// Devlop Console import (old)
 import('/assets/js/collections/allSubnets.js').then(m => module = m)
 module.default.getInstance().getAll()
+
+// Devlop Console import (New)
+$vue.$children[0].$children[1].$children[1].allConnections.get()
+

@@ -14,8 +14,6 @@ import Subnet from '../models/Subnet.js';
 
 // const clone = require('rfdc')({ proto: false, circles: false })
 
-const $ = require('jquery');
-
 const networkController = (function() {
     var instance;
     
@@ -622,10 +620,11 @@ const networkController = (function() {
             if (regex.exec(value)) {
                 isValid = true;
             } else {
-                $('#warningConnectionToastAlert').toast('show');
-                $('#warningConnectionToastAlert .toast-body').text(
-                    "Error: Invalid input! Example SubnetMask: 255.255.255.240"
-                );
+                // $('#warningConnectionToastAlert').toast('show');
+                // $('#warningConnectionToastAlert .toast-body').text(
+                //     "Error: Invalid input! Example SubnetMask: 255.255.255.240"
+                // );
+                window.$vue.makeToast("IP Input", "Error: Invalid input! Example SubnetMask: 255.255.255.240", true)
             }
             return isValid;
         }
@@ -661,10 +660,11 @@ const networkController = (function() {
                         if (validFirstOctet && validSecondOctet && validThirdOctet && validForthOctet) {
                             isValid = true;
                         } else {
-                            $('#warningConnectionToastAlert').toast('show');
-                            $('#warningConnectionToastAlert .toast-body').text(
-                                "Error: Require more host bits!"
-                            );
+                            // $('#warningConnectionToastAlert').toast('show');
+                            // $('#warningConnectionToastAlert .toast-body').text(
+                            //     "Error: Require more host bits!"
+                            // );
+                            window.$vue.makeToast("IP Input", "Error: Require more host bits!", true)
                         }
                     }
 
@@ -704,10 +704,11 @@ const networkController = (function() {
                         if (validFirstOctet && validSecondOctet && validThirdOctet && validForthOctet) {
                             isValid = true;
                         } else {
-                            $('#warningConnectionToastAlert').toast('show');
-                            $('#warningConnectionToastAlert .toast-body').text(
-                                "Error: Require more subnet bits!"
-                            );
+                            // $('#warningConnectionToastAlert').toast('show');
+                            // $('#warningConnectionToastAlert .toast-body').text(
+                            //     "Error: Require more subnet bits!"
+                            // );
+                            window.$vue.makeToast("IP Input", "Error: Require more host bits!", true)
                         }
                     }
                 }
@@ -830,18 +831,20 @@ const networkController = (function() {
 
                                 ipfield.className = "qs_invalid_ip_address";
 
-                                $('#warningConnectionToastAlert').toast('show');
-                                $('#warningConnectionToastAlert .toast-body').text(
-                                    "Invalid IP address for subnet!"
-                                );
+                                // $('#warningConnectionToastAlert').toast('show');
+                                // $('#warningConnectionToastAlert .toast-body').text(
+                                //     "Invalid IP address for subnet!"
+                                // );
+                                window.$vue.makeToast("IP Input", "Invalid IP address for subnet!", true)
                             }
                         }
                     }
                 } else {
-                    $('#warningConnectionToastAlert').toast('show');
-                    $('#warningConnectionToastAlert .toast-body').text(
-                        "Device is not part of any subnet!"
-                    );
+                    window.$vue.makeToast("IP Input", "Device is not part of any subnet!", true)
+                    // $('#warningConnectionToastAlert').toast('show');
+                    // $('#warningConnectionToastAlert .toast-body').text(
+                    //     "Device is not part of any subnet!"
+                    // );
                 }
             }
         }

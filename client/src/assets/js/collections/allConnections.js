@@ -41,7 +41,7 @@ var allConnections = (function() {
             var _relatedConnections = [];
             _connections.forEach((i) => {
                 if (i != selectedConnection) {
-                    if (c == i.getComponent(0) || c == i.getComponent(1)) {
+                    if (c.id == i.getComponent(0).id || c.id == i.getComponent(1).id) {
                         _relatedConnections.push(i);
                     }
                 }

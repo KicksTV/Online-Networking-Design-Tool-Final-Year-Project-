@@ -4,6 +4,8 @@ import connectionController from './connectionController.js';
 import networkController from './networkController.js';
 import ioController from './ioController.js';
 import panelController from './panelController.js';
+import saveLoadController from './saveLoadController.js';
+
 
 // Collections
 // import allTabs from '../collections/allComponentBarTabs.js';
@@ -83,17 +85,19 @@ const p5Controller = (function() {
                     networkController.initNetworkListener(gui);
 
                     panelController.getInstance();
-                
-            
-                    // Old way to load pre built projects
-                    // if (typeof projectJSON != 'undefined') {
-                    //     saveLoadController.loadProject(projectJSON) ; 
-                    // }
+
+                    
                 }
                 p5.setup = function() {
                     p5.frameRate(60);
                     let canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight-203);
                     canvas.parent("canvasDiv");
+
+                    // Pre load project
+                    if (window.$vue._route.params.loadedProject) {
+                        saveLoadController.loadProject(window.$vue._route.params.loadedProject.project)
+                    }
+                     
                 }
                 p5.draw = function() {
                     p5.clear();
@@ -140,7 +144,6 @@ const p5Controller = (function() {
                 
                             // Checks if users is selecting two components to make a connection
                             if (connectionController.getDrawConnection()) {
-                                console.log("Making connection")
                                 connectionController.selectConnectionForComp(componentController.getSelectedComponent());
                             }
                         }

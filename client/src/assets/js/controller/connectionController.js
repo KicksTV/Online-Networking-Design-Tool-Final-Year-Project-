@@ -11,8 +11,6 @@ import allVRules from '../collections/allValidationRules.js';
 import Connection from '../models/connection.js';
 import Graph from '../models/graph.js';
 
-const $ = require('jquery');
-
 const connectionController = (function() {
     var instance;
     
@@ -85,10 +83,11 @@ const connectionController = (function() {
                     endConnection();
 
                     // display error message
-                    $('#warningConnectionToastAlert').toast('show');
-                    $('#warningConnectionToastAlert .toast-body').text(
-                        "Connection not possible!"
-                    );
+                    // $('#warningConnectionToastAlert').toast('show');
+                    // $('#warningConnectionToastAlert .toast-body').text(
+                    //     "Connection not possible!"
+                    // );
+                    window.$vue.makeToast("Error", "Connection not possible!", true)
                 }               
             } 
             else if (compAddConnectionCounter == 1) {
@@ -103,20 +102,21 @@ const connectionController = (function() {
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                         selectingInterface = true;
                     } else {
-                        $('#warningConnectionToastAlert').toast('show');
-                        $('#warningConnectionToastAlert .toast-body').text(
-                            "No Available Ports!"
-                        );
+                        // $('#warningConnectionToastAlert').toast('show');
+                        // $('#warningConnectionToastAlert .toast-body').text(
+                        //     "No Available Ports!"
+                        // );
+                        window.$vue.makeToast("Error", "No Available Ports!", true)
                     }
                 } else {
                     endConnection();
                     // Deleting connection object
                     allConnections.removeConnection(allConnections);
-
-                    $('#warningConnectionToastAlert').toast('show');
-                    $('#warningConnectionToastAlert .toast-body').text(
-                        "Connection not possible!"
-                    );
+                    // $('#warningConnectionToastAlert').toast('show');
+                    // $('#warningConnectionToastAlert .toast-body').text(
+                    //     "Connection not possible!"
+                    // );
+                    window.$vue.makeToast("Error", "Connection not possible!", true)
                 }
             }
             
@@ -172,72 +172,75 @@ const connectionController = (function() {
             return isValidConnection;
         }
         function waitForSelectedPort(interfaces, comp, preComp) {
+            
             p5Controller.getCanvas().createInterfaceView(interfaces);
 
             selectingSecondConnection = false;
-
-            $('#connectionCancel').on('click', function() {
+            console.log(document.getElementById('connectionCancel'))
+            document.getElementById('connectionCancel').onclick = () => {
                 // Deleting connection object
                 allConnections.removeConnection(allConnections);
                 endConnection();
-                
-
                 selectingInterface = false;
-            });
+                window.$vue.makeToast("Canceled Connection", "", true)
+            }
                 
-            $('.portButton').on('click', function(){
-                // print("Selected port", this.value);
-                var interfaceValues = comp.getInterfaceFromString(this.value);
-
-                // print("interfaceValues: ", interfaceValues);
-                
-                addComponentToConnection(comp, interfaceValues);
-
-                if(compAddConnectionCounter == 1) {
-                    // Second component should now be selected
-                    selectingSecondConnection = true;
-
-                    // adding connection to list of allCons
-                    allConnections.add(allConnections.getSelectedConnection());
-
-                } else {
-                    allConnections.getSelectedConnection().getInterface(0).subtractPossibleAvailablePort();
-                    allConnections.getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
-
-                    // Creating new Edge on graph
-                    Graph.getInstance().addEdge(
-                        allConnections.getSelectedConnection().getComponent(0).getID(), 
-                        allConnections.getSelectedConnection().getComponent(1).getID()
-                    );
-
-                    endConnection();
-                }
-
-                selectingInterface = false;
-
-                p5Controller.getCanvas().hideInterfaceView();
-
-                // get the interface.
-                var inter= interfaceValues[0];
-                // get the port of that interface.
-                var port = interfaceValues[1];
-                // port is now in use and cannot be selected.
-                inter.portInUse(port);
-
-                p5Controller.getCanvas().clearInterfaceView();
-
-
-                // Triggering networkChangeEvent
-                networkController.dispatchNetworkChangeEvent();
-                //compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
-
-                if (preComp != null) {
-                    // $('#finishedConnectionToastAlert').toast('show');
-                    // $('#finishedConnectionToastAlert .toast-body').text(
-                    //     "Now linked " + preComp.displayName + "  ---->  " + comp.displayName + "."
-                    // );
-                }
-            });
+            document.getElementsByClassName('portButton').forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    // print("Selected port", this.value);
+                    var val = e.target.attributes['value'].value
+                    var interfaceValues = comp.getInterfaceFromString(val);
+    
+                    // print("interfaceValues: ", interfaceValues);
+                    
+                    addComponentToConnection(comp, interfaceValues);
+    
+                    if(compAddConnectionCounter == 1) {
+                        // Second component should now be selected
+                        selectingSecondConnection = true;
+    
+                        // adding connection to list of allCons
+                        allConnections.add(allConnections.getSelectedConnection());
+    
+                    } else {
+                        allConnections.getSelectedConnection().getInterface(0).subtractPossibleAvailablePort();
+                        allConnections.getSelectedConnection().getInterface(1).subtractPossibleAvailablePort();
+    
+                        // Creating new Edge on graph
+                        Graph.getInstance().addEdge(
+                            allConnections.getSelectedConnection().getComponent(0).getID(), 
+                            allConnections.getSelectedConnection().getComponent(1).getID()
+                        );
+    
+                        endConnection();
+                    }
+    
+                    selectingInterface = false;
+    
+                    p5Controller.getCanvas().hideInterfaceView();
+    
+                    // get the interface.
+                    var inter= interfaceValues[0];
+                    // get the port of that interface.
+                    var port = interfaceValues[1];
+                    // port is now in use and cannot be selected.
+                    inter.portInUse(port);
+    
+                    p5Controller.getCanvas().clearInterfaceView();
+    
+    
+                    // Triggering networkChangeEvent
+                    networkController.dispatchNetworkChangeEvent();
+                    //compPropertiesGUIContainer.dispatchEvent(networkChangeEvent);
+    
+                    if (preComp != null) {
+                        // $('#finishedConnectionToastAlert').toast('show');
+                        // $('#finishedConnectionToastAlert .toast-body').text(
+                        //     "Now linked " + preComp.displayName + "  ---->  " + comp.displayName + "."
+                        // );
+                    }
+                })
+            })
         }
         function endConnection() {
             // End selection process
@@ -258,7 +261,6 @@ const connectionController = (function() {
         }
 
         async function getDefaultComponentData(name) {
-            
             let promise = new Promise((resolve) => {
                 p5Controller.getCanvas().loadXML(`/components/${name.toLowerCase()}.xml`, (xml) => {
                     resolve(xml);
@@ -266,6 +268,7 @@ const connectionController = (function() {
             });
             let data = await promise;
             let type = data.getChild('type').getContent();
+            name = name.replace('-cable', '')
             var defaultComponent = new Connection(null, name, type);
             return defaultComponent;
         }

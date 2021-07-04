@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid mt-5">
     <h1 class="display-4"><strong>Create or load a project</strong></h1><br>
     <div class="card-deck">
         <router-link to="/projects/newproject" style="text-decoration: none;">
@@ -24,24 +24,122 @@
                 
             </div>
         </router-link>
+        <!-- Button trigger modal -->
+        <b-button id="joinRoomBtn" @click="joinRoom=true" style="padding: 0;">
+            <a>
+                <div class="card" style="width: 18rem;">
+                    <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
+                    <div class="card-body">
+                        <h5 class="card-title">Join Room</h5>
+                    </div>
+                </div>
+            </a>
+        </b-button>
     </div>
+    <br>
+    <h1 class="display-4">Or, here are some included projects</h1><br>
+    <div class="col-md-6">
+        <div class="card-deck">
+            <div v-for="project in projects" :key="project.path" class="card" style="width: 18rem;">
+                <img :src="project.img" class="card-img-top" alt="">
+                <div class="card-body">
+                <h5 class="card-title">{{ project.name }}</h5>
+                <p class="card-text"></p>
+                <button @click="setDefaultProject(project)" class="btn btn-primary">Load Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <b-modal v-model="joinRoom" title="Please enter room id.">
+        <form ref="joinRoomForm" action="/projects/join" method="post">
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Room ID</span>
+                    </div>
+                    <input name="room_id" type="text" class="form-control" placeholder="" aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </form>
+        <template #modal-footer>
+            <div class="w-100">
+                <b-button
+                    variant="primary"
+                    size="sm"
+                    class="float-right"
+                    @click="$refs.joinRoomForm.submit()">
+                    Join
+                </b-button>
+                <b-button
+                    variant="light"
+                    size="sm"
+                    class="float-right mr-2"
+                    @click="joinRoom=false">
+                    Close
+                </b-button>
+            </div>
+        </template>
+    </b-modal>
+    <div class="modal fade" id="errorModel" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModel">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            
   </div>
 </template>
 
 <style scoped>
+#joinRoomBtn {
+    text-align: left;
+}
 .card-title {
     color: black;
+}
+.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+    color: #fff;
 }
 </style>
 
 <script>
+import axios from "axios";
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'Projects',
-  components: {
-    
+  components: {},
+  data () {
+    return {
+      projects: null,
+      joinRoom: false,
+    }
+  },
+  methods: {
+    setDefaultProject(pro) {
+        var self = this
+        console.log(self)
+        self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
+    }
+  },
+  mounted: function() {
+    axios.get('./defaultProjects/defaultProjects.json').then(response => {
+        this.projects = response.data.projects
+        console.log(this.projects)
+    })
   }
 }
 </script>
