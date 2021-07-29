@@ -109,7 +109,6 @@ export default class PanelView {
 
             });
         } else {
-            console.log("No connections")
             // Clearing Table body
             var tr = document.createElement("tr");
             var table = document.getElementById("connections-table")

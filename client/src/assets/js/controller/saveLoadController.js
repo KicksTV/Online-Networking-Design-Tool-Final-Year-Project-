@@ -13,6 +13,7 @@ import allSubnets from '../collections/allSubnets.js';
 import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
 import Interface from '../models/Interface.js';
+import ProjectSettingsController from './ProjectSettingsController.js';
 
 const saveLoadController = (function() {
     var instance;
@@ -20,22 +21,12 @@ const saveLoadController = (function() {
     function init() {
 
         function init() {
-            var canvasLoadProject = document.getElementById("canvasLoadProject");
-            var canvasSaveProject = document.getElementById("canvasSaveProject");
-
-            // LOAD
-            var input = document.getElementById("upload_input");
-            canvasLoadProject.addEventListener("click", () => {
-                input.click();
-            });
-            input.onchange = loadEvent;
-            // SAVE
-            canvasSaveProject.addEventListener("click", saveEventToFile);
         }
 
         async function saveEventToFile() {
             // Setup of json format
             var json = {
+                "settings": {},
                 "graph": {},
                 "connections": [],
                 "components": [],
@@ -46,10 +37,11 @@ const saveLoadController = (function() {
 
                 var data = await getAllSaveData();
 
-                json.graph = data[0];
-                json.connections = data[1];
-                json.components = data[2];
-                json.subnets = data[3];
+                json.settings = data[0]
+                json.graph = data[1];
+                json.connections = data[2];
+                json.components = data[3];
+                json.subnets = data[4];
 
                 // Saves json to file
                 // console.log(json);
@@ -86,12 +78,13 @@ const saveLoadController = (function() {
         }
 
         async function getAllSaveData() {
+            var projectSettings = ProjectSettingsController.toJSON();
             var graphData = Graph.getInstance().toJSON();
             var connectionData = connectionController.toJSON();
             var componentData = componentController.toJSON();
             var subnetData = networkController.toJSON();
     
-            return Promise.all([graphData, connectionData, componentData, subnetData]);
+            return Promise.all([projectSettings, graphData, connectionData, componentData, subnetData]);
         }
 
         function loadEvent(evt) {

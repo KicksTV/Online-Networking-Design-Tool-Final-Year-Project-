@@ -17,6 +17,11 @@ newVue.config.productionTip = false
 
 
 const vue = new newVue({
+  data () {
+    return {
+        foundVueComp: null,
+    }
+  },
   router,
   render: h => {
 
@@ -37,6 +42,35 @@ const vue = new newVue({
         autoHideDelay: 5000,
         appendToast: append
       })
+    },
+    // Vue component or page
+    getVueComponent(name) {
+      var self = this
+      let foundVueComp = self.findComponent(self.$children, name)
+      self.$children
+      // console.log("returning again: ", foundVueComp)
+      return foundVueComp
+    },
+    findComponent(arrToIterate, name) {
+      var self = this
+      // console.log("Looking through: ", arrToIterate)
+      arrToIterate.forEach((vuecomp) => {
+        // console.log("Looking at: ", vuecomp)
+        if (vuecomp.$children) {
+          var vuecompName = vuecomp.$vnode.tag.split('-')[3]
+          // console.log(vuecompName)
+          if (vuecompName == name) {
+            // console.log("Found vuecomp: ", vuecomp)
+            self.foundVueComp = vuecomp
+            return
+          }
+          self.findComponent(vuecomp.$children, name)
+        }
+      })
+      if (self.foundVueComp) {
+        // console.log("Returning vuecomp: ", self.foundVueComp)
+        return self.foundVueComp
+      }
     }
   },
 }).$mount('#app')

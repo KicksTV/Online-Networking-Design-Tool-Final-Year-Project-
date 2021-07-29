@@ -16,7 +16,6 @@ export default class InterfaceView {
     }
     show(x, y) {
         // console.log("showing");
-        console.log(x, y);
         var xPos = x +30;
         this.container.style('left', xPos + "px");
         this.container.style('top', y + "px");
@@ -24,14 +23,13 @@ export default class InterfaceView {
         this.container.style('visibility', "visable");
     }
     hide() {
-        console.log("hide");
+        // console.log("hide");
         var container = document.getElementById('interfaceContainer')
-        console.log(container)
         container.style.visibility="hidden"
         //this.container.style('display', 'none');
     }
     create(p5) {
-        console.log('create interface')
+        // console.log('create interface')
         var container = document.getElementById('interfaceContainer')
         this.interfaces.forEach(i => {
             var div = p5.createDiv(i.name);
@@ -63,7 +61,7 @@ export default class InterfaceView {
         return this;
     }
     clear() {
-        console.log('clear')
+        // console.log('clear')
         var container = document.getElementById('interfaceContainer')
         var canvas = document.getElementById('canvasDiv');
         canvas.removeChild(container);

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<component>
-    <name>Fibre</name>
-    <type>Cable</type>
-    <image path="/assets/img/fibre-cable.svg" alt="Fibre Cable icon"></image>
-</component>

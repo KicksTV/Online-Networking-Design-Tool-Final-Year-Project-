@@ -2,17 +2,19 @@
   <div class="container-fluid mt-5">
     <h1 class="display-4"><strong>Create or load a project</strong></h1><br>
     <div class="card-deck">
-        <router-link to="/projects/newproject" style="text-decoration: none;">
-            <div class="card" style="width: 18rem;">
-                <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
-                <div class="card-body">
-                    <h5 class="card-title">New Project</h5>
-                    <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-                    <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
+        <b-button id="createProjectBtn" @click="createProjectModel=true" style="padding: 0;">
+            <a style="text-decoration: none;">
+                <div class="card" style="width: 18rem;">
+                    <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
+                    <div class="card-body">
+                        <h5 class="card-title">New Project</h5>
+                        <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                        <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
+                    </div>
+                    
                 </div>
-                
-            </div>
-        </router-link>
+            </a>
+        </b-button>
         <router-link to="#" class="disabled" style="text-decoration: none;">
             <div class="card" style="width: 18rem;">
                 <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
@@ -82,6 +84,38 @@
             </div>
         </template>
     </b-modal>
+    <!-- Modal -->
+    <b-modal v-model="createProjectModel" title="Project settings">
+        <form ref="createProjectForm">
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="project_name">Project Name</span>
+                    </div>
+                    <input name="project_name" type="text" class="form-control" required aria-label="project_name" aria-describedby="project_name">
+                </div>
+                <input name="creation_date" type="hidden" required :value="new Date().toISOString()">
+            </div>
+        </form>
+        <template #modal-footer>
+            <div class="w-100">
+                <b-button
+                    variant="primary"
+                    size="sm"
+                    class="float-right"
+                    @click="createProject">
+                    Create
+                </b-button>
+                <b-button
+                    variant="light"
+                    size="sm"
+                    class="float-right mr-2"
+                    @click="createProjectModel=false">
+                    Close
+                </b-button>
+            </div>
+        </template>
+    </b-modal>
     <div class="modal fade" id="errorModel" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -124,15 +158,44 @@ export default {
   components: {},
   data () {
     return {
-      projects: null,
-      joinRoom: false,
+        projects: null,
+        joinRoom: false,
+        createProjectModel: false,
     }
   },
   methods: {
     setDefaultProject(pro) {
         var self = this
-        console.log(self)
         self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
+    },
+    createProject() {
+        var self = this,
+            settings=null;
+        var form = self.$refs.createProjectForm
+        var requiredFields = []
+        var emptyRequiredFields = []
+        var fieldsValues = []
+        form.querySelectorAll('input').forEach((el) => {
+            if (el.getAttribute("required")) {
+                requiredFields.push(el)
+                if (el.value !== '') {
+                    fieldsValues.push(el.value)
+                } else {
+                    emptyRequiredFields.push(el)
+                }
+            }
+        })
+        if (emptyRequiredFields.length > 0) {
+            // form error
+        } else {
+            // console.log(fieldsValues)
+            settings = {
+                name: fieldsValues[0],
+                creationDate: fieldsValues[1],
+            }
+        }
+        // console.log(settings)
+        self._routerRoot._router.push({ name: 'NewProject', params: { 'projectSettings': settings }})
     }
   },
   mounted: function() {

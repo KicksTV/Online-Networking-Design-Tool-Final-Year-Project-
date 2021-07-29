@@ -176,7 +176,6 @@ const connectionController = (function() {
             p5Controller.getCanvas().createInterfaceView(interfaces);
 
             selectingSecondConnection = false;
-            console.log(document.getElementById('connectionCancel'))
             document.getElementById('connectionCancel').onclick = () => {
                 // Deleting connection object
                 allConnections.removeConnection(allConnections);

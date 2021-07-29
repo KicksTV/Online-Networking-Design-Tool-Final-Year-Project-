@@ -8,12 +8,10 @@ import saveLoadController from './saveLoadController.js';
 
 
 // Collections
-// import allTabs from '../collections/allComponentBarTabs.js';
 import allVRules from '../collections/allValidationRules.js';
 import allComponents from '../collections/allComponents.js';
 
 // Models
-// import {componentsBarTab, ComponentBarComponents, ComponentBarConnections} from '../models/componentsBar.js';
 import validationRule from '../models/validationRule.js';
 import Graph from '../models/graph.js';
 import allConnections from '../collections/allConnections.js';
@@ -23,6 +21,7 @@ import InterfaceView from '../views/InterfaceView.js';
 
 const GUI = require('dat.gui').GUI;
 import p5 from 'p5';
+import ProjectSettingsController from './ProjectSettingsController.js';
 const _ = require('lodash');
 
 
@@ -56,6 +55,7 @@ const p5Controller = (function() {
         function createNewCanvas() {
             var newP5 = new p5(function(p5) {
                 p5.preload = function() {
+                    currentCanvas = this;
 
                     var validationRules1 = validationRule("Server","Smartphone", false, "Connection is not allowed!");
                     var validationRules2 = validationRule("Access Point","Cloud", false, "Connection is not allowed!");
@@ -80,11 +80,27 @@ const p5Controller = (function() {
                     // print(gui)
             
                     networkController.initGUI(gui);
-                    componentController.initGUI(gui);
                 
                     networkController.initNetworkListener(gui);
 
                     panelController.getInstance();
+
+
+                    if (window.$vue._route.params) {
+                        // Project settings
+                        console.log(window.$vue)
+                        if (window.$vue._route.params.projectSettings) {
+                            let settings = window.$vue._route.params.projectSettings
+                            // console.log(settings)
+                            ProjectSettingsController.setSettings(settings)
+                        }
+                        // Pre load project
+                        if (window.$vue._route.params.loadedProject) {
+                            let project =window.$vue._route.params.loadedProject.project
+                            saveLoadController.loadProject(project)
+                        }
+                    }
+
 
                     
                 }
@@ -93,10 +109,7 @@ const p5Controller = (function() {
                     let canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight-203);
                     canvas.parent("canvasDiv");
 
-                    // Pre load project
-                    if (window.$vue._route.params.loadedProject) {
-                        saveLoadController.loadProject(window.$vue._route.params.loadedProject.project)
-                    }
+                    componentController.initGUI(gui);
                      
                 }
                 p5.draw = function() {
