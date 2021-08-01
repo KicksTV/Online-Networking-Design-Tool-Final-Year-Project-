@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {
   // publicPath: '../public',
-  outputDir: path.resolve(__dirname, '../public'),
+  outputDir: 'D:\\Online-Networking-Design-Tool-Final-Year-Project-\\public',
   configureWebpack: {
     resolve: {
       alias: {
