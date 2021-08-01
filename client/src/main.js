@@ -57,12 +57,15 @@ const vue = new newVue({
       arrToIterate.forEach((vuecomp) => {
         // console.log("Looking at: ", vuecomp)
         if (vuecomp.$children) {
-          var vuecompName = vuecomp.$vnode.tag.split('-')[3]
-          // console.log(vuecompName)
-          if (vuecompName == name) {
-            // console.log("Found vuecomp: ", vuecomp)
-            self.foundVueComp = vuecomp
-            return
+          // console.log(vuecomp)
+          if (vuecomp.$vnode) {
+            var vuecompName = vuecomp.$vnode.tag.split('-')[3]
+            // console.log(vuecompName)
+            if (vuecompName == name) {
+              // console.log("Found vuecomp: ", vuecomp)
+              self.foundVueComp = vuecomp
+              return
+            }
           }
           self.findComponent(vuecomp.$children, name)
         }

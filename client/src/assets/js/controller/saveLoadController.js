@@ -3,6 +3,7 @@ import connectionController from './connectionController.js';
 import componentController from './componentController.js';
 import networkController from './networkController.js';
 import p5Controller from './p5Controller.js';
+import ProjectSettingsController from './ProjectSettingsController.js';
 
 // Collections
 import allComponents from '../collections/allComponents.js';
@@ -13,7 +14,6 @@ import allSubnets from '../collections/allSubnets.js';
 import Graph from '../models/graph.js';
 import Subnet from '../models/Subnet.js';
 import Interface from '../models/Interface.js';
-import ProjectSettingsController from './ProjectSettingsController.js';
 
 const saveLoadController = (function() {
     var instance;
@@ -89,6 +89,7 @@ const saveLoadController = (function() {
 
         function loadEvent(evt) {
             var result = evt.target;
+            console.log()
             if ('files' in result) {
                 if (result.files.length == 0) {
                     // user didnt select file
@@ -152,12 +153,21 @@ const saveLoadController = (function() {
 
                 await loadConnections(array);
 
+                await loadProjectSettings(array);
+
                 window.setTimeout(() => {
                     console.log("Check network event");
                     networkController.dispatchNetworkChangeEvent();
                 }, 500);
             // }
         }
+
+        async function loadProjectSettings(array) {
+            console.log(array)
+            let settings = array.settings
+            ProjectSettingsController.setSettings(settings)
+        }
+
         async function loadComponents(array) {
             // LOADING COMPONENTS
             for (let comp of array.components) {

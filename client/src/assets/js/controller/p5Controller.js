@@ -96,7 +96,7 @@ const p5Controller = (function() {
                         }
                         // Pre load project
                         if (window.$vue._route.params.loadedProject) {
-                            let project =window.$vue._route.params.loadedProject.project
+                            let project =window.$vue._route.params.loadedProject.json
                             saveLoadController.loadProject(project)
                         }
                     }

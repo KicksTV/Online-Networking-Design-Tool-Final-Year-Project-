@@ -42,8 +42,8 @@
     <h1 class="display-4">Or, here are some included projects</h1><br>
     <div class="col-md-6">
         <div class="card-deck">
-            <div v-for="project in projects" :key="project.path" class="card" style="width: 18rem;">
-                <img :src="project.img" class="card-img-top" alt="">
+            <div v-for="project in projects" :key="project.name" class="card" style="width: 18rem;">
+                <img :src="project.img" class="card-img-top" alt="project.imgAlt">
                 <div class="card-body">
                 <h5 class="card-title">{{ project.name }}</h5>
                 <p class="card-text"></p>
@@ -151,7 +151,7 @@
 <script>
 import axios from "axios";
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
+// import HelloWorld from '@/assets/js/HelloWorld.vue'
 
 export default {
   name: 'Projects',
@@ -199,9 +199,10 @@ export default {
     }
   },
   mounted: function() {
-    axios.get('./defaultProjects/defaultProjects.json').then(response => {
-        this.projects = response.data.projects
-        console.log(this.projects)
+    var self = this
+    axios.get('/js/defaultProjects.json').then(response => {
+        self.projects = response.data.projects
+        console.log(self.projects)
     })
   }
 }
