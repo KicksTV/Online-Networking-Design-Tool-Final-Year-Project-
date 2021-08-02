@@ -31,6 +31,13 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
     template: 'App'
+  },
+  // Catch all 404
+  {
+    path: "*",
+    name: 'NotFound',
+    template: 'App',
+    component: () => import(/* webpackChunkName: "about" */ '../views/404NotFound.vue'),
   }
 ]
 

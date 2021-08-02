@@ -26,13 +26,10 @@ const vue = new newVue({
   render: h => {
 
     // Which templete to use
-    for (var r of router.options.routes) {
-      if (r.path == router.apps[0]._route.path) {
-        if (r.template == "App") 
-          return h(App)
-        else if (r.template == "Index") 
-          return h(Index)
-      }
+    if (router.apps[0]._route.path == '/') {
+      return h(Index)
+    } else {
+      return h(App)
     }
   },
   methods: {
