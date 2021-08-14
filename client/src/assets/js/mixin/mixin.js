@@ -1,28 +1,5 @@
 import p5Controller from '../controller/p5Controller.js';
 
-// Components Bar Component and Connection Mixin 
-export const compBarGetSetMixin = superclass => class extends superclass {
-    init() {
-        this.ul.addClass('navbar-nav mr-auto');
-        this.ul.id(`${this.title}navbar-component`);
-        this.ul.parent('componentsNav');
-    }
-    getTitle() {
-        return this.title;
-    }
-    setTitle(t) {
-        this.title = t;
-    }
-    getButtons(){
-        return this.buttons;
-    }
-    getUL() {
-        return this.ul;
-    }
-    add(b) {
-        this.buttons.push(b);
-    }
-};
 export const componentMixin = superclass => class extends superclass {
     applyAspectRatio() {
         this.image.height = this.image.width * (this.image.height / this.width);
@@ -95,5 +72,5 @@ export const connectionMixin = superclass => class extends superclass {
     }
 };
 
-export default {componentMixin, connectionMixin, compBarGetSetMixin}
+export default {componentMixin, connectionMixin}
 

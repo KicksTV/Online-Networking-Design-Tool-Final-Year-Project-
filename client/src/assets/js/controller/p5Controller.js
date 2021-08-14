@@ -77,8 +77,6 @@ const p5Controller = (function() {
                     con.appendChild(gui.domElement);
                     gui.width = 400;
             
-                    // print(gui)
-            
                     networkController.initGUI(gui);
                 
                     networkController.initNetworkListener(gui);
@@ -202,7 +200,7 @@ const p5Controller = (function() {
                     else if (componentController.isCurrentlyClickingComp() != null) {
                         // console.log("default move");
                         var comp = componentController.getSelectedComponent();
-                        moveComponent(comp, p5.mouseX, p5.mouseY);
+                        p5.moveComponent(comp, p5.mouseX, p5.mouseY);
                         componentController.setComponentDrag(true);
             
                         // SENDING DATA TO OTHER USERS
@@ -216,7 +214,7 @@ const p5Controller = (function() {
                         try {
                             // console.log("move new")
                             comp = componentController.getSelectedComponent();
-                            moveComponent(comp, p5.mouseX, p5.mouseY);
+                            p5.moveComponent(comp, p5.mouseX, p5.mouseY);
                         } catch (error) {
                             // console.error(error);
                             // expected output: ReferenceError: nonExistentFunction is not defined
@@ -324,7 +322,7 @@ const p5Controller = (function() {
                     p5.textAlign(p5.CENTER, p5.CENTER);
                 }
 
-                function moveComponent(comp, x, y) {
+                p5.moveComponent = function(comp, x, y) {
                     x = x - (comp.image.width/2);
                     y = y - (comp.image.height/2);
                     

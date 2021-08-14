@@ -53,7 +53,6 @@ import graph from '@/assets/js/models/graph.js';
 window.onload = function() {
     saveLoadController.init();
     componentController.init();
-    ioController.init();    
 }
 
 export default {
@@ -191,7 +190,11 @@ export default {
        }
     },
     mounted() {
-        p5Controller.createNewCanvas();
+        var self = this
+        p5Controller.createNewCanvas()
+
+        var room_id = (self.$root._route.query.room_id ) ? self.$root._route.query.room_id : null
+        if (room_id) ioController.init(room_id)   
     },
 }
 </script>
