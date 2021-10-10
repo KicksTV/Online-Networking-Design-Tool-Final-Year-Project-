@@ -22,7 +22,7 @@
 
               <footer class="mastfoot mt-auto">
                   <div class="inner">
-                    <p>A <a href="https://www.kingston.ac.uk/">Kingston University</a> Project, by <a href>Llewellyn Brunsdon-Haland</a>. Designed by <br><a href="http://elizabethzrose.com">Elizabeth Zographia Rose</a>.</p>
+                    <p>A <a href="https://www.kingston.ac.uk/">Kingston University</a> Project, by <a href>Llewellyn Brunsdon-Haland</a>. <br> Designed by <a href="http://elizabethzrose.com">Elizabeth Zographia Rose</a>.</p>
                   </div>
               </footer>
           </div>
