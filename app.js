@@ -9,7 +9,7 @@ var app = express();
 
 var PORT = process.env.PORT || 5000
 
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: false}));
 
@@ -43,7 +43,7 @@ app.get(/.*/, function (req, res) {
     var pagedata = {
         'title': 'Build Networks Online'
     };
-    res.sendFile(path.join(__dirname, '/public/index.html'));
+    res.sendFile(path.join(__dirname, '/dist/index.html'));
 });
 
 

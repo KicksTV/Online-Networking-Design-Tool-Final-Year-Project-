@@ -2,7 +2,12 @@ const path = require('path')
 
 module.exports = {
   // publicPath: '../public',
-  outputDir: '../public',
+  pages: {
+    index: {
+      entry: 'client/src/main.js',
+      template: 'client/public/index.html'
+    }
+  },
   configureWebpack: {
     resolve: {
       alias: {
@@ -11,6 +16,11 @@ module.exports = {
     },
   },
   configureWebpack: config => {
+    config.resolve = {
+      alias: {
+        '@': path.resolve(__dirname, 'client/src')
+      }
+    }
     if (process.env.NODE_ENV === 'production') {
       // mutate config for production...
     } else {
@@ -20,6 +30,14 @@ module.exports = {
   chainWebpack: config => {
     config.module.rule('js')
     config.module.rule('js').use('babel-loader')
+    config
+      .plugin('copy')
+      .use(require('copy-webpack-plugin'), [[{
+        from: path.resolve(__dirname, 'client/public'),
+        to: path.resolve(__dirname, 'dist'),
+        toType: 'dir',
+        ignore: ['.DS_Store']
+    }]])
   },
   // pages: {
   //   project: {
