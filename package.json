@@ -6,7 +6,7 @@
   "author": "Llewellyn Brunsdon-Haland",
   "scripts": {
     "vue-ui": "vue ui",
-    "build": "browserify -r dat.gui -r socket.io-client -r p5 -r bootstrap -r jquery -r rfdc -r lodash > assets/js/bundle.js -d",
+    "old_build": "browserify -r dat.gui -r socket.io-client -r p5 -r bootstrap -r jquery -r rfdc -r lodash > assets/js/bundle.js -d",
     "dev": "nodemon app.js",
     "dev-debug": "nodemon --watch app.js --inspect app.js",
     "start": "node app",

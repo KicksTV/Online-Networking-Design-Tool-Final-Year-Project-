@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div id="bottomPanel" class="container-fluid" style="width: 100%; height: 30px;">
-            <div class="row">
-                <div id="bottomPanelTitleContainer" class="container-fluid">
+        <div id="bottomPanel" class="container-fluid" style="width: 100%;">
+            <div class="row h-100">
+                <div id="bottomPanelTitleContainer" class="container-fluid h-100">
                     <b-tabs content-class="" :nav-class="['']">
                         <b-tab active>
                             <template #title>
@@ -27,18 +27,12 @@
                             </table>
                         </b-tab>
                         <b-tab title="Console" disabled></b-tab>
-                        <b-tab @click="$event.target.classList.add('d-none')" :title-item-class="['ml-auto']">
-                            <template #title>
-                                <p class="tab-title">Create Room</p>
-                            </template>
-                            <p>create room</p>
-                        </b-tab> 
-                        <b-tab :title-item-class="['ml-auto d-none']">
-                            <template #title>
+                        <b-tab :title-item-class="['ml-auto']">
+                            <template #title class="h-100">
                                 <p class="tab-title">Room</p>
                             </template>
-                            <p>room</p>
-                        </b-tab>
+                            <a class="btn btn-primary h-100" href="">Create Room</a>
+                        </b-tab> 
                     </b-tabs>
                     <!-- <div class="col">
                         <ul class="nav nav-tabs">
@@ -95,7 +89,7 @@
 </template>
 
 <script>
-    import ioController from '../assets/js/controller/ioController.js'
+    // import ioController from '../assets/js/controller/ioController.js'
     export default {
         name: "BottomPanel",
         props: {
@@ -103,13 +97,11 @@
         },
         methods: {
             createRoom: async function(e) {
-                var self = this
-                await ioController.initIO()
-                let socketID = ioController.getSocket().id
-                ioController.sendData('createRoom', socketID)
-
-                e.target.style.display = "none"
-                self.$refs.room_tab.classList.remove('d-none')
+                // await ioController.initIO()
+                // let socketID = ioController.getSocket().id
+                // ioController.sendData('createRoom', socketID)
+                e.target.closest("li.nav-item").classList.add('d-none')
+                e.target.closest("li.nav-item").nextSibling.classList.remove('d-none')
            }
         }
     }
@@ -162,5 +154,8 @@
     .nav-link.active .tab-title {
         color: blue;
         text-decoration: none;
+    }
+    .tab-content, .tab-pane {
+        height: 100%;
     }
 </style>
