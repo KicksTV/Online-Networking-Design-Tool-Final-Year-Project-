@@ -15,7 +15,7 @@
                 </div>
             </a>
         </b-button>
-        <router-link to="#" class="disabled" style="text-decoration: none;">
+        <router-link v-if="$root.isDevelopment()" to="#" class="disabled" style="text-decoration: none;">
             <div class="card" style="width: 18rem;">
                 <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
                 <div class="card-body">
@@ -27,7 +27,7 @@
             </div>
         </router-link>
         <!-- Button trigger modal -->
-        <b-button id="joinRoomBtn" @click="joinRoom=true" style="padding: 0;">
+        <b-button v-if="$root.isDevelopment()" id="joinRoomBtn" @click="joinRoom=true" style="padding: 0;">
             <a>
                 <div class="card" style="width: 18rem;">
                     <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
@@ -45,9 +45,9 @@
             <div v-for="project in projects" :key="project.name" class="card" style="width: 18rem;">
                 <img :src="project.img" class="card-img-top" alt="project.imgAlt">
                 <div class="card-body">
-                <h5 class="card-title">{{ project.name }}</h5>
-                <p class="card-text"></p>
-                <button @click="setDefaultProject(project)" class="btn btn-primary">Load Project</button>
+                    <h5 class="card-title">{{ project.name }}</h5>
+                    <p class="card-text"></p>
+                    <button @click="setDefaultProject(project)" class="btn btn-primary">Load Project</button>
                 </div>
             </div>
         </div>
@@ -202,7 +202,6 @@ export default {
     var self = this
     axios.get('/js/defaultProjects.json').then(response => {
         self.projects = response.data.projects
-        console.log(self.projects)
     })
   }
 }

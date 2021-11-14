@@ -86,7 +86,6 @@ const p5Controller = (function() {
 
                     if (window.$vue._route.params) {
                         // Project settings
-                        console.log(window.$vue)
                         if (window.$vue._route.params.projectSettings) {
                             let settings = window.$vue._route.params.projectSettings
                             // console.log(settings)
