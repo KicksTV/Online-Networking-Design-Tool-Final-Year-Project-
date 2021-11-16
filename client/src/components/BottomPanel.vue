@@ -27,15 +27,16 @@
                                 </tbody>
                             </table>
                         </b-tab>
-                        <b-tab v-if="process.env.NODE_ENV !== 'production'" title="Console" disabled></b-tab>
-                        <b-tab v-if="process.env.NODE_ENV !== 'production'" :title-item-class="['ml-auto']">
+
+                        <b-tab v-if="$root.isDevelopment()" title="Console" disabled></b-tab>
+                        <b-tab v-if="$root.isDevelopment()" :title-item-class="['ml-auto']">
                             <template #title class="h-100">
                                 <p class="tab-title mb-0">Room</p>
                             </template>
                             <a class="btn btn-primary h-100" href="">Create Room</a>
                         </b-tab> 
                     </b-tabs>
-                </div>
+git                </div>
             </div>
         </div>
     </div>
@@ -56,7 +57,7 @@
                 e.target.closest("li.nav-item").classList.add('d-none')
                 e.target.closest("li.nav-item").nextSibling.classList.remove('d-none')
            }
-        }
+        },
     }
 </script>
 

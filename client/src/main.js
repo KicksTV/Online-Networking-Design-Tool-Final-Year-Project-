@@ -33,6 +33,8 @@ const vue = new newVue({
     }
   },
   methods: {
+    isDevelopment: () => process.env.NODE_ENV == 'development',
+    isProduction: () => process.env.NODE_ENV == 'production',
     makeToast(title, msg, append = false) {
       this.$root.$bvToast.toast(msg, {
         title: title,
