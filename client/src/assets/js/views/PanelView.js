@@ -39,7 +39,7 @@ export default class PanelView {
     }
     collapse() {
         this.mainContainer.style.width = "100%";
-        this.mainContainer.style.height = "30px";
+        this.mainContainer.style.height = "40px";
     }
     extend() {
         this.mainContainer.style.width = "100%";
