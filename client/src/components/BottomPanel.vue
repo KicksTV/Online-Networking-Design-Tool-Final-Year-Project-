@@ -36,7 +36,7 @@
                             <a class="btn btn-primary h-100" href="">Create Room</a>
                         </b-tab> 
                     </b-tabs>
-git                </div>
+                </div>
             </div>
         </div>
     </div>

@@ -13,7 +13,6 @@ app.use(express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: false}));
 
-
 app.post('/projects/join', function(req, res) {
 
     let room_ID = req.body.room_id;
