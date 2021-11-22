@@ -17,6 +17,7 @@
   },
   "main": "app.js",
   "dependencies": {
+    "@prisma/client": "^3.5.0",
     "@vue/cli": "^4.5.14",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
