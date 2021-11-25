@@ -6,12 +6,15 @@ const path = require('path')
 const bodyParser = require('body-parser')
 
 var app = express();
-
 var PORT = process.env.PORT || 5000
 
 app.use(express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: false}));
+app.use(express.json())
+
+app.use('/api/user', require('./routes/user'))
+
 
 app.post('/projects/join', function(req, res) {
 
