@@ -12,9 +12,9 @@
     "vue-ui": "vue ui",
     "dev": "nodemon app.js",
     "dev-debug": "nodemon --watch app.js --inspect app.js",
-    "start": "node app",
+    "start": "node app && npm migrate",
     "prisma-studio": "npx prisma studio",
-    "migrate": "npx prisma migrate dev",
+    "migrate": "npx prisma migrate deploy",
     "test": "mocha -r esm"
   },
   "main": "app.js",
@@ -101,7 +101,7 @@
     "url": "https://github.com/KicksTV/Online-Networking-Design-Tool-Final-Year-Project-/issues"
   },
   "engines": {
-    "node": "10.16.3"
+    "node": "16.13.0"
   },
   "homepage": "https://github.com/KicksTV/Online-Networking-Design-Tool-Final-Year-Project-#readme",
   "keywords": [],
