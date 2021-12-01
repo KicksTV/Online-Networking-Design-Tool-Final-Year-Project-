@@ -12,9 +12,9 @@
     "vue-ui": "vue ui",
     "dev": "nodemon app.js",
     "dev-debug": "nodemon --watch app.js --inspect app.js",
-    "start": "node app",
+    "start": "node app && npm migrate",
     "prisma-studio": "npx prisma studio",
-    "migrate": "npx prisma migrate dev",
+    "migrate": "npx prisma migrate deploy",
     "test": "mocha -r esm"
   },
   "main": "app.js",
