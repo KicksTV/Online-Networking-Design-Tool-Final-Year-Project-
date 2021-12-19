@@ -1,20 +1,34 @@
 var express = require('express')
 var socket = require('socket.io')
 var expressSession = require('express-session')
+const pgSession = require('connect-pg-simple')(expressSession);
 const serveIndex = require('serve-index')
 const path = require('path')
 const bodyParser = require('body-parser')
+const pg = require('pg');
+let dotenv = require('dotenv').config()
 
 var app = express();
 var PORT = process.env.PORT || 5000
+var env = process.env.NODE_ENV || 'development';
 
 app.use(express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressSession({secret: 'secret', saveUninitialized: false, resave: false}));
+
+    app.use(expressSession({
+    store: new pgSession({
+        // Insert connect-pg-simple options here
+        conString: process.env.DATABASE_URL
+      }),
+    secret: process.env.COOKIE_SECRET,
+    saveUninitialized: false,
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+    resave: false
+}));
+
 app.use(express.json())
 
 app.use('/api/user', require('./routes/user'))
-
 
 app.post('/projects/join', function(req, res) {
 
@@ -48,6 +62,13 @@ app.get(/.*/, function (req, res) {
     res.sendFile(path.join(__dirname, '/dist/index.html'));
 });
 
+function errorHandler(err, req, res, next) {
+    if (err && env !== 'development') {
+        res.send('<h1>There was an error, please try again.</h1>')
+    }
+}
+
+app.use(errorHandler)
 
 var server = app.listen(PORT, () => {
     console.log(`Listening on ${PORT}`);

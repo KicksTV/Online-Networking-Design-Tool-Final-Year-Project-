@@ -27,7 +27,7 @@
             </div>
         </router-link>
         <!-- Button trigger modal -->
-        <b-button v-if="$root.isDevelopment()" id="joinRoomBtn" @click="joinRoom=true" style="padding: 0;">
+        <b-button id="joinRoomBtn" @click="joinRoom=true" style="padding: 0;">
             <a>
                 <div class="card" style="width: 18rem;">
                     <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
