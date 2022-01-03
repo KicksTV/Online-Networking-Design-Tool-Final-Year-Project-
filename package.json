@@ -14,6 +14,7 @@
     "dev-debug": "nodemon --watch app.js --inspect app.js",
     "start": "npm run migrate && node app",
     "prisma-studio": "npx prisma studio",
+    "makemigrations": "npx prisma migrate dev",
     "migrate": "npx prisma migrate deploy",
     "test": "mocha -r esm"
   },

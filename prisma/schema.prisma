@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,21 +8,27 @@ datasource db {
 }
 
 model User {
-  id          Int @default(autoincrement()) @id
-  username    String @db.VarChar(255) @unique
-  password    String
-  email       String @db.VarChar(255) @unique
-  createdAt   DateTime  @default(now()) @map(name: "created_at")
-  updatedAt   DateTime  @default(now()) @map(name: "updated_at")
-
-  isAdmin     Boolean @default(false)
-
-  // Relational fields
-  projects    Project[]
+  id        Int       @id @default(autoincrement())
+  username  String    @unique @db.VarChar(255)
+  password  String
+  email     String    @unique @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+  isAdmin   Boolean   @default(false)
+  salt      String
+  projects  Project[]
 }
 
 model Project {
-  id          Int @default(autoincrement()) @id
-  user        User @relation(fields: [userID], references: [id])
-  userID      Int
+  id     Int  @id @default(autoincrement())
+  userID Int
+  user   User @relation(fields: [userID], references: [id])
+}
+
+model session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
 }
