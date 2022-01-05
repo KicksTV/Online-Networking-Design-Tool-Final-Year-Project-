@@ -38,7 +38,17 @@ app.use(passport.session())
 app.use(express.json())
 
 app.use('/api/user', require('./routes/user'))
+app.use('/', require('./routes/registration'))
 app.use('/projects/join', socket_io.router)
+
+// app.get('/projects', (req, res, next) => {
+//     console.log(req.isAuthenticated())
+//     if (req.isAuthenticated()) {
+//         next()
+//     } else {
+//         res.redirect('/login')
+//     }
+// })
 
 app.get(/.*/, function (req, res) {
     var pagedata = {

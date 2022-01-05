@@ -6,25 +6,37 @@ const { PrismaClient } = require("@prisma/client")
 
 const { user } = new PrismaClient()
 
-router.post('/login', passport.authenticate('local'), (req, res, next) => {})
+router.post('/login', passport.authenticate('local', { failureRedirect: '/login', successRedirect: '/projects' }))
+
+router.get('/logout', (req, res, next) => {
+    req.logout()
+    res.redirect('/')
+})
 
 router.post('/register', async (req, res, next) => {
     const { username, email } = req.body;
-    const saltHash = genPassword(req.body.password)
+    console.log(req.body, username, email, req.body.password)
+    try {
+        const saltHash = genPassword(req.body.password)
 
-    const salt = saltHash.salt
-    const hash = saltHash.hash
+        const salt = saltHash.salt
+        const hash = saltHash.hash
 
-    const newUser = await user.create({
-        data: {
-            username: username,
-            password: hash,
-            salt: salt,
-            email: email
-        }
-    })
+        const newUser = await user.create({
+            data: {
+                username: username,
+                password: hash,
+                salt: salt,
+                email: email
+            }
+        })
 
-    console.log(newUser)
+        console.log(newUser)
 
-    res.redirect('/login')
+        res.redirect('/login')
+    } catch(e) {
+        throw e; 
+    }
 })
+
+module.exports = router

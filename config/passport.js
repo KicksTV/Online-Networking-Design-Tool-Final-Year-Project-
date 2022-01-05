@@ -6,13 +6,13 @@ const validPassword = require('../lib/passwordUtils').validPassword
 const { user } = new PrismaClient()
 
 const verifyCallback = (username, password, done) => {
-    user.findUnique({username})
+    user.findUnique({where: {username}})
         .then((user)=> {
             console.log(user)
             if (!user) { return done(null, false) }
 
-            const isValid = validPassword(password, user.hash, user.salt)
-
+            const isValid = validPassword(password, user.password, user.salt)
+            console.log(isValid, password)
             if (isValid) {
                 return done(null, user)
             } else {
@@ -33,7 +33,7 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((userID, done) => {
-    user.findUnique({id: userID})
+    user.findUnique({where: {id: userID}})
         .then((user)=> {
             return done(null, user)
         .catch(err => done(err))
