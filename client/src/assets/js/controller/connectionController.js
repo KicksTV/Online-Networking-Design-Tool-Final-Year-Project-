@@ -174,12 +174,13 @@ const connectionController = (function() {
         function waitForSelectedPort(interfaces, comp, preComp) {
             
             p5Controller.getCanvas().createInterfaceView(interfaces);
-
             selectingSecondConnection = false;
             document.getElementById('connectionCancel').onclick = () => {
                 // Deleting connection object
+                console.log("cancel")
                 allConnections.removeConnection(allConnections);
                 endConnection();
+                p5Controller.getCanvas().clearInterfaceView();
                 selectingInterface = false;
                 window.$vue.makeToast("Canceled Connection", "", true)
             }
@@ -243,7 +244,6 @@ const connectionController = (function() {
         }
         function endConnection() {
             // End selection process
-
             drawConnection = false;
             selectingSecondConnection = false;
             allConnections.setSelectedConnection(null);
