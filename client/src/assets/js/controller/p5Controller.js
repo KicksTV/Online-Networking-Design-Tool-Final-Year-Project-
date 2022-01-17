@@ -44,6 +44,7 @@ const p5Controller = (function() {
         var _pressed_keys = []
         var currentCanvas = null
         var selectedInterfaceView = null
+        var mousePressedEvent = null
 
 
         function getCanvas() {
@@ -120,56 +121,10 @@ const p5Controller = (function() {
                 
                 }
                 p5.mousePressed = function() {
-                    let multiSelect = checkForMultiSelect();
-                    componentController.checkForSelectedComponent(p5.mouseX, p5.mouseY);
-                
-                    if (componentController.isCurrentlyClickingComp() != null) {
-                        if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
-                            // print("clear select list");
-                            componentController.clearSelectList();
-                        }
-                        
-                        if (multiSelect) {
-                            if (!componentController.hasClickedSelectedComponent()) {
-                                if (componentController.isSelectListEmpty()) {
-                                    componentController.initMultiSelectList();
-                                } else {
-                                    componentController.addSelectList(componentController.isCurrentlyClickingComp());
-                                }
-                            }
-                        }
-                
-                        // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
-                        //print(connectionController.isSelectingInterfacePort());
-                        if (! connectionController.isSelectingInterfacePort()) {
-                            componentController.setSelectedComponent(componentController.getSelectedComponent());
-                
-                            // apply seleceted comp values to gui
-                            componentController.applyGUIValues();
-                
-                            // Adds connection data to table
-                            panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
-                            
-                            checkComponentDeleteEvent();
-                
-                            // Checks if users is selecting two components to make a connection
-                            if (connectionController.getDrawConnection()) {
-                                connectionController.selectConnectionForComp(componentController.getSelectedComponent());
-                            }
-                        }
-                
-                
-                    }else {
-                        // checking if the user is clicking the bin icon, if so then dont clear select list.
-                        if (p5.mouseX > 104 && p5.mouseY > 39) {
-                            if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
-                                // print("clear select list");
-                                componentController.clearSelectList();
-                            }
-                            if (!componentController.hasCopiedComponent()) {
-                                componentController.clearSelectList();
-                            }
-                        }
+                    if (mousePressedEvent) {
+                        mousePressedEvent(p5.mouseX, p5.mouseY)
+                    } else {
+                        defaultMousePressedEvent()
                     }
                 }
                 p5.mouseMoved = function() {
@@ -392,6 +347,40 @@ const p5Controller = (function() {
                         }
                     }
                 }
+
+                function defaultMousePressedEvent() {
+                    let multiSelect = checkForMultiSelect();
+                    componentController.checkForSelectedComponent(p5.mouseX, p5.mouseY);
+                
+                    if (componentController.isCurrentlyClickingComp() != null) {
+                        if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
+                            // print("clear select list");
+                            componentController.clearSelectList();
+                        }
+                        
+                        if (multiSelect) {
+                            if (!componentController.hasClickedSelectedComponent()) {
+                                if (componentController.isSelectListEmpty()) {
+                                    componentController.initMultiSelectList();
+                                } else {
+                                    componentController.addSelectList(componentController.isCurrentlyClickingComp());
+                                }
+                            }
+                        }
+                    }else {
+                        // checking if the user is clicking the bin icon, if so then dont clear select list.
+                        if (p5.mouseX > 104 && p5.mouseY > 39) {
+                            if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
+                                // print("clear select list");
+                                componentController.clearSelectList();
+                            }
+                            if (!componentController.hasCopiedComponent()) {
+                                componentController.clearSelectList();
+                            }
+                        }
+                    }
+                }
+
                 async function pasteSelectedComponents() {
                     if (! componentController.isSelectListEmpty()) {
                         console.log("multi select paste");
@@ -548,10 +537,20 @@ const p5Controller = (function() {
             currentCanvas = newP5;
         }
 
+        function getMousePressedEvent() {
+            return mousePressedEvent
+        }
+
+        function setMousePressedEvent(func) {
+            mousePressedEvent = func
+        }
+
         return {
             useFunc:useFunc,
             getCanvas:getCanvas,
             createNewCanvas:createNewCanvas,
+            getMousePressedEvent:getMousePressedEvent,
+            setMousePressedEvent:setMousePressedEvent,
         };   
     }
     return {

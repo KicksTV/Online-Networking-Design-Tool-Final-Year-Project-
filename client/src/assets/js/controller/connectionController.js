@@ -1,6 +1,7 @@
 // Controllers
 import networkController from './networkController.js';
 import componentController from './componentController.js';
+import panelController from './panelController.js';
 import p5Controller from './p5Controller.js';
 
 // Collections
@@ -20,6 +21,24 @@ const connectionController = (function() {
         var selectingSecondConnection = false;
         var selectingInterface = false;
 
+        function connectionEvent(mouseX, mouseY) {
+            console.log("here", mouseX, mouseY)
+            componentController.checkForSelectedComponent(mouseX, mouseY);
+            if (componentController.isCurrentlyClickingComp() != null) {
+                // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
+                if (! isSelectingInterfacePort()) {
+                    componentController.setSelectedComponent(componentController.getSelectedComponent());
+        
+                    // Adds connection data to table
+                    panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
+                    
+                    // Checks if users is selecting two components to make a connection
+                    if (getDrawConnection()) {
+                        selectConnectionForComp(componentController.getSelectedComponent());
+                    }
+                }
+            }        
+        }
         function createNewConnection(name) {
             let newcon = getDefaultComponentData(name);
             return newcon;
@@ -249,6 +268,9 @@ const connectionController = (function() {
             allConnections.setSelectedConnection(null);
             compAddConnectionCounter=0;
             //updateMouseCursor();
+
+            // Now use default mouse press event
+            p5Controller.setMousePressedEvent(null)
         }
 
         function toJSON() {
@@ -273,6 +295,7 @@ const connectionController = (function() {
         }
 
         return {
+            connectionEvent:connectionEvent,
             getAll:getAll,
             add:add,
             clear:clear,

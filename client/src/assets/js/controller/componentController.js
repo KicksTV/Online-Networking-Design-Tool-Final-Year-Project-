@@ -301,7 +301,9 @@ const componentController = (function() {
             return isEndDevice;
         }
         function addSelectList(comp) {
-            _multiSelectList.push(comp);
+            if (_multiSelectList.indexOf(comp) < 0) {
+                _multiSelectList.push(comp);
+            }
         }
         function getSelectList() {
             return _multiSelectList;

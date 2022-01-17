@@ -5,8 +5,6 @@ export const componentMixin = superclass => class extends superclass {
         this.image.height = this.image.width * (this.image.height / this.width);
         this.width = this.image.width;
     }
-    
-    
     multiMove(x, y) {
         var p5 = p5Controller.getCanvas()
         if ((p5.width) > (this.x + this.image.width + x) && 0 < (x + this.x)) {
