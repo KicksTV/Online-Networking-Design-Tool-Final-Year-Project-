@@ -45,6 +45,7 @@ const p5Controller = (function() {
         var currentCanvas = null
         var selectedInterfaceView = null
         var mousePressedEvent = null
+        var selectBox = []
 
 
         function getCanvas() {
@@ -159,6 +160,15 @@ const p5Controller = (function() {
             
                         // SENDING DATA TO OTHER USERS
                         ioController.sendData('componentMove', componentController.getSelectedComponent().prepareForJson());
+                    }
+                    else {
+                        // SELECTING NOTHING - CREATE SELECT BOX
+                        if (selectBox.length == 0) {
+                            selectBox = [p5.mouseX, p5.mouseY]
+                        } else {
+                            selectBox[0] += event.movementX
+                            selectBox[1] += event.movementY
+                        }
                     }
             
                     // DRAGGING NEWLY CREATED COMPONENTS
@@ -354,7 +364,7 @@ const p5Controller = (function() {
                 
                     if (componentController.isCurrentlyClickingComp() != null) {
                         if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
-                            // print("clear select list");
+                            //console.log("clear select list");
                             componentController.clearSelectList();
                         }
                         
@@ -382,9 +392,9 @@ const p5Controller = (function() {
                 }
 
                 async function pasteSelectedComponents() {
-                    if (! componentController.isSelectListEmpty()) {
+                    if (! componentController.isCopyListEmpty()) {
                         console.log("multi select paste");
-                        var list = componentController.getSelectList();
+                        var list = componentController.getCopyList();
                         for (var i=0; i<list.length;i++) {
                             
                             var firstCX;
@@ -451,7 +461,7 @@ const p5Controller = (function() {
     
                 function checkForMultiSelect() {
                     // CTRL Key
-                    if (p5.keyIsDown(17)) {
+                    if (p5.keyIsDown(17) || componentController.getSelectList().length > 0) {
                         return true;
                     }else {
                         return false;

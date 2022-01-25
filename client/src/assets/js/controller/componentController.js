@@ -20,6 +20,7 @@ const componentController = (function() {
         var newlyCreatedComp = null;
         var preComputer = null;
         var _multiSelectList = [];
+        var _copyList = [];
         var _clearedMultiSelectList = [];
 
         var componentHover = false;
@@ -308,12 +309,22 @@ const componentController = (function() {
         function getSelectList() {
             return _multiSelectList;
         }
+        function getCopyList() {
+            return _copyList;
+        }
         function clearSelectList() {
             _clearedMultiSelectList = _multiSelectList;
             _multiSelectList = [];
         }
         function isSelectListEmpty() {
             if (_multiSelectList.length == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function isCopyListEmpty() {
+            if (_copyList.length == 0) {
                 return true;
             } else {
                 return false;
@@ -337,6 +348,7 @@ const componentController = (function() {
         }
         function copySelectedComponents() {
             if (selectedComponent) {
+                _copyList = _multiSelectList
                 copied = true;
                 pasted = false;
                 console.log("copied"); 
@@ -454,8 +466,10 @@ const componentController = (function() {
             isEndDevice:isEndDevice,
             addSelectList:addSelectList,
             getSelectList:getSelectList,
+            getCopyList:getCopyList,
             clearSelectList:clearSelectList,
             isSelectListEmpty:isSelectListEmpty,
+            isCopyListEmpty:isCopyListEmpty,
             initMultiSelectList:initMultiSelectList,
             getClearedMultiSelectList:getClearedMultiSelectList,
             isClearedSelectListEmpty:isClearedSelectListEmpty,
