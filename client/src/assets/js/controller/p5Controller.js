@@ -119,6 +119,8 @@ const p5Controller = (function() {
                     //updateMouseCursor();
             
                     checkComponentDeleteEvent();
+
+                    drawSelectBox();
                 
                 }
                 p5.mousePressed = function() {
@@ -162,12 +164,22 @@ const p5Controller = (function() {
                         ioController.sendData('componentMove', componentController.getSelectedComponent().prepareForJson());
                     }
                     else {
-                        // SELECTING NOTHING - CREATE SELECT BOX
-                        if (selectBox.length == 0) {
-                            selectBox = [p5.mouseX, p5.mouseY]
-                        } else {
-                            selectBox[0] += event.movementX
-                            selectBox[1] += event.movementY
+                        if (!componentController.getDraggingNewComponent()) {
+                            // SELECTING NOTHING - CREATE SELECT BOX
+                            if (selectBox.length == 0) {
+                                selectBox = [p5.mouseX, p5.mouseY]
+                            } else {
+                                if (!selectBox[2] && !selectBox[3]) {
+                                    selectBox[2] = event.movementX
+                                    selectBox[3] = event.movementY
+                                } else {
+                                    selectBox[2] += event.movementX
+                                    selectBox[3] += event.movementY
+                                }
+                                
+                                // Check if any components are within the select box
+                                allComponents.getAll().forEach((c) => isInsideSelectBox(c))
+                            }
                         }
                     }
             
@@ -194,6 +206,9 @@ const p5Controller = (function() {
                     componentController.setDraggingNewComponent(false);
                     componentController.setNewlyCreatedComp(null);
                     componentController.setComponentDrag(false);
+
+                    if (selectBox.length > 0)
+                        selectBox = []
                 }
 
                 p5.keyPressed = function() {
@@ -358,6 +373,17 @@ const p5Controller = (function() {
                     }
                 }
 
+                function drawSelectBox() {
+                    if (selectBox.length > 0) {
+                        p5.push()
+                        var c = p5.color(0, 0, 255)
+                        c.setAlpha(100)
+                        p5.fill(c)
+                        p5.rect(selectBox[0], selectBox[1], selectBox[2], selectBox[3])
+                        p5.pop()
+                    }
+                }
+
                 function defaultMousePressedEvent() {
                     let multiSelect = checkForMultiSelect();
                     componentController.checkForSelectedComponent(p5.mouseX, p5.mouseY);
@@ -466,6 +492,16 @@ const p5Controller = (function() {
                     }else {
                         return false;
                     }
+                }
+
+                function isInsideSelectBox(c) {
+                    if (selectBox[0] <= c.x && selectBox[1] <= c.y && selectBox[2] >= (c.x + c.getWidth()) && selectBox[3] >= (c.y + c.getHeight())) {
+                        componentController.addSelectList(c);
+                    }
+                    else if (selectBox[0] >= c.x && selectBox[1] >= c.y && selectBox[2] <= (c.x + c.getWidth()) && selectBox[3] <= (c.y + c.getHeight())) {
+                        componentController.addSelectList(c);
+                    }
+                    console.log(componentController.getSelectList())
                 }
                 
                 function checkComponentDeleteEvent() {
