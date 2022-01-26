@@ -495,10 +495,10 @@ const p5Controller = (function() {
                 }
 
                 function isInsideSelectBox(c) {
-                    if (selectBox[0] <= c.x && selectBox[1] <= c.y && selectBox[2] >= (c.x + c.getWidth()) && selectBox[3] >= (c.y + c.getHeight())) {
+                    if (selectBox[0] <= c.x && selectBox[1] <= c.y && (selectBox[0] + selectBox[2]) >= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) >= (c.y + c.getHeight())) {
                         componentController.addSelectList(c);
                     }
-                    else if (selectBox[0] >= c.x && selectBox[1] >= c.y && selectBox[2] <= (c.x + c.getWidth()) && selectBox[3] <= (c.y + c.getHeight())) {
+                    else if (selectBox[0] >= c.x && selectBox[1] >= c.y && (selectBox[0] + selectBox[2]) <= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) <= (c.y + c.getHeight())) {
                         componentController.addSelectList(c);
                     }
                     console.log(componentController.getSelectList())
