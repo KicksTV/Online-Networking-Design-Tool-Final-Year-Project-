@@ -306,6 +306,11 @@ const componentController = (function() {
                 _multiSelectList.push(comp);
             }
         }
+        function removeSelectList(comp) {
+            if (_multiSelectList.indexOf(comp) >= 1) {
+                _multiSelectList.pop(comp)
+            }
+        }
         function getSelectList() {
             return _multiSelectList;
         }
@@ -465,6 +470,7 @@ const componentController = (function() {
             removeComponent:removeComponent,
             isEndDevice:isEndDevice,
             addSelectList:addSelectList,
+            removeSelectList:removeSelectList,
             getSelectList:getSelectList,
             getCopyList:getCopyList,
             clearSelectList:clearSelectList,

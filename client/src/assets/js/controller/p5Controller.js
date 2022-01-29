@@ -146,7 +146,7 @@ const p5Controller = (function() {
                     // console.log(event.movementY);
             
                     // MULTI MOVE COMPONENTS
-                    if (componentController.getSelectList().length > 1) {
+                    if (componentController.getSelectList().length > 1 && selectBox.length == 0) {
                         // console.log("multi move");
                         componentController.getSelectList().forEach((c) => {
                             c.multiMove(event.movementX, event.movementY);
@@ -154,7 +154,7 @@ const p5Controller = (function() {
                         componentController.setComponentDrag(true);
                     }
                     // STANDARD MOVE EVENT
-                    else if (componentController.isCurrentlyClickingComp() != null && !connectionController.getDrawConnection()) {
+                    else if (componentController.isCurrentlyClickingComp() != null && !connectionController.getDrawConnection() && selectBox.length == 0) {
                         // console.log("default move");
                         var comp = componentController.getSelectedComponent();
                         p5.moveComponent(comp, p5.mouseX, p5.mouseY);
@@ -496,12 +496,22 @@ const p5Controller = (function() {
 
                 function isInsideSelectBox(c) {
                     if (selectBox[0] <= c.x && selectBox[1] <= c.y && (selectBox[0] + selectBox[2]) >= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) >= (c.y + c.getHeight())) {
-                        componentController.addSelectList(c);
+                        if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
+                            componentController.setSelectedComponent(c)
+                        } else {
+                            componentController.addSelectList(c);
+                        }
                     }
                     else if (selectBox[0] >= c.x && selectBox[1] >= c.y && (selectBox[0] + selectBox[2]) <= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) <= (c.y + c.getHeight())) {
-                        componentController.addSelectList(c);
+                        if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
+                            componentController.setSelectedComponent(c)
+                        } else {
+                            componentController.addSelectList(c);
+                        }
                     }
-                    console.log(componentController.getSelectList())
+                    else {
+                        componentController.removeSelectList(c);
+                    }
                 }
                 
                 function checkComponentDeleteEvent() {
