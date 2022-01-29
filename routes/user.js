@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
         res.json(newUser)
     } catch(e) {
         return res.status(500).json({
-            msg: "Error creating user!"
+            msg: `Error creating user: ${e}`
         })
     }
 })

@@ -20,6 +20,7 @@ const componentController = (function() {
         var newlyCreatedComp = null;
         var preComputer = null;
         var _multiSelectList = [];
+        var _copyList = [];
         var _clearedMultiSelectList = [];
 
         var componentHover = false;
@@ -301,10 +302,20 @@ const componentController = (function() {
             return isEndDevice;
         }
         function addSelectList(comp) {
-            _multiSelectList.push(comp);
+            if (_multiSelectList.indexOf(comp) < 0) {
+                _multiSelectList.push(comp);
+            }
+        }
+        function removeSelectList(comp) {
+            if (_multiSelectList.indexOf(comp) >= 1) {
+                _multiSelectList.pop(comp)
+            }
         }
         function getSelectList() {
             return _multiSelectList;
+        }
+        function getCopyList() {
+            return _copyList;
         }
         function clearSelectList() {
             _clearedMultiSelectList = _multiSelectList;
@@ -312,6 +323,13 @@ const componentController = (function() {
         }
         function isSelectListEmpty() {
             if (_multiSelectList.length == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function isCopyListEmpty() {
+            if (_copyList.length == 0) {
                 return true;
             } else {
                 return false;
@@ -335,6 +353,7 @@ const componentController = (function() {
         }
         function copySelectedComponents() {
             if (selectedComponent) {
+                _copyList = _multiSelectList
                 copied = true;
                 pasted = false;
                 console.log("copied"); 
@@ -451,9 +470,12 @@ const componentController = (function() {
             removeComponent:removeComponent,
             isEndDevice:isEndDevice,
             addSelectList:addSelectList,
+            removeSelectList:removeSelectList,
             getSelectList:getSelectList,
+            getCopyList:getCopyList,
             clearSelectList:clearSelectList,
             isSelectListEmpty:isSelectListEmpty,
+            isCopyListEmpty:isCopyListEmpty,
             initMultiSelectList:initMultiSelectList,
             getClearedMultiSelectList:getClearedMultiSelectList,
             isClearedSelectListEmpty:isClearedSelectListEmpty,

@@ -44,6 +44,8 @@ const p5Controller = (function() {
         var _pressed_keys = []
         var currentCanvas = null
         var selectedInterfaceView = null
+        var mousePressedEvent = null
+        var selectBox = []
 
 
         function getCanvas() {
@@ -117,59 +119,15 @@ const p5Controller = (function() {
                     //updateMouseCursor();
             
                     checkComponentDeleteEvent();
+
+                    drawSelectBox();
                 
                 }
                 p5.mousePressed = function() {
-                    let multiSelect = checkForMultiSelect();
-                    componentController.checkForSelectedComponent(p5.mouseX, p5.mouseY);
-                
-                    if (componentController.isCurrentlyClickingComp() != null) {
-                        if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
-                            // print("clear select list");
-                            componentController.clearSelectList();
-                        }
-                        
-                        if (multiSelect) {
-                            if (!componentController.hasClickedSelectedComponent()) {
-                                if (componentController.isSelectListEmpty()) {
-                                    componentController.initMultiSelectList();
-                                } else {
-                                    componentController.addSelectList(componentController.isCurrentlyClickingComp());
-                                }
-                            }
-                        }
-                
-                        // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
-                        //print(connectionController.isSelectingInterfacePort());
-                        if (! connectionController.isSelectingInterfacePort()) {
-                            componentController.setSelectedComponent(componentController.getSelectedComponent());
-                
-                            // apply seleceted comp values to gui
-                            componentController.applyGUIValues();
-                
-                            // Adds connection data to table
-                            panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
-                            
-                            checkComponentDeleteEvent();
-                
-                            // Checks if users is selecting two components to make a connection
-                            if (connectionController.getDrawConnection()) {
-                                connectionController.selectConnectionForComp(componentController.getSelectedComponent());
-                            }
-                        }
-                
-                
-                    }else {
-                        // checking if the user is clicking the bin icon, if so then dont clear select list.
-                        if (p5.mouseX > 104 && p5.mouseY > 39) {
-                            if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
-                                // print("clear select list");
-                                componentController.clearSelectList();
-                            }
-                            if (!componentController.hasCopiedComponent()) {
-                                componentController.clearSelectList();
-                            }
-                        }
+                    if (mousePressedEvent) {
+                        mousePressedEvent(p5.mouseX, p5.mouseY)
+                    } else {
+                        defaultMousePressedEvent()
                     }
                 }
                 p5.mouseMoved = function() {
@@ -188,7 +146,7 @@ const p5Controller = (function() {
                     // console.log(event.movementY);
             
                     // MULTI MOVE COMPONENTS
-                    if (componentController.getSelectList().length > 1) {
+                    if (componentController.getSelectList().length > 1 && selectBox.length == 0) {
                         // console.log("multi move");
                         componentController.getSelectList().forEach((c) => {
                             c.multiMove(event.movementX, event.movementY);
@@ -196,7 +154,7 @@ const p5Controller = (function() {
                         componentController.setComponentDrag(true);
                     }
                     // STANDARD MOVE EVENT
-                    else if (componentController.isCurrentlyClickingComp() != null) {
+                    else if (componentController.isCurrentlyClickingComp() != null && !connectionController.getDrawConnection() && selectBox.length == 0) {
                         // console.log("default move");
                         var comp = componentController.getSelectedComponent();
                         p5.moveComponent(comp, p5.mouseX, p5.mouseY);
@@ -204,6 +162,25 @@ const p5Controller = (function() {
             
                         // SENDING DATA TO OTHER USERS
                         ioController.sendData('componentMove', componentController.getSelectedComponent().prepareForJson());
+                    }
+                    else {
+                        if (!componentController.getDraggingNewComponent()) {
+                            // SELECTING NOTHING - CREATE SELECT BOX
+                            if (selectBox.length == 0) {
+                                selectBox = [p5.mouseX, p5.mouseY]
+                            } else {
+                                if (!selectBox[2] && !selectBox[3]) {
+                                    selectBox[2] = event.movementX
+                                    selectBox[3] = event.movementY
+                                } else {
+                                    selectBox[2] += event.movementX
+                                    selectBox[3] += event.movementY
+                                }
+                                
+                                // Check if any components are within the select box
+                                allComponents.getAll().forEach((c) => isInsideSelectBox(c))
+                            }
+                        }
                     }
             
                     // DRAGGING NEWLY CREATED COMPONENTS
@@ -229,6 +206,9 @@ const p5Controller = (function() {
                     componentController.setDraggingNewComponent(false);
                     componentController.setNewlyCreatedComp(null);
                     componentController.setComponentDrag(false);
+
+                    if (selectBox.length > 0)
+                        selectBox = []
                 }
 
                 p5.keyPressed = function() {
@@ -392,10 +372,55 @@ const p5Controller = (function() {
                         }
                     }
                 }
+
+                function drawSelectBox() {
+                    if (selectBox.length > 0) {
+                        p5.push()
+                        var c = p5.color(0, 0, 255)
+                        c.setAlpha(100)
+                        p5.fill(c)
+                        p5.rect(selectBox[0], selectBox[1], selectBox[2], selectBox[3])
+                        p5.pop()
+                    }
+                }
+
+                function defaultMousePressedEvent() {
+                    let multiSelect = checkForMultiSelect();
+                    componentController.checkForSelectedComponent(p5.mouseX, p5.mouseY);
+                
+                    if (componentController.isCurrentlyClickingComp() != null) {
+                        if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
+                            //console.log("clear select list");
+                            componentController.clearSelectList();
+                        }
+                        
+                        if (multiSelect) {
+                            if (!componentController.hasClickedSelectedComponent()) {
+                                if (componentController.isSelectListEmpty()) {
+                                    componentController.initMultiSelectList();
+                                } else {
+                                    componentController.addSelectList(componentController.isCurrentlyClickingComp());
+                                }
+                            }
+                        }
+                    }else {
+                        // checking if the user is clicking the bin icon, if so then dont clear select list.
+                        if (p5.mouseX > 104 && p5.mouseY > 39) {
+                            if (!componentController.hasClickedSelectedComponent() && !multiSelect) {
+                                // print("clear select list");
+                                componentController.clearSelectList();
+                            }
+                            if (!componentController.hasCopiedComponent()) {
+                                componentController.clearSelectList();
+                            }
+                        }
+                    }
+                }
+
                 async function pasteSelectedComponents() {
-                    if (! componentController.isSelectListEmpty()) {
+                    if (! componentController.isCopyListEmpty()) {
                         console.log("multi select paste");
-                        var list = componentController.getSelectList();
+                        var list = componentController.getCopyList();
                         for (var i=0; i<list.length;i++) {
                             
                             var firstCX;
@@ -462,10 +487,30 @@ const p5Controller = (function() {
     
                 function checkForMultiSelect() {
                     // CTRL Key
-                    if (p5.keyIsDown(17)) {
+                    if (p5.keyIsDown(17) || componentController.getSelectList().length > 0) {
                         return true;
                     }else {
                         return false;
+                    }
+                }
+
+                function isInsideSelectBox(c) {
+                    if (selectBox[0] <= c.x && selectBox[1] <= c.y && (selectBox[0] + selectBox[2]) >= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) >= (c.y + c.getHeight())) {
+                        if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
+                            componentController.setSelectedComponent(c)
+                        } else {
+                            componentController.addSelectList(c);
+                        }
+                    }
+                    else if (selectBox[0] >= c.x && selectBox[1] >= c.y && (selectBox[0] + selectBox[2]) <= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) <= (c.y + c.getHeight())) {
+                        if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
+                            componentController.setSelectedComponent(c)
+                        } else {
+                            componentController.addSelectList(c);
+                        }
+                    }
+                    else {
+                        componentController.removeSelectList(c);
                     }
                 }
                 
@@ -548,10 +593,20 @@ const p5Controller = (function() {
             currentCanvas = newP5;
         }
 
+        function getMousePressedEvent() {
+            return mousePressedEvent
+        }
+
+        function setMousePressedEvent(func) {
+            mousePressedEvent = func
+        }
+
         return {
             useFunc:useFunc,
             getCanvas:getCanvas,
             createNewCanvas:createNewCanvas,
+            getMousePressedEvent:getMousePressedEvent,
+            setMousePressedEvent:setMousePressedEvent,
         };   
     }
     return {

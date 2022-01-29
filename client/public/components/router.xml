@@ -6,6 +6,7 @@
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="4"></interface>
         <interface portType="Serial" numberOfPorts="2"></interface>
+        <interface portType="Fibre" numberOfPorts="2"></interface>
     </interfaces>
     <validLinkingComponents>
         <linkingComponent>Twisted-Pair</linkingComponent>

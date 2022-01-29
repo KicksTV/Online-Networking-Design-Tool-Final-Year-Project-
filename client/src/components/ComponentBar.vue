@@ -93,6 +93,7 @@
 
 <script>
     // Controller
+    import p5Controller from '@/assets/js/controller/p5Controller.js';
     import componentController from '@/assets/js/controller/componentController.js';
     import connectionController from '@/assets/js/controller/connectionController.js';
     import ioController from '@/assets/js/controller/ioController.js';
@@ -132,6 +133,8 @@
                 let c = await connectionController.createNewConnection(name);
                 connectionController.setDrawConnection(true);
                 allConnections.setSelectedConnection(c);
+
+                p5Controller.setMousePressedEvent(connectionController.connectionEvent)
             }
         }
     }

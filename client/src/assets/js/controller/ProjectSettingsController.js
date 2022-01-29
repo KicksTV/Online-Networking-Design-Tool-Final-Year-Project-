@@ -7,10 +7,14 @@ const ProjectSettingsController = (function() {
         var creationDate = null;
         var lastEdited = null;
         var editors = null;
+        var realtimeValidation = false;
         
         function setSettings(settings) {
             name = settings.name
             creationDate = settings.creationDate
+            realtimeValidation = settings.realtimeValidation
+
+
             var vueCompCanvas = window.$vue.getVueComponent('Canvas')
             vueCompCanvas.projectName = name
         }
@@ -38,11 +42,19 @@ const ProjectSettingsController = (function() {
         function getEditors() {
             return editors
         }
+        function getRealTimeValidation() {
+            return realtimeValidation;
+        }
+        function setRealTimeValidation(val) {
+            realtimeValidation = val;
+            return instance
+        }
         function toJSON() {
             return {
                 'name': name,
                 'creationDate': creationDate,
                 'lastEdited': lastEdited,
+                'realtimeValidation': realtimeValidation,
             }
         }
         
@@ -56,6 +68,8 @@ const ProjectSettingsController = (function() {
             getlastEdited:getlastEdited,
             addEditor:addEditor,
             getEditors:getEditors,
+            getRealTimeValidation,
+            setRealTimeValidation,
             toJSON:toJSON,
         };   
     }
