@@ -16,7 +16,8 @@
     "prisma-studio": "npx prisma studio",
     "makemigrations": "npx prisma migrate dev",
     "migrate": "npx prisma migrate deploy",
-    "test": "mocha -r esm"
+    "test": "mocha -r esm",
+    "deploy-production": "git checkout production && git merge master -m 'Merged master into production' && git push"
   },
   "main": "app.js",
   "dependencies": {
