@@ -146,7 +146,7 @@ const p5Controller = (function() {
                     // console.log(event.movementY);
             
                     // MULTI MOVE COMPONENTS
-                    if (componentController.getSelectList().length > 1 && selectBox.length == 0) {
+                    if (componentController.isCurrentlyClickingComp() != null && componentController.getSelectList().length > 1 && selectBox.length == 0) {
                         // console.log("multi move");
                         componentController.getSelectList().forEach((c) => {
                             c.multiMove(event.movementX, event.movementY);
@@ -503,6 +503,20 @@ const p5Controller = (function() {
                         }
                     }
                     else if (selectBox[0] >= c.x && selectBox[1] >= c.y && (selectBox[0] + selectBox[2]) <= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) <= (c.y + c.getHeight())) {
+                        if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
+                            componentController.setSelectedComponent(c)
+                        } else {
+                            componentController.addSelectList(c);
+                        }
+                    }
+                    else if (selectBox[0] <= c.x && selectBox[1] >= c.y && (selectBox[0] + selectBox[2]) >= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) <= (c.y + c.getHeight())) {
+                        if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
+                            componentController.setSelectedComponent(c)
+                        } else {
+                            componentController.addSelectList(c);
+                        }
+                    }
+                    else if (selectBox[0] >= c.x && selectBox[1] <= c.y && (selectBox[0] + selectBox[2]) <= (c.x + c.getWidth()) && (selectBox[1] + selectBox[3]) >= (c.y + c.getHeight())) {
                         if (componentController.isSelectListEmpty() && componentController.getSelectedComponent() != c) {
                             componentController.setSelectedComponent(c)
                         } else {
