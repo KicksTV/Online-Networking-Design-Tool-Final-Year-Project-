@@ -12,6 +12,18 @@ const routes = [
     template: 'Index'
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import(/* webpackChunkName: "about" */ '../views/register.vue'),
+    template: 'App'
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "about" */ '../views/login.vue'),
+    template: 'App'
+  },
+  {
     path: '/projects',
     name: 'Projects',
     component: () => import(/* webpackChunkName: "about" */ '../views/Projects.vue'),
