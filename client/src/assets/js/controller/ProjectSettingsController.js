@@ -1,14 +1,25 @@
+const GUI = require('dat.gui').GUI;
+
 const ProjectSettingsController = (function() {
     var instance;
     
     function init() {
-
+        
         var name = 'New Project';
         var creationDate = null;
         var lastEdited = null;
         var editors = null;
         var realtimeValidation = false;
         
+        function initGUI() {
+            var gui = new GUI({ autoPlace: false });
+            var con = document.getElementsByClassName('p5Canvas')[0];
+            con.appendChild(gui.domElement);
+            gui.width = 400;
+            console.log('new gui')
+            gui.add(realtimeValidation).listen()
+
+        }
         function setSettings(settings) {
             name = settings.name
             creationDate = settings.creationDate
@@ -59,6 +70,7 @@ const ProjectSettingsController = (function() {
         }
         
         return {
+            initGUI:initGUI,
             setSettings:setSettings,
             setName:setName,
             getName:getName,
