@@ -4,10 +4,12 @@
         <div id="canvasRow">
             <div id="projectDetails">
                 <div class="canvasButtonContainer row">
-                    <span @click="loadProject" ref="loadProject" id="canvasLoadProject" style="margin-left: 15px" class="canvasButton fas fa-file-upload fa-lg" data-toggle="tooltip" data-placement="bottom" title="Load Project"></span>
+                    <span id="canvasSettingsBtn" @click="showProjectSettings" class="canvasButton fas fa-cog fa-lg ml-2" data-toggle="tooltip" data-placement="bottom" title="Open project settings"></span>
+                    <span @click="loadProject" ref="loadProject" id="canvasLoadProject" class="canvasButton fas fa-file-upload fa-lg" data-toggle="tooltip" data-placement="bottom" title="Load Project"></span>
                     <input ref="upload_input" id="upload_input" type="file" name="project_upload" class="upload_input" />
                     <span @click="saveProject" id="canvasSaveProject" class="canvasButton fas fa-save fa-lg" data-toggle="tooltip" data-placement="bottom" title="Save Project"></span>
                     <span id="canvasDeleteButton" class="canvasButton fas fa-trash-alt fa-lg" data-toggle="tooltip" data-placement="bottom" title="Delete Component"></span>
+                    <span id="canvasRunBtn" @click="runValidiationChecks" class="canvasButton fas fa-play fa-lg" data-toggle="tooltip" data-placement="bottom" title="Run network and validation checks"></span>
                 </div>
                 <h4 @click="editProjectName" class="mt-2 ml-2">{{ projectName }}</h4>
                 <input id="projectNameInput" type="text" class="d-none form-controls mt-2">
@@ -25,6 +27,12 @@
     </b-tooltip>
     <b-tooltip target="canvasLoadProject" placement="bottom">
         Load network
+    </b-tooltip>
+    <b-tooltip target="canvasSettingsBtn" placement="bottom">
+        Edit project settings
+    </b-tooltip>
+    <b-tooltip target="canvasRunBtn" placement="bottom">
+        Run network and validation checks
     </b-tooltip>
   </div>
 </template>
@@ -187,6 +195,12 @@ export default {
                 self.$refs.upload_input.click();
             });
             self.$refs.upload_input.onchange = self.saveLoadController.loadEvent;
+       },
+       runValidiationChecks: function() {
+           
+       },
+       showProjectSettings: function() {
+          projectSettings.initGUI()
        }
     },
     mounted() {
@@ -258,7 +272,7 @@ export default {
         min-width: 100px;
     }
     .canvasButton {
-        padding: 15px 8px 0 8px;
+        padding: 15px 15px 0 15px;
     }
     .canvasButton:hover {
         opacity: 0.7;
