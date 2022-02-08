@@ -1,10 +1,9 @@
 <template>
   <div>
-    <div id="canvasContainer">
+    <div id="canvasContainer" ref="canvasContainer">
         <div id="canvasRow">
             <div id="projectDetails">
                 <div class="canvasButtonContainer row">
-                    <span id="canvasSettingsBtn" @click="showProjectSettings" class="canvasButton fas fa-cog fa-lg ml-2" data-toggle="tooltip" data-placement="bottom" title="Open project settings"></span>
                     <span @click="loadProject" ref="loadProject" id="canvasLoadProject" class="canvasButton fas fa-file-upload fa-lg" data-toggle="tooltip" data-placement="bottom" title="Load Project"></span>
                     <input ref="upload_input" id="upload_input" type="file" name="project_upload" class="upload_input" />
                     <span @click="saveProject" id="canvasSaveProject" class="canvasButton fas fa-save fa-lg" data-toggle="tooltip" data-placement="bottom" title="Save Project"></span>
@@ -38,6 +37,9 @@
 </template>
 
 <script>
+
+import Vue from 'vue'
+
 // Controllers
 import componentController from '@/assets/js/controller/componentController.js';
 import ioController from '@/assets/js/controller/ioController.js';
@@ -57,6 +59,10 @@ import allConnections from '@/assets/js/collections/allConnections.js';
 // Models
 import graph from '@/assets/js/models/graph.js';
 
+// Vue components
+/* eslint-disable */
+import Gui from './Gui.vue'
+
 
 window.onload = function() {
     saveLoadController.init();
@@ -65,9 +71,15 @@ window.onload = function() {
 
 export default {
     name: 'Canvas',
+    components: {
+        Gui
+    },
     data() {
         return {
+            GuiClass: Vue.extend(Gui),
             projectName: 'New Project',
+            guiRight: null,
+            projectSettingGui: null,
         }
     },
     props: {
@@ -184,24 +196,45 @@ export default {
                 projectSettings.setName(input.value)
             })
 
-       },
-       saveProject: function() {
+        },
+        saveProject: function() {
            var self = this
            self.saveLoadController.saveEventToFile()
-       },
-       loadProject: function() {
+        },
+        loadProject: function() {
             var self = this
             self.$refs.loadProject.addEventListener("click", () => {
                 self.$refs.upload_input.click();
             });
             self.$refs.upload_input.onchange = self.saveLoadController.loadEvent;
-       },
-       runValidiationChecks: function() {
+        },
+        runValidiationChecks: function() {
            
-       },
-       showProjectSettings: function() {
-          projectSettings.initGUI()
-       }
+        },
+        toggleProjectSettings: function() {
+            var self = this
+            //   projectSettings.initGUI()
+            if (self.projectSettingGui.showing) {
+                self.projectSettingGui.hide()
+            } else {
+                self.projectSettingGui.show()
+            }
+        },
+        initGuiRight: function() {
+            var self = this
+            self.guiRight = new self.GuiClass({
+                propsData: {}
+            })
+            self.guiRight.$mount()
+            self.guiRight.init('rightSidePanel')
+            self.guiRight.addFolder(projectSettings, "Project Settings")
+            self.guiRight.width = 400;
+    
+            networkController.initGUI(self.guiRight.datgui);
+        
+            networkController.initNetworkListener(self.guiRight.datgui);
+            componentController.initGUI(self.guiRight.datgui);
+        },
     },
     mounted() {
         var self = this
@@ -209,6 +242,7 @@ export default {
 
         var room_id = (self.$root._route.query.room_id ) ? self.$root._route.query.room_id : null
         if (room_id) ioController.init(room_id)   
+        self.initGuiRight()
     },
 }
 </script>

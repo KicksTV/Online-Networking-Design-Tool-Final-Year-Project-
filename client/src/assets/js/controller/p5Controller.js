@@ -19,7 +19,6 @@ import allConnections from '../collections/allConnections.js';
 // View
 import InterfaceView from '../views/InterfaceView.js';
 
-const GUI = require('dat.gui').GUI;
 import p5 from 'p5';
 import ProjectSettingsController from './ProjectSettingsController.js';
 const _ = require('lodash');
@@ -29,9 +28,6 @@ const p5Controller = (function() {
     var instance;
     
     function init() {
-
-        // dat.GUI
-        var gui = null
 
         // Panels or Bars
         // var compBar;
@@ -73,15 +69,6 @@ const p5Controller = (function() {
                     allVRules.getInstance().add(validationRules5);
                     allVRules.getInstance().add(validationRules6);
                 
-                
-                    gui = new GUI({ autoPlace: false });
-                    var con = document.getElementById("rightSidePanel");
-                    con.appendChild(gui.domElement);
-                    gui.width = 400;
-            
-                    networkController.initGUI(gui);
-                
-                    networkController.initNetworkListener(gui);
 
                     panelController.getInstance();
 
@@ -99,16 +86,12 @@ const p5Controller = (function() {
                             saveLoadController.loadProject(project)
                         }
                     }
-
-
                     
                 }
                 p5.setup = function() {
                     p5.frameRate(60);
                     let canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight-203);
                     canvas.parent("canvasDiv");
-
-                    componentController.initGUI(gui);
                      
                 }
                 p5.draw = function() {
@@ -546,7 +529,7 @@ const p5Controller = (function() {
                                 // Delete related connections
                                 connectionController.deleteConnection(comp);
                             });
-                            gui.removeFolder(componentController.getPropertiesPanel());
+                            // gui.removeFolder(componentController.getPropertiesPanel());
                         } 
                         else if (componentController.getSelectedComponent() != null) {
                             var comp = componentController.getSelectedComponent();
@@ -559,7 +542,7 @@ const p5Controller = (function() {
                             //     componentController.getSelectedComponent().displayName + " has been deleted."
                             // );
                 
-                            gui.removeFolder(componentController.getPropertiesPanel());
+                            // gui.removeFolder(componentController.getPropertiesPanel());
                 
                         }
                         Graph.getInstance().updateGraph();
