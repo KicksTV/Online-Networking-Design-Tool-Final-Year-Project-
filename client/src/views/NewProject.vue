@@ -12,13 +12,12 @@ import ComponentBar from '@/components/ComponentBar.vue'
 import Canvas from '@/components/Canvas.vue'
 import BottomPanel from '@/components/BottomPanel.vue'
 
-
 export default {
   name: 'NewProject',
   components: {
     ComponentBar,
     Canvas,
-    BottomPanel
+    BottomPanel,
   }
 }
 </script>

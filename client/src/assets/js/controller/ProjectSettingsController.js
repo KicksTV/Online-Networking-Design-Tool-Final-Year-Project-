@@ -5,73 +5,90 @@ const ProjectSettingsController = (function() {
     
     function init() {
         
-        var name = 'New Project';
-        var creationDate = null;
-        var lastEdited = null;
-        var editors = null;
-        var realtimeValidation = false;
+        var settings = {
+            'name': 'New Project',
+            'creationDate': null,
+            'lastEdited': null,
+            'editors': null,
+            'realtimeValidation': false,
+        }
+        var _gui_fields = ['realtimeValidation'] // eslint-disable-line
+        // var projectSettingsPanel = null
         
         function initGUI() {
             var gui = new GUI({ autoPlace: false });
-            var con = document.getElementsByClassName('p5Canvas')[0];
+            var con = document.getElementById('canvasDiv');
+            console.log(con)
             con.appendChild(gui.domElement);
             gui.width = 400;
             console.log('new gui')
-            gui.add(realtimeValidation).listen()
+            gui.addFolder("Project settings");
+            gui.add(settings, 'realtimeValidation').listen()
 
         }
-        function setSettings(settings) {
-            name = settings.name
-            creationDate = settings.creationDate
-            realtimeValidation = settings.realtimeValidation
+        function setSettings(s) {
+            settings.name = s.name
+            settings.creationDate = s.creationDate
+            settings.realtimeValidation = s.realtimeValidation
 
 
             var vueCompCanvas = window.$vue.getVueComponent('Canvas')
-            vueCompCanvas.projectName = name
+            vueCompCanvas.projectName = settings.name
+        }
+        function gui_fields(val) {
+            if (val) {
+                _gui_fields = val
+            }
+            return _gui_fields
+        }
+        function obj() {
+            return settings
         }
         function setName(str) {
-            name = str
+            settings.name = str
         }
         function getName() {
-            return name
+            return settings.name
         }
         function setCreationDate(date) {
-            creationDate = date
+            settings.creationDate = date
         }
         function getCreationDate() {
-            return creationDate
+            return settings.creationDate
         }
         function setlastEdited(date) {
-            lastEdited = date
+            settings.lastEdited = date
         }
         function getlastEdited() {
-            return lastEdited
+            return settings.lastEdited
         }
         function addEditor(editor) {
-            editors.push(editor)
+            settings.editors.push(editor)
         }
         function getEditors() {
-            return editors
+            return settings.editors
         }
         function getRealTimeValidation() {
-            return realtimeValidation;
+            return settings.realtimeValidation;
         }
         function setRealTimeValidation(val) {
-            realtimeValidation = val;
+            settings.realtimeValidation = val;
             return instance
         }
         function toJSON() {
             return {
-                'name': name,
-                'creationDate': creationDate,
-                'lastEdited': lastEdited,
-                'realtimeValidation': realtimeValidation,
+                'name': settings.name,
+                'creationDate': settings.creationDate,
+                'lastEdited': settings.lastEdited,
+                'realtimeValidation': settings.realtimeValidation,
             }
         }
         
         return {
             initGUI:initGUI,
             setSettings:setSettings,
+            gui_fields:gui_fields,
+            obj:obj,
             setName:setName,
             getName:getName,
             setCreationDate:setCreationDate,

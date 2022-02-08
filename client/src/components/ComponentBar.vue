@@ -6,7 +6,7 @@
                 <li class="nav-item active"><b v-b-toggle.linkingComponentList.componentList class="nav-link">Connections</b></li>
             </ul>
         </nav>
-        <div id="rightSidePanel"></div>
+        <div id="rightSidePanel" style="z-index:1000;"></div>
         <b-collapse visible  class="shadow" id="componentList">
             <nav id="componentsNav" class="navbar navbar-expand-lg">
                 <li class="d-inline-block">
