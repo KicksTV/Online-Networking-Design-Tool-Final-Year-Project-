@@ -41,8 +41,16 @@ const ProjectSettingsController = (function() {
             }
             return _gui_fields
         }
-        function obj() {
-            return settings
+        function obj(prop, val) {
+            if (prop) {
+                if (val) {
+                    settings[prop] = val
+                } else {
+                    return settings[prop]
+                }
+            } else {
+                return settings
+            }
         }
         function setName(str) {
             settings.name = str

@@ -89,5 +89,18 @@ export default class Connection extends connectionMixin(Device) {
         let ipaddress = typeof foundInterface.portIPaddress[port] != 'undefined' ? foundInterface.portIPaddress[port] : "";
         return ipaddress;
     }
+    getIPaddresses() {
+        var ip_addresses = []
+        for (var i=0;i<=1;i++) {
+            let comp = this._components[i];
+            // Connection will eventually be storing the Interface ID, not the object.
+            let intface = this._interfacePorts[i][0];
+            let port = this._interfacePorts[i][1];
+            let foundInterface = comp._interfaces.find(i => i.id == intface.id);
+            let ipaddress = typeof foundInterface.portIPaddress[port] != 'undefined' ? foundInterface.portIPaddress[port] : "";
+            ip_addresses.push(ipaddress)
+        }
+        return ip_addresses;
+    }
 
 }

@@ -1,6 +1,8 @@
 // Controllers
 import componentController from '../controller/componentController.js';
 import connectionController from '../controller/connectionController.js';
+import projectSettingsController from '../controller/ProjectSettingsController.js';
+
 
 
 // Collections
@@ -111,70 +113,93 @@ const networkController = (function() {
         function initGuiControllerEvents() {
             
             var subnetController = properties[4];
+            var supernetController = properties[5];
+            var autoCalculateController = properties[6];
+
             subnetController.onChange(function(value) {
-                // Fires on every change, drag, keypress, etc.
-                if (! isValidSubnetMask(value)) {
-                    this.domElement.firstElementChild.style.color = "red";
-                } else {
-                    this.domElement.firstElementChild.style.color = "#1ed36f";
-                }
+
+                network.autoCalculateMasks = false;
                 
+                // Fires on every change, drag, keypress, etc.
+                if (projectSettingsController.obj('realtimeValidation')) {
+                    if (! isValidSubnetMask(value)) {
+                        this.domElement.firstElementChild.style.color = "red";
+                    } else {
+                        this.domElement.firstElementChild.style.color = "#1ed36f";
+                    }
+                }
             });
             subnetController.onFinishChange(function(value) {
                 // Fires when a controller loses focus.
                 // alert("The new value is " + value);
 
-                var oldValue = this.initialValue;
+                // var oldValue = this.initialValue;
 
                 network.subnetMask = value;
 
-                if (isValidSubnetMask(value)) {
-                    this.domElement.firstElementChild.style.color = "#1ed36f";
-                } else {
-                    network.subnetMask = oldValue;
-                    this.domElement.firstElementChild.style.color = "orange";
-                }
+                if (projectSettingsController.obj('realtimeValidation')) {
 
-                window.setTimeout(() => {
-                    this.domElement.firstElementChild.style.color = "1ed36f";
-                }, 2000);
+                    // User wants to manually set masks
+                    if (autoCalculateController.initialValue)
+                        autoCalculateController.domElement.click();
+
+                    if (isValidSubnetMask(value)) {
+                        this.domElement.firstElementChild.classList.add('bg-success', 'text-white')
+                    } else {
+                        this.domElement.firstElementChild.classList.add('bg-danger', 'text-white')
+                        // window.setTimeout(() => {
+                        //     trigger change event
+                        //     network.subnetMask = oldValue;
+                        // }, 2000);
+                    }
+
+                    window.setTimeout(() => {
+                        this.domElement.firstElementChild.classList.remove('bg-danger', 'text-white', 'bg-success')
+                    }, 2000);
+                }
             });
 
-
-
-            var supernetController = properties[5];
             supernetController.onChange(function(value) {
-                // Fires on every change, drag, keypress, etc.
 
-                if (! isValidSupernetMask(value)) {
-                    this.domElement.firstElementChild.style.color = "red";
-                } else {
-                    this.domElement.firstElementChild.style.color = "#1ed36f";
+                // Fires on every change, drag, keypress, etc.
+                if (projectSettingsController.obj('realtimeValidation')) {
+                    if (! isValidSupernetMask(value)) {
+                        this.domElement.firstElementChild.style.color = "red";
+                    } else {
+                        this.domElement.firstElementChild.style.color = "#1ed36f";
+                    }
                 }
             });
               
             supernetController.onFinishChange(function(value) {
                 // Fires when a controller loses focus.
 
-                var oldValue = this.initialValue;
-
+                // var oldValue = this.initialValue;
                 network.supernetMask = value;
 
-                if (isValidSupernetMask(value)) {
-                    this.domElement.firstElementChild.style.color = "#1ed36f";
-                } else {
-                    network.supernetMask = oldValue;
-                    this.domElement.firstElementChild.style.color = "orange";
+                if (projectSettingsController.obj('realtimeValidation')) {
+
+                    // User wants to manually set masks
+                    if (autoCalculateController.initialValue)
+                        autoCalculateController.domElement.click();
+
+                    if (isValidSupernetMask(value)) {
+                        this.domElement.firstElementChild.classList.add('bg-success', 'text-white')
+                    } else {
+                        this.domElement.firstElementChild.classList.add('bg-danger', 'text-white')
+                        // window.setTimeout(() => {
+                        //     // trigger change event
+                        //     network.supernetMask = oldValue;
+                        // }, 2000);
+                    }
+
+                    window.setTimeout(() => {
+                        this.domElement.firstElementChild.classList.remove('bg-danger', 'text-white', 'bg-success')
+                    }, 2000);
                 }
-
-                window.setTimeout(() => {
-                    this.domElement.firstElementChild.style.color = "1ed36f";
-                }, 2000);
-
             });
 
 
-            var autoCalculateController = properties[6];
             autoCalculateController.onChange(function(value) {
                 // Fires on every change, drag, keypress, etc.
 
@@ -197,6 +222,12 @@ const networkController = (function() {
             });
         }
 
+        function getManualSubnetMask() {
+            return network.subnetMask;
+        }
+        function getManualSupernetMask() {
+            return network.supernetMask;
+        }
         function getSubnetMask() {
             return network.calculated_subnetmask;
         }
@@ -634,14 +665,13 @@ const networkController = (function() {
             if (isValidInput(value)) {
                 if (network.calculated_subnetmask) {
 
-                    var calOctets = network.calculated_subnetmask.split(".");
+                    var calOctets = calculateSubnetMask().split(".");
                     var enteredOctets = value.split(".");
 
                     var validFirstOctet = false;
                     var validSecondOctet = false;
                     var validThirdOctet = false;
                     var validForthOctet = false;
-
 
                     if (enteredOctets.length == 4) {
                         if (calOctets[0] >= enteredOctets[0]) {
@@ -660,11 +690,7 @@ const networkController = (function() {
                         if (validFirstOctet && validSecondOctet && validThirdOctet && validForthOctet) {
                             isValid = true;
                         } else {
-                            // $('#warningConnectionToastAlert').toast('show');
-                            // $('#warningConnectionToastAlert .toast-body').text(
-                            //     "Error: Require more host bits!"
-                            // );
-                            window.$vue.makeToast("IP Input", "Error: Require more host bits!", true)
+                            window.$vue.makeToast("SubnetMask Input Error", "Require more host bits!", true)
                         }
                     }
 
@@ -678,14 +704,13 @@ const networkController = (function() {
             if (isValidInput(value)) {
                 if (network.calculated_supernetmask) {
 
-                    var calOctets = network.calculated_supernetmask.split(".");
+                    var calOctets = calculateSupernetMask(network.calculated_subnetmask).split(".");
                     var enteredOctets = value.split(".");
 
                     var validFirstOctet = false;
                     var validSecondOctet = false;
                     var validThirdOctet = false;
                     var validForthOctet = false;
-
 
                     if (enteredOctets.length == 4) {
                         if (calOctets[0] >= enteredOctets[0]) {
@@ -704,18 +729,46 @@ const networkController = (function() {
                         if (validFirstOctet && validSecondOctet && validThirdOctet && validForthOctet) {
                             isValid = true;
                         } else {
-                            // $('#warningConnectionToastAlert').toast('show');
-                            // $('#warningConnectionToastAlert .toast-body').text(
-                            //     "Error: Require more subnet bits!"
-                            // );
-                            window.$vue.makeToast("IP Input", "Error: Require more host bits!", true)
+                            window.$vue.makeToast("SupernetMask Address Input", "Error: Require more host bits!", true)
                         }
                     }
                 }
             }
             return isValid;
         }
+        function checkValidIPAddress(connection) {
+            var invalid_ipaddresses = []
+            // Finding subnet related to selected component
+            var foundSubnetforComp = null;
+            allSubnets.getInstance().toList().forEach(s => {
+                var found = s.endDevices.find(x => x.id == connection.getComponent(0).id || x.id == connection.getComponent(1).id);
+                if (found != null) {
+                    foundSubnetforComp = s;
+                }
+            });
+            var ip_addresses = connection.getIPaddresses()
 
+            for (var ip_address of ip_addresses) {
+                // Get the number of octets currently IP address field
+                var numberOfOctets = ip_address.split(".").length;
+
+                // Array of octets
+                var octets = ip_address.split(".");
+
+                if (foundSubnetforComp) {
+                    if (numberOfOctets == 4 && octets[0] != "" && octets[1] != "" && octets[2] != "" && octets[3] != "") {
+                        // Checking for valid assignment of IP address.
+                        let subnetmask = getSubnetMask();
+                        var subnetID = calculateSubnetID(ip_address, subnetmask);
+                        if (subnetID != foundSubnetforComp.subnetID) {
+                            console.log("not valid ip address")
+                            invalid_ipaddresses.push(ip_address)
+                        }
+                    }
+                }
+            }
+            return invalid_ipaddresses
+        }
         function checkIPAddressInput(event, connection) {
             var interfaceValues;
             var currentSelectedComp = componentController.getSelectedComponent();
@@ -812,26 +865,32 @@ const networkController = (function() {
 
                             var subnetID = calculateSubnetID(IPaddressField, subnetmask);
                             
-                            // Check against existing assign IP addresses
-                            if (subnetID == foundSubnetforComp.subnetID && checkAvailableIPAddress(foundSubnetforComp, IPaddressField)) {
-                                
-                                // Valid IP address for subnet
-                                ipfield.className = "qs_valid_ip_address";
-                                inter.portIPaddress[port] = IPaddressField;
+                            // if project auto validation enabled
+                            if (projectSettingsController.obj('realtimeValidation')) {
+                                // Check against existing assign IP addresses
+                                if (subnetID == foundSubnetforComp.subnetID && checkAvailableIPAddress(foundSubnetforComp, IPaddressField)) {
+                                    
+                                    // Valid IP address for subnet
+                                    ipfield.className = "qs_valid_ip_address";
+                                    inter.portIPaddress[port] = IPaddressField;
 
-                                foundSubnetforComp.addAddressToSubnet(currentSelectedComp, IPaddressField);
+                                    foundSubnetforComp.addAddressToSubnet(currentSelectedComp, IPaddressField);
 
+                                } else {
+                                    
+                                    // Not valid IP address for subnet
+
+                                    ipfield.className = "qs_invalid_ip_address";
+
+                                    // $('#warningConnectionToastAlert').toast('show');
+                                    // $('#warningConnectionToastAlert .toast-body').text(
+                                    //     "Invalid IP address for subnet!"
+                                    // );
+                                    window.$vue.makeToast("IP Input", "Invalid IP address for subnet!", true)
+                                }
                             } else {
-                                
-                                // Not valid IP address for subnet
-
-                                ipfield.className = "qs_invalid_ip_address";
-
-                                // $('#warningConnectionToastAlert').toast('show');
-                                // $('#warningConnectionToastAlert .toast-body').text(
-                                //     "Invalid IP address for subnet!"
-                                // );
-                                window.$vue.makeToast("IP Input", "Invalid IP address for subnet!", true)
+                                inter.portIPaddress[port] = IPaddressField;
+                                foundSubnetforComp.addAddressToSubnet(currentSelectedComp, IPaddressField);
                             }
                         }
                     }
@@ -1068,8 +1127,13 @@ const networkController = (function() {
             binaryToDecimal:binaryToDecimal,
             decimalToBinary:decimalToBinary,
             calculateSubnetID:calculateSubnetID,
+            getManualSubnetMask:getManualSubnetMask,
+            getManualSupernetMask:getManualSupernetMask,
             getSubnetMask:getSubnetMask,
             getSupernetMask:getSupernetMask,
+            isValidSupernetMask:isValidSupernetMask,
+            isValidSubnetMask:isValidSubnetMask,
+            checkValidIPAddress:checkValidIPAddress,
             checkIPAddressInput:checkIPAddressInput,
             checkAvailableIPAddress:checkAvailableIPAddress,
             setupNetwork:setupNetwork,

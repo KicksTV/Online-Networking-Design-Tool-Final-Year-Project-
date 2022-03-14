@@ -1,5 +1,3 @@
-// NOT BEING USED!!!!!
-
 
 // Collections
 import allConnections from '../collections/allConnections.js';
