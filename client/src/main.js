@@ -6,6 +6,8 @@ import {router, newVue} from './router'
 import PortalVue from 'portal-vue'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
+const _ = require('lodash');
+
 newVue.use(PortalVue)
 
 // Make BootstrapVue available throughout your project
@@ -20,6 +22,7 @@ const vue = new newVue({
   data () {
     return {
         foundVueComp: null,
+        toastQueue: []
     }
   },
   router,
@@ -36,11 +39,24 @@ const vue = new newVue({
     isDevelopment: () => process.env.NODE_ENV == 'development',
     isProduction: () => process.env.NODE_ENV == 'production',
     makeToast(title, msg, append = false) {
-      this.$root.$bvToast.toast(msg, {
-        title: title,
-        autoHideDelay: 5000,
-        appendToast: append
-      })
+      var self = this,
+          toast = {title, msg},
+          hideDelay = 5000;
+      // console.log(!self.toastQueue.find(x => { return _.isEqual(x, toast)} ))
+      if (!self.toastQueue.find(x => {return _.isEqual(x, toast)} )) {
+        this.$root.$bvToast.toast(msg, {
+          title: title,
+          autoHideDelay: hideDelay,
+          appendToast: append
+        })
+        self.toastQueue.push(toast)
+        window.setTimeout(function() {
+          // var item_to_delete = self.toastQueue.find(x => {return _.isEqual(x, toast)} )
+          // console.log("Deleting item from queue", item_to_delete)
+          self.toastQueue.shift()
+        }, hideDelay)
+      }
+      console.log(self.toastQueue)
     },
     // Vue component or page
     getVueComponent(name) {
@@ -54,12 +70,13 @@ const vue = new newVue({
       var self = this
       // console.log("Looking through: ", arrToIterate)
       arrToIterate.forEach((vuecomp) => {
+        // console.log(vuecomp.$vnode.tag)
         // console.log("Looking at: ", vuecomp)
         if (vuecomp.$children) {
-          // console.log(vuecomp)
           if (vuecomp.$vnode) {
             var vuecompName = vuecomp.$vnode.tag.split('-')[3]
             // console.log(vuecompName)
+            // console.log(vuecomp)
             if (vuecompName == name) {
               // console.log("Found vuecomp: ", vuecomp)
               self.foundVueComp = vuecomp

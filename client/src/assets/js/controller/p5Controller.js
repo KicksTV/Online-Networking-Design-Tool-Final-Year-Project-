@@ -92,7 +92,9 @@ const p5Controller = (function() {
                     p5.frameRate(60);
                     let canvas = p5.createCanvas((p5.windowWidth-20), p5.windowHeight-203);
                     canvas.parent("canvasDiv");
-                     
+                    var vueCompCanvas = window.$vue.getVueComponent('Gui')
+                    componentController.initGUI(vueCompCanvas.datgui);
+                    console.log("p5 setup")
                 }
                 p5.draw = function() {
                     p5.clear();
@@ -386,6 +388,26 @@ const p5Controller = (function() {
                                 }
                             }
                         }
+
+                        // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
+                        //print(connectionController.isSelectingInterfacePort());
+                        if (! connectionController.isSelectingInterfacePort()) {
+                            componentController.setSelectedComponent(componentController.getSelectedComponent());
+                
+                            // apply seleceted comp values to gui
+                            componentController.applyGUIValues();
+                
+                            // Adds connection data to table
+                            panelController.getInstance().updatePanelWithData(componentController.getSelectedComponent());
+                            
+                            checkComponentDeleteEvent();
+                
+                            // Checks if users is selecting two components to make a connection
+                            if (connectionController.getDrawConnection()) {
+                                connectionController.selectConnectionForComp(componentController.getSelectedComponent());
+                            }
+                        }
+
                     }else {
                         // checking if the user is clicking the bin icon, if so then dont clear select list.
                         if (p5.mouseX > 104 && p5.mouseY > 39) {

@@ -3,6 +3,7 @@ import networkController from './networkController.js';
 import componentController from './componentController.js';
 import panelController from './panelController.js';
 import p5Controller from './p5Controller.js';
+import projectSettingsController from './ProjectSettingsController.js';
 
 // Collections
 import allConnections from '../collections/allConnections.js';
@@ -22,7 +23,7 @@ const connectionController = (function() {
         var selectingInterface = false;
 
         function connectionEvent(mouseX, mouseY) {
-            console.log("here", mouseX, mouseY)
+            // console.log("here", mouseX, mouseY)
             componentController.checkForSelectedComponent(mouseX, mouseY);
             if (componentController.isCurrentlyClickingComp() != null) {
                 // NEED TO CHANGE HOW THIS WORKS - PREVENTS INTERACTION WITH CANVAS WHILE SELECTING INTERFACE
@@ -80,8 +81,32 @@ const connectionController = (function() {
             var preComp = allConnections.getSelectedConnection().getComponent(0);
 
                 //print(checkValidConnection(true, comp, preComp));
-                if (checkValidConnection(true, comp, preComp)) {
-                    
+
+                // if project auto validation enabled
+                if (projectSettingsController.obj('realtimeValidation')) {
+                    if (checkValidConnection(true, comp, preComp)) {
+                        
+                        if (comp.hasAvailablePort()) {
+                            waitForSelectedPort(comp.getInterfaces(), comp, preComp);
+                            selectingInterface = true;
+                        }
+                        comp.setHasConnection(true);
+                        
+                        if (typeof preComp !== 'undefined') {
+                            preComp.setHasConnection(true);
+                        }
+                        
+                    } else {
+                        // print("ending connection");
+
+                        // Deleting connection object
+                        allConnections.removeConnection(allConnections);
+
+                        // End selection process
+                        endConnection();
+                        window.$vue.makeToast("Error", "Connection not possible!", true)
+                    }
+                } else {
                     if (comp.hasAvailablePort()) {
                         waitForSelectedPort(comp.getInterfaces(), comp, preComp);
                         selectingInterface = true;
@@ -91,52 +116,38 @@ const connectionController = (function() {
                     if (typeof preComp !== 'undefined') {
                         preComp.setHasConnection(true);
                     }
-                    
-                } else {
-                    // print("ending connection");
-
-                    // Deleting connection object
-                    allConnections.removeConnection(allConnections);
-
-                    // End selection process
-                    endConnection();
-
-                    // display error message
-                    // $('#warningConnectionToastAlert').toast('show');
-                    // $('#warningConnectionToastAlert .toast-body').text(
-                    //     "Connection not possible!"
-                    // );
-                    window.$vue.makeToast("Error", "Connection not possible!", true)
-                }               
+                }          
             } 
             else if (compAddConnectionCounter == 1) {
                 // console.log("check valid", checkValidConnection(false, comp, null))
-                if (checkValidConnection(false, comp, null)) {
-                    // print("connecting first component");
-                    //print(comp.hasAvailablePort());
+                if (projectSettingsController.obj('realtimeValidation')) {
+                    if (checkValidConnection(false, comp, null)) {
+                        // print("connecting first component");
+                        //print(comp.hasAvailablePort());
 
-                    // NEED TO CHANGE THIS!!!
+                        // NEED TO CHANGE THIS!!!
+                        if (comp.hasAvailablePort()) {
+                            // print("waiting for selection of components");
+                            waitForSelectedPort(comp.getInterfaces(), comp, null);
+                            selectingInterface = true;
+                        } else {
+                            window.$vue.makeToast("Error", "No Available Ports!", true)
+                        }
+                    } else {
+                        endConnection();
+                        // Deleting connection object
+                        allConnections.removeConnection(allConnections);
+                        window.$vue.makeToast("Error", "Connection not possible!", true)
+                    }
+                } else {
                     if (comp.hasAvailablePort()) {
                         // print("waiting for selection of components");
                         waitForSelectedPort(comp.getInterfaces(), comp, null);
                         selectingInterface = true;
                     } else {
-                        // $('#warningConnectionToastAlert').toast('show');
-                        // $('#warningConnectionToastAlert .toast-body').text(
-                        //     "No Available Ports!"
-                        // );
                         window.$vue.makeToast("Error", "No Available Ports!", true)
                     }
-                } else {
-                    endConnection();
-                    // Deleting connection object
-                    allConnections.removeConnection(allConnections);
-                    // $('#warningConnectionToastAlert').toast('show');
-                    // $('#warningConnectionToastAlert .toast-body').text(
-                    //     "Connection not possible!"
-                    // );
-                    window.$vue.makeToast("Error", "Connection not possible!", true)
-                }
+                }   
             }
             
             //print(get());
@@ -167,7 +178,8 @@ const connectionController = (function() {
             // print(allConnections.getSelectedConnection());
             
             var isValidConnection = false;
-            var isValidConnectionType1 = comp.checkValidLinkingComponent(allConnections.getSelectedConnection());
+            var connection = allConnections.getSelectedConnection() || allConnections.getConnectionRelatedToComps(comp, preComp)
+            var isValidConnectionType1 = comp.checkValidLinkingComponent(connection);
 
             // console.log("Valid linking component", isValidConnectionType1);
             
@@ -177,7 +189,7 @@ const connectionController = (function() {
             }
             
             if (hasSelectedBothComponents) {
-                var isValidConnectionType2 = preComp.checkValidLinkingComponent(allConnections.getSelectedConnection());
+                var isValidConnectionType2 = preComp.checkValidLinkingComponent(connection);
                 if (allVRules.getInstance().isValidConnection(comp.name, preComp.name) && isValidConnectionType1 && isValidConnectionType2) {
                     isValidConnection = true;
                 }
@@ -308,6 +320,7 @@ const connectionController = (function() {
             setDrawConnection: setDrawConnection,
             addComponentToConnection:addComponentToConnection,
             drawConnetions:drawConnetions,
+            checkValidConnection:checkValidConnection,
             deleteConnection:deleteConnection,
             endConnection:endConnection,
         };   

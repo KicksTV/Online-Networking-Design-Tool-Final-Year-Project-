@@ -27,9 +27,6 @@
     <b-tooltip target="canvasLoadProject" placement="bottom">
         Load network
     </b-tooltip>
-    <b-tooltip target="canvasSettingsBtn" placement="bottom">
-        Edit project settings
-    </b-tooltip>
     <b-tooltip target="canvasRunBtn" placement="bottom">
         Run network and validation checks
     </b-tooltip>
@@ -48,7 +45,9 @@ import saveLoadController from '@/assets/js/controller/saveLoadController.js';
 import connectionController from '@/assets/js/controller/connectionController.js';
 import networkController from '@/assets/js/controller/networkController.js';
 import panelController from '@/assets/js/controller/panelController.js';
+import validationController from '@/assets/js/controller/validationController.js';
 import projectSettings from '@/assets/js/controller/ProjectSettingsController.js';
+
 
 
 // Collections
@@ -60,7 +59,6 @@ import allConnections from '@/assets/js/collections/allConnections.js';
 import graph from '@/assets/js/models/graph.js';
 
 // Vue components
-/* eslint-disable */
 import Gui from './Gui.vue'
 
 
@@ -69,10 +67,10 @@ window.onload = function() {
     componentController.init();
 }
 
+/* eslint-disable */
 export default {
     name: 'Canvas',
     components: {
-        Gui
     },
     data() {
         return {
@@ -137,6 +135,14 @@ export default {
             // a factory function
             default: function () {
                 return panelController
+            }
+        },
+        validationController: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return validationController
             }
         },
         allComponents: {
@@ -209,7 +215,9 @@ export default {
             self.$refs.upload_input.onchange = self.saveLoadController.loadEvent;
         },
         runValidiationChecks: function() {
-           
+            var self = this
+            console.log("run validation check")
+            self.validationController.runValidationCheck()
         },
         toggleProjectSettings: function() {
             var self = this
@@ -223,26 +231,27 @@ export default {
         initGuiRight: function() {
             var self = this
             self.guiRight = new self.GuiClass({
-                propsData: {}
+                propsData: {},
             })
             self.guiRight.$mount()
             self.guiRight.init('rightSidePanel')
-            self.guiRight.addFolder(projectSettings, "Project Settings")
+            self.guiRight.addFolder(projectSettings, "Project Settings", false)
             self.guiRight.width = 400;
-    
+            self.$children.push(self.guiRight)
+
             networkController.initGUI(self.guiRight.datgui);
-        
             networkController.initNetworkListener(self.guiRight.datgui);
-            componentController.initGUI(self.guiRight.datgui);
         },
     },
+    created: function() {
+    },
     mounted() {
-        var self = this
+        var self = this;
+        self.initGuiRight()
         p5Controller.createNewCanvas()
-
         var room_id = (self.$root._route.query.room_id ) ? self.$root._route.query.room_id : null
         if (room_id) ioController.init(room_id)   
-        self.initGuiRight()
+
     },
 }
 </script>

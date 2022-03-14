@@ -37,6 +37,7 @@ var allConnections = (function() {
         function setSelectedConnection(con) {
             selectedConnection = con;
         }
+        // Find all connections that is connected with this device
         function getConnectionsRelatedToComp(c) {
             var _relatedConnections = [];
             _connections.forEach((i) => {
@@ -48,6 +49,18 @@ var allConnections = (function() {
             });
             return _relatedConnections;
         }
+        // Get the connection between two devices
+        function getConnectionRelatedToComps(first_c, second_c) {
+            var found = null;
+            _connections.forEach((i) => {
+                if (i != selectedConnection) {
+                    if ((first_c.id == i.getComponent(0).id && second_c.id == i.getComponent(1).id) || (second_c.id == i.getComponent(0).id && first_c.id == i.getComponent(1).id)) {
+                        found = i;
+                    }
+                }
+            });
+            return found
+        }
         return {add:add,
                 length:length,
                 get:get,
@@ -58,6 +71,7 @@ var allConnections = (function() {
                 getSelectedConnection:getSelectedConnection,
                 setSelectedConnection:setSelectedConnection,
                 getConnectionsRelatedToComp:getConnectionsRelatedToComp,
+                getConnectionRelatedToComps:getConnectionRelatedToComps,
             };   
     }
 

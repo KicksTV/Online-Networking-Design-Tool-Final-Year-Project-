@@ -52,12 +52,32 @@
         color: #007bff;
         text-decoration: none;
     }
+    #bottomPanel .tabs {
+        height: 100%;
+    }
     .tab-content, .tab-pane {
         height: 100%;
     }
     textarea:focus-visible {
         outline: 0px;
     }
+    p {
+        margin-bottom: 0 !important;
+    }
+    #consoleDiv {
+        display: flex;
+        flex-flow: column;
+        height: 80%;
+    }
+    #console {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 15px;
+    }
+    #consoleInput {
+        height: 20%;
+    }
+    
 </style>
 
 
@@ -90,9 +110,14 @@
                             </table>
                         </b-tab>
 
-                        <b-tab v-if="$root.isDevelopment()" :title-item-class="['text-black']" title="Console">
-                            <textarea class="border-0 w-100" name="" id="console" cols="30" rows="10" readonly></textarea>
+                        <b-tab v-if="$root.isDevelopment()" :title-item-class="['text-black']" title="Console" id="consoleDiv">
+                            <div ref="console" id="console" class="w-100 h-100 bg-light">
+                                <p>The console will display success, infomational, warning and error messages.</p>
+                            </div>
+                            <textarea class="border-0 w-100" name="" id="consoleInput" cols="1" rows="1"></textarea>
                         </b-tab>
+
+
                         <b-tab :title-item-class="['ml-auto']">
                             <template #title class="h-100">
                                 <p class="tab-title mb-0">Room</p>
@@ -120,7 +145,26 @@
                 // ioController.sendData('createRoom', socketID)
                 e.target.closest("li.nav-item").classList.add('d-none')
                 e.target.closest("li.nav-item").nextSibling.classList.remove('d-none')
-           }
+           },
+
+            consoleErrorMsg: function(msg) {
+                var self = this,
+                    console_el = self.$refs.console;
+
+                console_el.innerHTML += `<p class="text-danger"><i>${new Date().toLocaleTimeString()}</i> Error: ${msg}</p>`
+            },
+            consoleInfoMsg: function(msg) {
+                var self = this,
+                    console_el = self.$refs.console;
+
+                console_el.innerHTML += `<p class="text-info"><i>${new Date().toLocaleTimeString()}</i> Info: ${msg}</p>`
+            },
+            consoleWarningMsg: function(msg) {
+                var self = this,
+                    console_el = self.$refs.console;
+
+                console_el.innerHTML += `<p class="text-warning"><i>${new Date().toLocaleTimeString()}</i> Warning: ${msg}</p>`
+            }
         },
     }
 </script>
