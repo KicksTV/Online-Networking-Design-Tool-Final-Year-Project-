@@ -80,7 +80,6 @@
     
 </style>
 
-
 <template>
     <div>
         <div id="bottomPanel" class="container-fluid" style="width: 100%;">
@@ -110,15 +109,14 @@
                             </table>
                         </b-tab>
 
-                        <b-tab v-if="$root.isDevelopment()" :title-item-class="['text-black']" title="Console" id="consoleDiv">
+                        <b-tab :title-item-class="['text-black']" title="Console" id="consoleDiv">
                             <div ref="console" id="console" class="w-100 h-100 bg-light">
                                 <p>The console will display success, infomational, warning and error messages.</p>
                             </div>
                             <textarea class="border-0 w-100" name="" id="consoleInput" cols="1" rows="1"></textarea>
                         </b-tab>
 
-
-                        <b-tab :title-item-class="['ml-auto']">
+                        <b-tab v-if="$root.isDevelopment()" :title-item-class="['ml-auto']">
                             <template #title class="h-100">
                                 <p class="tab-title mb-0">Room</p>
                             </template>
