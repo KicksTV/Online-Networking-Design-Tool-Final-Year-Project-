@@ -49,20 +49,28 @@ app.use('/projects/join', socket_io.router)
 //         res.redirect('/login')
 //     }
 // })
+// app.get('/projects/newproject/', vue_route);
 
-app.get(/.*/, function (req, res) {
+app.get(/.*/, vue_route);
+
+function vue_route(req, res) {
     var pagedata = {
         'title': 'Build Networks Online'
     };
     res.sendFile(path.join(__dirname, '/dist/index.html'));
-});
+}
 
 
 function errorHandler(err, req, res, next) {
     if (err && env !== 'development') {
-        res.send('<h1>There was an error, please try again.</h1>')
+        res.send(`
+            <h1>There was an error, please try again.</h1>
+        `)
     } else {
-        next()
+        res.send(`
+            <h1>There was an error, please try again.</h1>
+            <p>${err}</p>
+        `)
     }
 }
 app.use(errorHandler)
