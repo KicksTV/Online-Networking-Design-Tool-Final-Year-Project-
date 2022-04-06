@@ -50,6 +50,7 @@
     "serve-index": "^1.9.1",
     "socket.io": "^2.4.1",
     "vue": "^2.6.14",
+    "vue-p5": "^0.8.4",
     "vue-router": "^3.4.9",
     "vue-template-compiler": "^2.6.14"
   },

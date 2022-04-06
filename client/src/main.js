@@ -69,26 +69,28 @@ const vue = new newVue({
     findComponent(arrToIterate, name) {
       var self = this
       // console.log("Looking through: ", arrToIterate)
-      arrToIterate.forEach((vuecomp) => {
-        // console.log(vuecomp.$vnode.tag)
-        // console.log("Looking at: ", vuecomp)
-        if (vuecomp.$children) {
-          if (vuecomp.$vnode) {
-            var vuecompName = vuecomp.$vnode.tag.split('-')[3]
-            // console.log(vuecompName)
-            // console.log(vuecomp)
-            if (vuecompName == name) {
-              // console.log("Found vuecomp: ", vuecomp)
-              self.foundVueComp = vuecomp
-              return
+      if (arrToIterate.length) {
+        arrToIterate.forEach((vuecomp) => {
+          // console.log(vuecomp.$vnode.tag)
+          // console.log("Looking at: ", vuecomp)
+          if (vuecomp.$children) {
+            if (vuecomp.$vnode) {
+              var vuecompName = vuecomp.$vnode.tag.split('-')[3]
+              // console.log(vuecompName)
+              // console.log(vuecomp)
+              if (vuecompName == name) {
+                // console.log("Found vuecomp: ", vuecomp)
+                self.foundVueComp = vuecomp
+                return
+              }
             }
+            self.findComponent(vuecomp.$children, name)
           }
-          self.findComponent(vuecomp.$children, name)
+        })
+        if (self.foundVueComp) {
+          // console.log("Returning vuecomp: ", self.foundVueComp)
+          return self.foundVueComp
         }
-      })
-      if (self.foundVueComp) {
-        // console.log("Returning vuecomp: ", self.foundVueComp)
-        return self.foundVueComp
       }
     }
   },

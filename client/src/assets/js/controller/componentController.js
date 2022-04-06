@@ -56,7 +56,7 @@ const componentController = (function() {
             // Wait for img to be loaded
             let promise = new Promise((resolve) => {
                 // Loading component image
-                p5Controller.getCanvas().loadImage(defaultComponent.getImgPath(), img => {
+                p5Controller.useFunc('loadImage')(defaultComponent.getImgPath(), img => {
                     img.width = img.width/2;
                     img.height = img.height/2;
 
@@ -412,7 +412,7 @@ const componentController = (function() {
         async function getDefaultComponentData(name) {
             
             let promise = new Promise((resolve) => {
-                p5Controller.getCanvas().loadXML(`/components/${name.toLowerCase()}.xml`, (xml) => {
+                p5Controller.getCanvas().loadXML(`/components/${name.toLowerCase()}.xml`, function(xml) {
                     resolve(xml);
                 });
             });
@@ -421,7 +421,11 @@ const componentController = (function() {
             let type = data.getChild('type').getContent();
             let image = data.getChild('image').getString('path');
 
+
             var defaultComponent = new Component(null, name, type, image, null);
+
+            // console.log(image, defaultComponent)
+
 
             for (let getInter of data.getChild("interfaces").getChildren()) {
                 // print(getInter.getString('portType'));
