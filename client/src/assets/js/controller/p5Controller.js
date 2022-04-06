@@ -611,8 +611,6 @@ const p5Controller = (function() {
             //     }
             // }
             
-            console.log(newP5)
-
             _allCanvases.push(newP5);
             currentCanvas = newP5;
         }

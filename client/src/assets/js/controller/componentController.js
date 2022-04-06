@@ -424,9 +424,6 @@ const componentController = (function() {
 
             var defaultComponent = new Component(null, name, type, image, null);
 
-            // console.log(image, defaultComponent)
-
-
             for (let getInter of data.getChild("interfaces").getChildren()) {
                 // print(getInter.getString('portType'));
                 let portType = getInter.getString('portType');
