@@ -20,6 +20,7 @@ import allConnections from '../collections/allConnections.js';
 import InterfaceView from '../views/InterfaceView.js';
 
 import p5 from 'p5';
+// import p5 from '/node_modules/p5/lib/p5.js';
 import ProjectSettingsController from './ProjectSettingsController.js';
 const _ = require('lodash');
 
@@ -87,6 +88,7 @@ const p5Controller = (function() {
                         }
                     }
                     
+                    
                 }
                 p5.setup = function() {
                     p5.frameRate(60);
@@ -95,10 +97,12 @@ const p5Controller = (function() {
                     var vueCompCanvas = window.$vue.getVueComponent('Gui')
                     componentController.initGUI(vueCompCanvas.datgui);
                     console.log("p5 setup")
+
+                    
                 }
                 p5.draw = function() {
                     p5.clear();
-                    
+
                     drawAllConnections();
                     displayAllComponents();
                     //updateMouseCursor();
@@ -607,7 +611,6 @@ const p5Controller = (function() {
             //     }
             // }
             
-
             _allCanvases.push(newP5);
             currentCanvas = newP5;
         }

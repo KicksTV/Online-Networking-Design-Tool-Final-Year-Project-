@@ -67,11 +67,11 @@ window.onload = function() {
     componentController.init();
 }
 
+
+
 /* eslint-disable */
 export default {
     name: 'Canvas',
-    components: {
-    },
     data() {
         return {
             GuiClass: Vue.extend(Gui),
@@ -242,8 +242,15 @@ export default {
             networkController.initGUI(self.guiRight.datgui);
             networkController.initNetworkListener(self.guiRight.datgui);
         },
+        setup(sketch) {
+            sketch.background('green');
+            sketch.text('Hello p5!', 20, 20);
+        }
     },
     created: function() {
+        var self = this;
+        // self.initGuiRight()
+        // p5Controller.createNewCanvas()
     },
     mounted() {
         var self = this;

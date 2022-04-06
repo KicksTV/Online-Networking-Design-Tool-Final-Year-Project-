@@ -115,7 +115,6 @@
                             </div>
                             <textarea class="border-0 w-100" name="" id="consoleInput" cols="1" rows="1"></textarea>
                         </b-tab>
-
                         <b-tab v-if="$root.isDevelopment()" :title-item-class="['ml-auto']">
                             <template #title class="h-100">
                                 <p class="tab-title mb-0">Room</p>
