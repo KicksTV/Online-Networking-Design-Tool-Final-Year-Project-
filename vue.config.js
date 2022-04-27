@@ -18,7 +18,8 @@ module.exports = {
   configureWebpack: config => {
     config.resolve = {
       alias: {
-        '@': path.resolve(__dirname, 'client/src')
+        '@': path.resolve(__dirname, 'client/src'),
+        'datgui2': path.resolve(__dirname, 'dat.gui/build/dat.gui.js')
       }
     }
     if (process.env.NODE_ENV === 'production') {

@@ -1,7 +1,12 @@
 
 <template><div></div></template>
 <script>
-    const GUI = require('dat.gui').GUI;
+    // const GUI = require('dat.gui').GUI;
+
+    // ES6:
+    import * as dat from '/dat.gui';
+    // const GUI = require('datgui2').GUI;
+
 
     export default {
         name: "Gui",
@@ -10,7 +15,7 @@
         },
         data() {
             return {
-                datgui: new GUI({ name: 'test', autoPlace: true, resizable: true }),
+                datgui: new dat.GUI({ name: 'test', autoPlace: true, resizable: true,  }),
                 folders: {},
                 showing: false,
             }
