@@ -31,7 +31,7 @@
     "browserify": "^16.5.2",
     "connect-pg-simple": "^7.0.0",
     "core-js": "^3.6.5",
-    "dat.gui": "^0.7.7",
+    "dat.gui": "git@github.com:KicksTV/dat.gui.git",
     "dotenv": "^10.0.0",
     "ejs": "^2.7.4",
     "express": "^4.17.1",
@@ -106,7 +106,7 @@
     "url": "https://github.com/KicksTV/Online-Networking-Design-Tool-Final-Year-Project-/issues"
   },
   "engines": {
-    "node": "16.13.0"
+    "node": "14.19.1"
   },
   "homepage": "https://github.com/KicksTV/Online-Networking-Design-Tool-Final-Year-Project-#readme",
   "keywords": [],

@@ -96,6 +96,32 @@ const networkController = (function() {
             var autoCalculateController = networkPropertiesPanel.add(network, 'autoCalculateMasks');
 
 
+            hosts.set_help_text(
+                `Number of existing devices (which are able to be given an IP address) currently loaded in the project.`
+            )
+            subnets.set_help_text(
+                `Number of existing subnets currently in the project.`
+            )
+            totalHosts.set_help_text(
+                `Total number of usable IP addresses.`
+            )
+            totalSubnets.set_help_text(
+                `Total number of subnets.`
+            )
+            
+            subnetController.set_help_text(
+                `Auto calculated subnet mash based on current VALID connected devices, 
+                 e.g. PC_1 linked with Router_1 using a twiested pair cable.`
+            )
+            supernetController.set_help_text(
+                `Auto calculated supernet mash based on current VALID connected devices, 
+                 e.g. PC_1 linked with Router_1 using a twiested pair cable.`
+            )
+            autoCalculateController.set_help_text(
+                `Enable auto calculation of subnet/supernet masks while creating a network.`
+            )
+
+
             properties = [hosts, subnets, totalHosts, totalSubnets, subnetController, 
                           supernetController, autoCalculateController];
         }
