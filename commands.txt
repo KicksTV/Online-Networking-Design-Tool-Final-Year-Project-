@@ -1,7 +1,3 @@
-# Push project to heroku
-
-
-
 # Bundling libraries together.
 browserify -r dat.gui -r socket.io-client -r p5 > bundle.js
 
@@ -23,6 +19,31 @@ module.default.getInstance().getAll()
 
 // Devlop Console import (New)
 $vue.$children[0].$children[1].$children[1].allConnections.get()
+
+
+
+# DATABASE SETUP - https://www.educba.com/postgresql-commands/
+
+sudo apt install postgresql postgresql-contrib
+
+sudo service postgresql start
+
+sudo -i -u postgres
+
+sudo -u postgres createuser llewe
+
+sudo -u postgres createdb llewe
+
+psql
+
+alter user <username> with encrypted password '<password>';
+
+grant all privileges on database <dbname> to <username> ;
+
+ALTER USER username CREATEDB;
+
+
+# DEPLOYING LIVE
 
 
 How to switch deployment method from GitHub to Heroku Git with all the changes/app code available in a GitHub repo
