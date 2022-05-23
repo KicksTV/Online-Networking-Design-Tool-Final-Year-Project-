@@ -16,6 +16,16 @@ router.get('/', async (req, res) => {
     res.json(users)
 })
 
+router.get('/get/session/', async (req, res) => {
+    var userData = req.user
+    if (userData) {
+        delete userData['id'];
+        delete userData['password'];
+        delete userData['salt'];
+    }
+    res.json(userData)
+})
+
 router.post('/', async (req, res) => {
     const { username, password, email } = req.body;
     try {

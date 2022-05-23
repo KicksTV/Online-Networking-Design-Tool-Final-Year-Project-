@@ -26,10 +26,19 @@ var allConnections = (function() {
             return _connections[num];
         }
         function removeConnection(con) {
-            var index = _connections.findIndex(c => c === con);
-            _connections = _connections.filter((value, i) => {
-                return i != index; 
-            });
+            if (!con) {
+                // Assume that its the selected
+                if (selectedConnection) {
+                    _connections = _connections.filter(c => selectedConnection.id !== c.id);
+                } else {
+                    throw {name : "UnknownConnection", message : "No connection found for deletion"}; 
+                }
+            } else {
+                var index = _connections.findIndex(c => c === con);
+                _connections = _connections.filter((value, i) => {
+                    return i != index; 
+                });
+            }
         }
         function getSelectedConnection() {
             return selectedConnection;

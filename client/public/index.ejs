@@ -23,6 +23,27 @@
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
+
+    <script>
+      function getPageData() {
+        var pagedata = {}
+        if (Object.keys(pagedata).length === 0)
+          // hasn't loaded data yet, so set it
+          if ('<$= title $>') {
+            pagedata.title = "<$= title $>";
+            
+          }
+          if ('<$- user $>') {
+            pagedata.user = '<$- user $>';
+          }
+        
+        // Has loaded so just return data
+        return pagedata
+      }
+      getPageData()
+      
+    </script>
+
     <!-- built files will be auto injected -->
     <script src="https://kit.fontawesome.com/96eb25bbd8.js" crossorigin="anonymous"></script>
 

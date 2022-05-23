@@ -29,20 +29,77 @@
           <b-dropdown-item href="#">RU</b-dropdown-item>
           <b-dropdown-item href="#">FA</b-dropdown-item>
         </b-nav-item-dropdown> -->
-
-        <!-- <b-nav-item-dropdown right>
+        <b-nav-item-dropdown right v-if="getUser">
           <template #button-content>
-            <em>User</em>
+            <i class="fas fa-user mr-2"></i>
+            <em>{{ getUserName }} </em>
           </template>
-          <b-dropdown-item href="#">Profile</b-dropdown-item>
-          <b-dropdown-item href="#">Sign Out</b-dropdown-item>
-        </b-nav-item-dropdown> -->
+          <!-- <b-dropdown-item href="#">Profile</b-dropdown-item> -->
+          <b-dropdown-item href="/logout">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <div right v-else>
+          <a href="/login">Login</a>
+          <span class="text-white">/</span>
+          <a href="/register">Sign up</a>
+        </div>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
   <router-view/>
   </div>
 </template>
+
+<script>
+  export default {
+      name: "App",
+      props: {
+
+      },
+      data: function() {
+        return {
+          user: null,
+        }
+      },
+      methods: {
+          getUserData: function() {
+            var self = this
+            console.log(self.$parent.HTTP)
+            self.$parent.HTTP.get('api/user/get/session/')
+                  .then(response => {
+                    console.log(response)
+                    if (response.data) {
+                      self.user = response.data
+                    }
+                    this.loading = false
+                  })
+                  .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                    this.loading = false
+                    return null
+                  })
+                  .finally(() => this.loading = false)
+            
+          },
+          
+      },
+      computed: {
+        getUser: function() {
+          console.log(this.user)
+          return this.user
+        },
+        getUserName: function() {
+          if (this.user)
+            return this.user.username
+          else
+            return null
+        }
+      },
+      mounted: function() {
+        this.getUserData()
+      }
+  }
+</script>
 
 <style>
 #app {

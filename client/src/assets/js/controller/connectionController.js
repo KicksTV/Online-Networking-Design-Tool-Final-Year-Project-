@@ -78,7 +78,7 @@ const connectionController = (function() {
 
             // if user is selecting final component for link
             if (compAddConnectionCounter == 2) {
-            var preComp = allConnections.getSelectedConnection().getComponent(0);
+                var preComp = allConnections.getSelectedConnection().getComponent(0);
 
                 //print(checkValidConnection(true, comp, preComp));
 
@@ -100,7 +100,7 @@ const connectionController = (function() {
                         // print("ending connection");
 
                         // Deleting connection object
-                        allConnections.removeConnection(allConnections);
+                        allConnections.removeConnection();
 
                         // End selection process
                         endConnection();
@@ -136,7 +136,7 @@ const connectionController = (function() {
                     } else {
                         endConnection();
                         // Deleting connection object
-                        allConnections.removeConnection(allConnections);
+                        allConnections.removeConnection();
                         window.$vue.makeToast("Error", "Connection not possible!", true)
                     }
                 } else {
@@ -203,13 +203,13 @@ const connectionController = (function() {
             return isValidConnection;
         }
         function waitForSelectedPort(interfaces, comp, preComp) {
-            
             p5Controller.getCanvas().createInterfaceView(interfaces);
             selectingSecondConnection = false;
             document.getElementById('connectionCancel').onclick = () => {
                 // Deleting connection object
                 console.log("cancel")
-                allConnections.removeConnection(allConnections);
+                console.log(drawConnection)
+                allConnections.removeConnection();
                 endConnection();
                 p5Controller.getCanvas().clearInterfaceView();
                 selectingInterface = false;
