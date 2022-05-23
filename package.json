@@ -17,7 +17,7 @@
     "makemigrations": "npx prisma migrate dev",
     "migrate": "npx prisma migrate deploy",
     "test": "mocha -r esm",
-    "deploy-production": "git checkout production && git merge master -m 'Merged master into production' && git push && git checkout master"
+    "deploy-production": "git checkout production && git merge master -m 'Merged master into production' && git push && git push heroku production:main && git checkout master"
   },
   "main": "app.js",
   "dependencies": {
