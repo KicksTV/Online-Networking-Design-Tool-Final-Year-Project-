@@ -8,6 +8,9 @@ const pg = require('pg');
 
 var socket_io = require('./routes/socket_io.js')
 
+var ejs = require('ejs');
+ejs.delimiter = '$';
+
 // Gives us access to the .env file for enviroment variables
 require('dotenv').config()
 
@@ -15,6 +18,7 @@ var app = express();
 var PORT = process.env.PORT || 5000
 var env = process.env.NODE_ENV || 'development';
 
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '/dist')));
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,15 +53,27 @@ app.use('/projects/join', socket_io.router)
 //         res.redirect('/login')
 //     }
 // })
-// app.get('/projects/newproject/', vue_route);
+
+// app.get('/', require('./routes/main'));
 
 app.get(/.*/, vue_route);
 
 function vue_route(req, res) {
     var pagedata = {
-        'title': 'Build Networks Online'
+        'title': 'Build Networks Online',
+        'user': null,
     };
-    res.sendFile(path.join(__dirname, '/dist/index.html'));
+
+    var userData = req.user
+    if (userData) {
+        delete userData['id'];
+        delete userData['password'];
+        delete userData['salt'];
+        console.log(userData)
+        pagedata['user'] = JSON.stringify(userData)
+    }
+    
+    res.render(path.join(__dirname, '/dist/index.ejs'), pagedata);
 }
 
 

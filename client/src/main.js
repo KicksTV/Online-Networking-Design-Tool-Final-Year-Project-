@@ -6,6 +6,7 @@ import {router, newVue} from './router'
 import PortalVue from 'portal-vue'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
+
 const _ = require('lodash');
 
 newVue.use(PortalVue)
@@ -18,11 +19,19 @@ newVue.use(IconsPlugin)
 newVue.config.productionTip = false
 
 
+const axios = require('axios').default;
+
+const HTTP = axios.create({
+    baseURL: process.env.BASE_URL,
+})
+
+
 const vue = new newVue({
   data () {
     return {
-        foundVueComp: null,
-        toastQueue: []
+      HTTP: HTTP,
+      foundVueComp: null,
+      toastQueue: []
     }
   },
   router,
@@ -94,6 +103,8 @@ const vue = new newVue({
       }
     }
   },
+  mounted: function() {
+  }
 }).$mount('#app')
 
 window.$vue = vue

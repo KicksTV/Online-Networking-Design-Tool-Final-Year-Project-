@@ -2,10 +2,11 @@ const path = require('path')
 
 module.exports = {
   // publicPath: '../public',
+  indexPath: 'index.ejs',
   pages: {
     index: {
       entry: 'client/src/main.js',
-      template: 'client/public/index.html'
+      template: 'client/public/index.ejs'
     }
   },
   configureWebpack: {
@@ -18,7 +19,7 @@ module.exports = {
   configureWebpack: config => {
     config.resolve = {
       alias: {
-        '@': path.resolve(__dirname, 'client/src')
+        '@': path.resolve(__dirname, 'client/src'),
       }
     }
     if (process.env.NODE_ENV === 'production') {

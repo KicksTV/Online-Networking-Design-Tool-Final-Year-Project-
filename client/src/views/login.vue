@@ -11,7 +11,7 @@
             <label for="password">Password</label>
             <input id="password" class="form-control" type="password" name="password" placeholder="Password">
           </div>
-          <button class="btn btn-primary" type="submit">Go</button>
+          <button class="btn btn-primary" type="submit">Login</button>
         </form>
     </div>
   </div>
