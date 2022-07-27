@@ -39,8 +39,8 @@
         </b-nav-item-dropdown>
         <div right v-else>
           <a href="/login">Login</a>
-          <span class="text-white">/</span>
-          <a href="/register">Sign up</a>
+          <span class="text-white mx-2">/</span>
+          <a href="/register">Signup</a>
         </div>
       </b-navbar-nav>
     </b-collapse>
@@ -52,40 +52,51 @@
 <script>
   export default {
       name: "App",
-      props: {
-
-      },
       data: function() {
         return {
           user: null,
+          HTTP: this.$parent.HTTP,
+          loadingUserData: false,
         }
       },
       methods: {
-          getUserData: function() {
+          getUserData: async function() {
             var self = this
-            console.log(self.$parent.HTTP)
-            self.$parent.HTTP.get('api/user/get/session/')
+            if (!self.loadingUserData) {
+              self.loadingUserData = true
+
+              const promise = new Promise((resolve) => {
+                self.HTTP.get('api/user/get/session/')
                   .then(response => {
                     console.log(response)
                     if (response.data) {
                       self.user = response.data
+                      resolve(response.data)
+                    } else {
+                      // No data
+                      resolve(null)
                     }
-                    this.loading = false
+                    self.loadingUserData = false
                   })
                   .catch(error => {
                     console.log(error)
-                    this.errored = true
-                    this.loading = false
+                    self.errored = true
+                    self.loadingUserData = false
+                    resolve(error)
                     return null
                   })
-                  .finally(() => this.loading = false)
-            
+                  .finally(() => self.loadingUserData = false)
+              })
+              return await promise
+            } else {
+              return; 
+            }
+
           },
           
       },
       computed: {
         getUser: function() {
-          console.log(this.user)
           return this.user
         },
         getUserName: function() {

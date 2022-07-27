@@ -2,7 +2,7 @@
 <component>
     <name>PC</name>
     <type>Device</type>
-    <image path="../img/pc.svg" alt="Personal computer icon"></image>
+    <image path="/img/pc.svg" alt="Personal computer icon"></image>
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="1"></interface>
     </interfaces>

@@ -2,7 +2,7 @@
 <component>
     <name>Server</name>
     <type>Device</type>
-    <image path="../img/server.svg" alt="Server icon"></image>
+    <image path="/img/server.svg" alt="Server icon"></image>
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="1"></interface>
     </interfaces>

@@ -2,7 +2,7 @@
 <component>
     <name>Laptop</name>
     <type>Device</type>
-    <image path="../img/laptop.svg" alt="Laptop icon"></image>
+    <image path="/img/laptop.svg" alt="Laptop icon"></image>
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="1"></interface>
     </interfaces>

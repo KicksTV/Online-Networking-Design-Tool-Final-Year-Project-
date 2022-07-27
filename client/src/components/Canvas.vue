@@ -18,6 +18,21 @@
             </div>
         </div>
     </div>
+    <b-modal id="saveModal" title="Save Project">
+        <div class="container-fuild">
+            <div class="row">
+                <div class="col">
+                    <button @click="saveLocal()" id="localSave" class="btn btn-default w-100 border">Download to local file</button>
+                </div>
+                <div class="col">
+                    <button id="accountSave" 
+                            @click="saveAccount()" 
+                            class="btn btn-default w-100 border" >
+                            Save to account</button>
+                </div>
+            </div>
+        </div>
+    </b-modal>
     <b-tooltip target="canvasDeleteButton" placement="bottom">
         Delete selected component
     </b-tooltip>
@@ -78,6 +93,9 @@ export default {
             projectName: 'New Project',
             guiRight: null,
             projectSettingGui: null,
+            HTTP: this.$parent.$parent.$parent.HTTP,
+            user: null,
+            project: null
         }
     },
     props: {
@@ -177,6 +195,14 @@ export default {
                 return graph
             }
         },
+        projectSettings: {
+            type: Object,
+            // Object or array defaults must be returned from
+            // a factory function
+            default: function () {
+                return projectSettings
+            }
+        },
     },
     methods: {
         editProjectName: function(e) {
@@ -204,8 +230,44 @@ export default {
 
         },
         saveProject: function() {
-           var self = this
-           self.saveLoadController.saveEventToFile()
+            var self = this
+            self.$bvModal.show('saveModal')
+        },
+        saveLocal: function() {
+            this.saveLoadController.saveEventToFile()
+        },
+        saveAccount: async function() {
+            var self = this;
+            self.user = self.$parent.$parent.user
+            if (!self.savingData) {
+                self.savingData = true
+
+                var projectJSON = await this.saveLoadController.saveEventToJSON()
+                console.log(projectJSON)
+                if (projectJSON) {
+                    const promise = new Promise((resolve) => {
+                        self.HTTP.post(`api/project/${self.user.username}/`, {project: projectJSON})
+                        .then(response => {
+                            if (response.data) {
+                                self.project = response.data
+                                self.$bvModal.hide('saveModal')
+                                window.$vue.makeToast("Project saved!", `"${self.project.name}" has now been saved`, false)
+                                resolve(response.data)
+                            }
+                            self.savingData = false
+                        })
+                        .catch(error => {
+                            console.log(error)
+                            self.errored = true
+                            self.savingData = false
+                            resolve(error)
+                            return null
+                        })
+                        .finally(() => self.savingData = false)
+                    })
+                    return await promise
+                }
+            }
         },
         loadProject: function() {
             var self = this
@@ -257,8 +319,14 @@ export default {
         self.initGuiRight()
         p5Controller.createNewCanvas()
         var room_id = (self.$root._route.query.room_id ) ? self.$root._route.query.room_id : null
-        if (room_id) ioController.init(room_id)   
-
+        if (room_id) ioController.init(room_id)  
+        
+        // if (window.pagedata.project) {
+        //     var project = window.pagedata.project
+        //     projectSettings.setSettings(project.json.settings)
+        //     self.saveLoadController.loadProject(project.json)
+        //     projectSettings.setID(project.id)
+        // }
     },
 }
 </script>
@@ -379,5 +447,11 @@ export default {
     #rightSidePanel {
         position: absolute;
         right: 0px;
+    }
+    #localSave {
+        height: 100px;
+    }
+    #accountSave {
+        height: 100px;
     }
 </style>

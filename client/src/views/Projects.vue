@@ -1,12 +1,11 @@
 <template>
   <div class="container-fluid mt-5">
-    <h1 class="display-4"><strong>Create or load a project</strong></h1><br>
-    <div class="card-deck">
-        <b-button id="createProjectBtn" @click="createProjectModel=true" style="padding: 0;">
+    <div class="card-deck mb-4">
+        <b-button id="createProjectBtn" @click="createProjectModel=true" class="col-3 py-0">
             <a style="text-decoration: none;">
-                <div class="card" style="width: 18rem;">
-                    <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
-                    <div class="card-body">
+                <div class="card mx-1">
+                    <img class="m-4" src="@/assets/img/add.png" width="50px" height="50px" alt="Image of plus icon">
+                    <div class="card-body py-0 pb-1">
                         <h5 class="card-title">New Project</h5>
                         <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                         <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
@@ -15,10 +14,10 @@
                 </div>
             </a>
         </b-button>
-        <router-link v-if="$root.isDevelopment()" to="#" class="disabled" style="text-decoration: none;">
-            <div class="card" style="width: 18rem;">
-                <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
-                <div class="card-body">
+        <router-link v-if="$root.isDevelopment()" to="#" class="col-3 disabled" style="text-decoration: none;">
+            <div class="card mx-1">
+                <img class="m-4" src="@/assets/img/add.png" width="50px" height="50px" alt="Image of plus icon">
+                <div class="card-body py-0 pb-1">
                     <h5 class="card-title">Load Project</h5>
                     <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                     <!-- <a href="/projects/newproject" class="btn btn-primary"></a> -->
@@ -27,11 +26,11 @@
             </div>
         </router-link>
         <!-- Button trigger modal -->
-        <b-button id="joinRoomBtn" @click="joinRoom=true" style="padding: 0;">
-            <a>
-                <div class="card" style="width: 18rem;">
-                    <img class="" src="@/assets/img/add.png" style="margin: 20px;" width="50px" height="50px" alt="Image of plus icon">
-                    <div class="card-body">
+        <b-button v-if="$root.isDevelopment()" id="joinRoomBtn" @click="joinRoom=true" class="col-3 py-0">
+            <a style="text-decoration: none;">
+                <div class="card mx-1">
+                    <img class="m-4" src="@/assets/img/add.png" width="50px" height="50px" alt="Image of plus icon">
+                    <div class="card-body py-0 pb-1">
                         <h5 class="card-title">Join Room</h5>
                     </div>
                 </div>
@@ -39,12 +38,36 @@
         </b-button>
     </div>
     <br>
+
+
+    <div class="mb-2" v-if="savedProjects.length"><h1 class="display-4 d-inline"><strong>Load a saved project</strong></h1>
+    <h4 v-if="savedProjects" class="d-inline my-1"><b-badge class="ml-2">{{savedProjects.length}}</b-badge></h4></div>
+    <div v-if="savedProjects" class="col-12 mb-4">
+        <div id="savedProjectsContainer" class="card-deck row flex-nowrap" style="overflow-x: auto;">
+            <div v-for="project in savedProjects" :key="project.name" class="col-3">
+                <div class="card px-2">
+                    <img :src="project.img ? project.img : '/img/SimpleNetworkDesign.PNG'" class="card-img-top" :alt="project.imgAlt">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ project.name }}</h5>
+                        <p class="card-text">
+                            Slug: {{project.slug}}<br>
+                            Created at: {{project.createdAt}}<br>
+                            Updated at: {{project.updatedAt}}
+                        </p>
+                        <a class="btn btn-primary" :href="'/projects/' + project.slug + '/'">Load Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <h1 class="display-4">Or, here are some included projects</h1><br>
     <div class="col-md-6">
         <div class="card-deck">
-            <div v-for="project in projects" :key="project.name" class="card" style="width: 18rem;">
+            <div v-for="project in included_projects" :key="project.name" class="card" style="width: 18rem;">
                 <img :src="project.img" class="card-img-top" alt="project.imgAlt">
-                <div class="card-body">
+                <div class="card-body pb-1">
                     <h5 class="card-title">{{ project.name }}</h5>
                     <p class="card-text"></p>
                     <button @click="setDefaultProject(project)" class="btn btn-primary">Load Project</button>
@@ -137,11 +160,20 @@
 </template>
 
 <style scoped>
+h1 {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
 #joinRoomBtn {
     text-align: left;
 }
 .card-title {
     color: black;
+    text-align: left;
+}
+#savedProjectsContainer {
+    overflow-x: auto;
 }
 .btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
     color: #fff;
@@ -153,20 +185,31 @@ import axios from "axios";
 // @ is an alias to /src
 // import HelloWorld from '@/assets/js/HelloWorld.vue'
 
+const _ = require('lodash');
+
 export default {
   name: 'Projects',
   components: {},
   data () {
     return {
-        projects: null,
+        HTTP: this.$parent.$parent.HTTP,
+        user: this.$parent.user,
         joinRoom: false,
         createProjectModel: false,
+        saved_projects: null,
+        included_projects: null
     }
   },
   methods: {
     setDefaultProject(pro) {
         var self = this
         self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
+    },
+    loadSavedProject(pro) {
+        var self = this
+        console.log(pro)
+        self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
+
     },
     createProject() {
         var self = this,
@@ -196,12 +239,49 @@ export default {
         }
         // console.log(settings)
         self._routerRoot._router.push({ name: 'NewProject', params: { 'projectSettings': settings }})
-    }
+    },
+    getProjectData: function() {
+        var self = this
+        self.HTTP.get(`api/project/${self.user.username}/`)
+            .then(response => {
+                console.log(response)
+                if (response.data) {
+                    self.saved_projects = response.data.projects
+                }
+                this.loading = false
+            })
+            .catch(error => {
+                console.log(error)
+                this.errored = true
+                this.loading = false
+                return null
+            })
+            .finally(() => this.loading = false)
+        },
   },
-  mounted: function() {
+  computed: {
+        savedProjects: function() {
+            console.log(_.orderBy(this.saved_projects, ['updatedAt'], ['desc']))
+            return _.orderBy(this.saved_projects, ['updatedAt'], ['desc'])
+        },
+        includedProjects: function() {
+            return this.included_projects           
+        }
+
+  },
+  mounted: async function() {
     var self = this
+    self.user = await self.$parent.getUserData()
+    console.log(self.user)
+
+    if (self.user) {
+        self.getProjectData()
+        console.log( self.getProjectData())
+    }
     axios.get('/js/defaultProjects.json').then(response => {
-        self.projects = response.data.projects
+        self.included_projects = response.data.projects
+    }).catch(err => {
+        console.log(err)
     })
   }
 }
