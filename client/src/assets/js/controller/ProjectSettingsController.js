@@ -6,6 +6,8 @@ const ProjectSettingsController = (function() {
     function init() {
         
         var settings = {
+            'id': null,
+            'slug': null,
             'name': 'New Project',
             'creationDate': null,
             'lastEdited': null,
@@ -27,9 +29,13 @@ const ProjectSettingsController = (function() {
 
         }
         function setSettings(s) {
+            if (s.id) settings.id = s.id
             settings.name = s.name
             settings.creationDate = s.creationDate
             settings.realtimeValidation = s.realtimeValidation
+            settings.slug = s.slug
+
+            console.log(s, settings)
 
 
             var vueCompCanvas = window.$vue.getVueComponent('Canvas')
@@ -52,20 +58,37 @@ const ProjectSettingsController = (function() {
                 return settings
             }
         }
+        function setID(id) {
+            settings.id = id
+            return settings
+        }
+        function getID() {
+            return settings.id
+        }
+        function setSlug(slug) {
+            settings.slug = slug
+            return settings
+        }
+        function getSlug() {
+            return settings.slug
+        }
         function setName(str) {
             settings.name = str
+            return settings
         }
         function getName() {
             return settings.name
         }
         function setCreationDate(date) {
             settings.creationDate = date
+            return settings
         }
         function getCreationDate() {
             return settings.creationDate
         }
         function setlastEdited(date) {
             settings.lastEdited = date
+            return settings
         }
         function getlastEdited() {
             return settings.lastEdited
@@ -81,10 +104,12 @@ const ProjectSettingsController = (function() {
         }
         function setRealTimeValidation(val) {
             settings.realtimeValidation = val;
-            return instance
+            return settings
         }
         function toJSON() {
             return {
+                'id': settings.id,
+                'slug': settings.slug,
                 'name': settings.name,
                 'creationDate': settings.creationDate,
                 'lastEdited': settings.lastEdited,
@@ -97,6 +122,10 @@ const ProjectSettingsController = (function() {
             setSettings:setSettings,
             gui_fields:gui_fields,
             obj:obj,
+            setID:setID,
+            getID:getID,
+            setSlug:setSlug,
+            getSlug:getSlug,
             setName:setName,
             getName:getName,
             setCreationDate:setCreationDate,

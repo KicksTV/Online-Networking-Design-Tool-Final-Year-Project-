@@ -2,7 +2,7 @@
 <component>
     <name>Router</name>
     <type>Device</type>
-    <image path="../img/router.svg" alt="Router icon"></image>
+    <image path="/img/router.svg" alt="Router icon"></image>
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="4"></interface>
         <interface portType="Serial" numberOfPorts="2"></interface>

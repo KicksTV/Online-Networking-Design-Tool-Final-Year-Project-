@@ -54,6 +54,7 @@ const saveLoadController = (function() {
         async function saveEventToJSON() {
             // Setup of json format
             var json = {
+                "settings": {},
                 "graph": {},
                 "connections": [],
                 "components": [],
@@ -64,10 +65,11 @@ const saveLoadController = (function() {
 
                 var data = await getAllSaveData();
 
-                json.graph = data[0];
-                json.connections = data[1];
-                json.components = data[2];
-                json.subnets = data[3];
+                json.settings = data[0];
+                json.graph = data[1];
+                json.connections = data[2];
+                json.components = data[3];
+                json.subnets = data[4];
 
                 // Saves json to file
                 // console.log(json);
@@ -165,6 +167,7 @@ const saveLoadController = (function() {
         async function loadProjectSettings(array) {
             console.log(array)
             let settings = array.settings
+            console.log(settings)
             ProjectSettingsController.setSettings(settings)
         }
 

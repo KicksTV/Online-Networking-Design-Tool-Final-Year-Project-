@@ -11,7 +11,7 @@ model User {
   id        Int       @id @default(autoincrement())
   username  String    @unique @db.VarChar(255)
   password  String
-  email     String    @unique @db.VarChar(255)
+  email     String    @unique 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @map("updated_at")
   isAdmin   Boolean   @default(false)
@@ -20,9 +20,14 @@ model User {
 }
 
 model Project {
-  id     Int  @id @default(autoincrement())
+  id     Int          @id @default(autoincrement())
+  slug   String       @unique @db.VarChar(255)
+  name   String       @db.VarChar(255)
   userID Int
-  user   User @relation(fields: [userID], references: [id])
+  user   User         @relation(fields: [userID], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+  json   Json?        @default("{}")
 }
 
 model session {

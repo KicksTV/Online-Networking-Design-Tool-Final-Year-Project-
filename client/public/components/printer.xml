@@ -2,7 +2,7 @@
 <component>
     <name>Printer</name>
     <type>Device</type>
-    <image path="../img/printer.svg" alt="Printer icon"></image>
+    <image path="/img/printer.svg" alt="Printer icon"></image>
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="1"></interface>
     </interfaces>

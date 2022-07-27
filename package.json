@@ -13,6 +13,7 @@
     "dev": "nodemon app.js",
     "dev-debug": "nodemon --watch app.js --inspect app.js",
     "start": "npm run migrate && node app && npm run prisma-studio",
+    "run-postgresql": "sudo service postgresql start",
     "prisma-studio": "npx prisma studio",
     "makemigrations": "npx prisma migrate dev",
     "migrate": "npx prisma migrate deploy",

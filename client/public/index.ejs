@@ -25,23 +25,10 @@
     <div id="app"></div>
 
     <script>
-      function getPageData() {
-        var pagedata = {}
-        if (Object.keys(pagedata).length === 0)
-          // hasn't loaded data yet, so set it
-          if ('<$= title $>') {
-            pagedata.title = "<$= title $>";
-            
-          }
-          if ('<$- user $>') {
-            pagedata.user = '<$- user $>';
-          }
-        
-        // Has loaded so just return data
-        return pagedata
-      }
-      getPageData()
-      
+      <$ if (locals.pagedata) {  $>
+        window.pagedata = JSON.parse('<$- JSON.stringify(pagedata) $>')
+      <$ } $>
+      console.log(window.pagedata)
     </script>
 
     <!-- built files will be auto injected -->

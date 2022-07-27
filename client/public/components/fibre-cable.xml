@@ -2,5 +2,5 @@
 <component>
     <name>Fibre</name>
     <type>Cable</type>
-    <image path="../img/fibre-cable.svg" alt="Fibre Cable icon"></image>
+    <image path="/img/fibre-cable.svg" alt="Fibre Cable icon"></image>
 </component>

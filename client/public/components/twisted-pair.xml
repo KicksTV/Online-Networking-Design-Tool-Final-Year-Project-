@@ -2,5 +2,5 @@
 <component>
     <name>Twisted_Pair</name>
     <type>Cable</type>
-    <image path="../img/tp-cable.svg" alt="Twisted Pair icon"></image>
+    <image path="/img/tp-cable.svg" alt="Twisted Pair icon"></image>
 </component>

@@ -21,7 +21,7 @@ import InterfaceView from '../views/InterfaceView.js';
 
 import p5 from 'p5';
 // import p5 from '/node_modules/p5/lib/p5.js';
-import ProjectSettingsController from './ProjectSettingsController.js';
+import projectSettings from './ProjectSettingsController.js';
 const _ = require('lodash');
 
 
@@ -73,21 +73,36 @@ const p5Controller = (function() {
 
                     panelController.getInstance();
 
+                    // console.log(window.$vue._route.params)
+                    // if (window.$vue._route.params) {
+                    //     // Project settings
+                    //     console.log(window.$vue._route.params.projectSettings)
 
-                    if (window.$vue._route.params) {
-                        // Project settings
-                        if (window.$vue._route.params.projectSettings) {
-                            let settings = window.$vue._route.params.projectSettings
-                            // console.log(settings)
-                            ProjectSettingsController.setSettings(settings)
-                        }
-                        // Pre load project
-                        if (window.$vue._route.params.loadedProject) {
-                            let project =window.$vue._route.params.loadedProject.json
-                            saveLoadController.loadProject(project)
+                    //     if (window.$vue._route.params.projectSettings) {
+                    //         let settings = window.$vue._route.params.projectSettings
+                    //         console.log("settings: ", settings)
+                    //         ProjectSettingsController.setSettings(settings)
+                    //     }
+                    //     // Pre load project
+                    //     console.log(window.$vue._route.params.loadedProject)
+
+                    //     if (window.$vue._route.params.loadedProject) {
+                    //         let project = window.$vue._route.params.loadedProject
+                    //         console.log("project", project)
+                    //         saveLoadController.loadProject(project.json)
+                    //         console.log(project.id)
+                    //         ProjectSettingsController.setID(project.id)
+                    //     }
+                    // }
+                    if (window.pagedata) {
+                        if (window.pagedata.project) {
+                            var project = window.pagedata.project
+                            projectSettings.setSettings(project.json.settings)
+                            console.log(project.json)
+                            saveLoadController.loadProject(project.json)
+                            projectSettings.setID(project.id)
                         }
                     }
-                    
                     
                 }
                 p5.setup = function() {

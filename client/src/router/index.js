@@ -36,6 +36,12 @@ const routes = [
     template: 'App'
   },
   {
+    path: '/projects/:slug',
+    name: 'NewProject',
+    component: () => import(/* webpackChunkName: "about" */ '../views/NewProject.vue'),
+    template: 'App'
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting

@@ -22,7 +22,7 @@ newVue.config.productionTip = false
 const axios = require('axios').default;
 
 const HTTP = axios.create({
-    baseURL: process.env.BASE_URL,
+    baseURL: process.env.VUE_APP_API_BASE_URL,
 })
 
 

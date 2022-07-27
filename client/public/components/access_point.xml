@@ -2,7 +2,7 @@
 <component>
     <name>Access_Point</name>
     <type>Device</type>
-    <image path="../img/wireless-access-point.svg" alt="Access_Point icon"></image>
+    <image path="/img/wireless-access-point.svg" alt="Access_Point icon"></image>
     <interfaces>
         <interface portType="Fast_Ethernet" numberOfPorts="12"></interface>
     </interfaces>
