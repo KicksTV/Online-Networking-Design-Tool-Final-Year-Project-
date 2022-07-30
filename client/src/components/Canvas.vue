@@ -246,7 +246,7 @@ export default {
                 console.log(projectJSON)
                 if (projectJSON) {
                     const promise = new Promise((resolve) => {
-                        self.HTTP.post(`api/project/${self.user.username}/`, {project: projectJSON})
+                        self.HTTP.post(`/api/project/${self.user.username}/`, {project: projectJSON})
                         .then(response => {
                             if (response.data) {
                                 self.project = response.data
