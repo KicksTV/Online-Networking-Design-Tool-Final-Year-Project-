@@ -24,8 +24,15 @@ module.exports = {
     }
     if (process.env.NODE_ENV === 'production') {
       // mutate config for production...
+      console.log('production')
+      console.log(config)
+      // config.pages.index.template = 'client/public/index.ejs'
     } else {
       // mutate for development...
+      console.log('development')
+      console.log(config)
+      // config.pages.index.template = 'client/public/dev_index.ejs'
+
     }
   },
   chainWebpack: config => {

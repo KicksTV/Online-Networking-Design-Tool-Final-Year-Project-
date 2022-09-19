@@ -43,8 +43,12 @@ app.use(passport.session())
 
 app.use(express.json())
 
+
+const { PrismaClient } = require("@prisma/client")
+const { user } = new PrismaClient()
+
 // Add headers before the routes are defined
-app.use(function (req, res, next) {
+app.use(async function (req, res, next) {
     if (env == 'development') {
         // Website you wish to allow to connect
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
@@ -58,6 +62,12 @@ app.use(function (req, res, next) {
         // Set to true if you need the website to include cookies in the requests sent
         // to the API (e.g. in case you use sessions)
         res.setHeader('Access-Control-Allow-Credentials', true);
+
+        req.user = await user.findUnique({where: {username: 'kickstv'}})
+        delete req.user['id'];
+        delete req.user['password'];
+        delete req.user['salt'];
+        console.log(req.user)
     }
     // Pass to next layer of middleware
     next();
@@ -65,6 +75,8 @@ app.use(function (req, res, next) {
 
 app.use('/api/user', require('./routes/api/user'))
 app.use('/api/project', require('./routes/api/project'))
+app.use('/api/module', require('./routes/api/module'))
+
 app.use('/projects', require('./routes/projects'))
 
 app.use('/', require('./routes/registration'))

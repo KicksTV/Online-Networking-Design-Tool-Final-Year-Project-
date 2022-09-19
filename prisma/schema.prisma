@@ -14,20 +14,71 @@ model User {
   email     String    @unique 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @map("updated_at")
-  isAdmin   Boolean   @default(false)
+  isAdmin   Boolean   @default(false) @map("is_admin")
+  isTeacher Boolean   @default(false) @map("is_teacher")
   salt      String
-  projects  Project[]
+
+  projects        Project[]
+  roles           EnRolled[]
 }
 
 model Project {
-  id     Int          @id @default(autoincrement())
-  slug   String       @unique @db.VarChar(255)
-  name   String       @db.VarChar(255)
-  userID Int
+  id            Int          @id @default(autoincrement())
+  slug          String       @db.VarChar(255)
+  name          String       @db.VarChar(255)
+  userID        Int
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @map("updated_at")
+  json          Json?        @default("{}")
+
   user   User         @relation(fields: [userID], references: [id])
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now()) @map("updated_at")
-  json   Json?        @default("{}")
+
+  submissions     Submission[]
+
+  @@unique([userID, slug])
+}
+
+model EnRolled {
+  userID    Int
+  moduleID  Int
+
+  user      User        @relation(fields: [userID], references: [id])
+  module    Module      @relation(fields: [moduleID], references: [id])
+  @@unique([userID, moduleID])
+}
+
+model Module {
+  id            Int          @id @default(autoincrement())
+  slug          String       @unique @db.VarChar(255)
+  name          String       @db.VarChar(255)
+  description   String       @db.VarChar(255)
+
+  roles     EnRolled[]
+  tasks     Task[]
+}
+
+model Task {
+  id            Int           @id @default(autoincrement())
+  moduleID      Int
+  slug          String        @unique @db.VarChar(255)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @map("updated_at")
+
+  module        Module        @relation(fields: [moduleID], references: [id])
+
+  submissions Submission[]
+}
+
+model Submission {
+  taskID        Int
+  projectID     Int
+  passed        Boolean       @default(false)
+  errors        String[]
+
+  task      Task              @relation(fields: [taskID], references: [id])
+  project   Project           @relation(fields: [projectID], references: [id])
+
+  @@unique([taskID, projectID])
 }
 
 model session {

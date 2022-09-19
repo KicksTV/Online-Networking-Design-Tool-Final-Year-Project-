@@ -44,7 +44,7 @@
     <h4 v-if="savedProjects" class="d-inline my-1"><b-badge class="ml-2">{{savedProjects.length}}</b-badge></h4></div>
     <div v-if="savedProjects" class="col-12 mb-4">
         <div id="savedProjectsContainer" class="card-deck row flex-nowrap" style="overflow-x: auto;">
-            <div v-for="project in savedProjects" :key="project.name" class="col-3">
+            <div v-for="project in savedProjects" :key="project.slug" class="col-3">
                 <div class="card px-2">
                     <img :src="project.img ? project.img : '/img/SimpleNetworkDesign.PNG'" class="card-img-top" :alt="project.imgAlt">
                     <div class="card-body">
@@ -61,8 +61,7 @@
         </div>
     </div>
 
-
-    <h1 class="display-4">Or, here are some included projects</h1><br>
+    <!-- <h1 class="display-4">Or, here are some included projects</h1><br>
     <div class="col-md-6">
         <div class="card-deck">
             <div v-for="project in included_projects" :key="project.name" class="card" style="width: 18rem;">
@@ -74,7 +73,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Modal -->
     <b-modal v-model="joinRoom" title="Please enter room id.">
@@ -188,78 +187,98 @@ import axios from "axios";
 const _ = require('lodash');
 
 export default {
-  name: 'Projects',
-  components: {},
-  data () {
-    return {
-        HTTP: this.$parent.$parent.HTTP,
-        user: this.$parent.user,
-        joinRoom: false,
-        createProjectModel: false,
-        saved_projects: null,
-        included_projects: null
-    }
-  },
-  methods: {
-    setDefaultProject(pro) {
-        var self = this
-        self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
-    },
-    loadSavedProject(pro) {
-        var self = this
-        console.log(pro)
-        self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
-
-    },
-    createProject() {
-        var self = this,
-            settings=null;
-        var form = self.$refs.createProjectForm
-        var requiredFields = []
-        var emptyRequiredFields = []
-        var fieldsValues = []
-        form.querySelectorAll('input').forEach((el) => {
-            if (el.getAttribute("required")) {
-                requiredFields.push(el)
-                if (el.value !== '') {
-                    fieldsValues.push(el.value)
-                } else {
-                    emptyRequiredFields.push(el)
-                }
-            }
-        })
-        if (emptyRequiredFields.length > 0) {
-            // form error
-        } else {
-            // console.log(fieldsValues)
-            settings = {
-                name: fieldsValues[0],
-                creationDate: fieldsValues[1],
-            }
+    name: 'Projects',
+    components: {},
+    data () {
+        return {
+            HTTP: this.$parent.$parent.HTTP,
+            user: this.$parent.user,
+            joinRoom: false,
+            createProjectModel: false,
+            saved_projects: null,
+            included_projects: null
         }
-        // console.log(settings)
-        self._routerRoot._router.push({ name: 'NewProject', params: { 'projectSettings': settings }})
     },
-    getProjectData: function() {
-        var self = this
-        self.HTTP.get(`api/project/${self.user.username}/`)
-            .then(response => {
-                console.log(response)
-                if (response.data) {
-                    self.saved_projects = response.data.projects
-                }
-                this.loading = false
-            })
-            .catch(error => {
-                console.log(error)
-                this.errored = true
-                this.loading = false
-                return null
-            })
-            .finally(() => this.loading = false)
+    methods: {
+        setDefaultProject(pro) {
+            var self = this
+            self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
         },
-  },
-  computed: {
+        loadSavedProject(pro) {
+            var self = this
+            console.log(pro)
+            self._routerRoot._router.push({ name: 'NewProject', params: { 'loadedProject': pro }})
+
+        },
+        createProject() {
+            var self = this,
+                settings=null;
+            var form = self.$refs.createProjectForm
+            var requiredFields = []
+            var emptyRequiredFields = []
+            var fieldsValues = []
+            form.querySelectorAll('input').forEach((el) => {
+                if (el.getAttribute("required")) {
+                    requiredFields.push(el)
+                    if (el.value !== '') {
+                        fieldsValues.push(el.value)
+                    } else {
+                        emptyRequiredFields.push(el)
+                    }
+                }
+            })
+            if (emptyRequiredFields.length > 0) {
+                // form error
+            } else {
+                // console.log(fieldsValues)
+                settings = {
+                    name: fieldsValues[0],
+                    creationDate: fieldsValues[1],
+                }
+            }
+            // console.log(settings)
+            self._routerRoot._router.push({ name: 'NewProject', params: { 'projectSettings': settings }})
+        },
+        getProjectData: function() {
+            var self = this
+            self.HTTP.get(`api/project/${self.user.username}/`)
+                .then(response => {
+                    console.log(response)
+                    if (response.data) {
+                        self.saved_projects = response.data.projects
+                    }
+                    this.loading = false
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                    this.loading = false
+                    return null
+                })
+                .finally(() => this.loading = false)
+        },
+        getModulesData: function() {
+            var self = this
+            self.HTTP.get(`api/project/${self.user.username}/`)
+                .then(response => {
+                    console.log(response)
+                    if (response.data) {
+                        self.saved_projects = response.data.projects
+                    }
+                    this.loading = false
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                    this.loading = false
+                    return null
+                })
+                .finally(() => this.loading = false)
+            
+        },
+    },
+ 
+    computed: {
         savedProjects: function() {
             console.log(_.orderBy(this.saved_projects, ['updatedAt'], ['desc']))
             return _.orderBy(this.saved_projects, ['updatedAt'], ['desc'])
@@ -268,21 +287,21 @@ export default {
             return this.included_projects           
         }
 
-  },
-  mounted: async function() {
-    var self = this
-    self.user = await self.$parent.getUserData()
-    console.log(self.user)
+    },
+    mounted: async function() {
+        var self = this
+        self.user = await self.$parent.getUserData()
+        console.log(self.user)
 
-    if (self.user) {
-        self.getProjectData()
-        console.log( self.getProjectData())
+        if (self.user) {
+            self.getProjectData()
+            console.log( self.getProjectData())
+        }
+        axios.get('/js/defaultProjects.json').then(response => {
+            self.included_projects = response.data.projects
+        }).catch(err => {
+            console.log(err)
+        })
     }
-    axios.get('/js/defaultProjects.json').then(response => {
-        self.included_projects = response.data.projects
-    }).catch(err => {
-        console.log(err)
-    })
-  }
 }
 </script>

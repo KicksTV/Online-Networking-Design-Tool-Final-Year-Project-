@@ -15,6 +15,9 @@
         <b-nav-item href="#">
           <router-link to="/projects" class="nav-link">Projects <span class="sr-only">(current)</span></router-link>
         </b-nav-item>
+        <b-nav-item href="#">
+          <router-link to="/modules" class="nav-link">Modules</router-link>
+        </b-nav-item>
         <b-nav-item href="#" disabled>
           <router-link to="/about" class="nav-link">How to use</router-link>
         </b-nav-item>
