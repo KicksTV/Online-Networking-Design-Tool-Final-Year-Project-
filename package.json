@@ -24,6 +24,8 @@
   "dependencies": {
     "@prisma/client": "^3.5.0",
     "@vue/cli": "^4.5.14",
+    "@vue/cli-plugin-vuex": "^4.3.0",
+    "@vue/compiler-sfc": "^2.7.10",
     "aws-sdk": "^2.1185.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
@@ -54,7 +56,8 @@
     "vue": "^2.6.14",
     "vue-p5": "^0.8.4",
     "vue-router": "^3.4.9",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "vuex": "^3.1.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.13.8",

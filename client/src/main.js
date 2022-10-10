@@ -1,5 +1,6 @@
 import App from './App.vue'
 import Index from './Index.vue'
+import store from './store'
 
 import {router, newVue} from './router'
 
@@ -18,6 +19,7 @@ newVue.use(IconsPlugin)
 
 newVue.config.productionTip = false
 
+newVue.use(store)
 
 const axios = require('axios').default;
 

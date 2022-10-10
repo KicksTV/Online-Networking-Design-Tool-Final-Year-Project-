@@ -45,19 +45,22 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="project_name">Name</span>
                         </div>
-                        <input name="module_name" type="text" class="form-control" required aria-label="module_name" aria-describedby="module_name">
+                        <!-- <input name="module_name" type="text" class="form-control" required aria-label="module_name" aria-describedby="module_name"> -->
+                        <bound-input obj='module/getCurrent' name="module_name" type="text" class="form-control" :required="true" ariaLabel="module_name" ariaDescribedby="module_name"></bound-input>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="project_name">Slug</span>
                         </div>
-                        <input name="module_slug" type="text" class="form-control" required aria-label="module_slug" aria-describedby="module_slug">
+                        <bound-input obj='module/getCurrent' :name="'module_slug'" :type="'text'" class="form-control" :required="true" :ariaLabel="'module_slug'" :ariaDescribedby="'module_slug'"></bound-input>
+                        <!-- <input name="module_slug" type="text" class="form-control" required aria-label="module_slug" aria-describedby="module_slug"> -->
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="project_name">Description</span>
                         </div>
-                        <input name="module_description" type="text" class="form-control" required aria-label="module_description" aria-describedby="module_description">
+                        <bound-input obj='module/getCurrent' :name="'module_description'" :type="'text'" :class="'form-control'" :required="true" :ariaLabel="'module_description'" :ariaDescribedby="'module_description'"></bound-input>
+                        <!-- <input name="module_description" type="text" class="form-control" required aria-label="module_description" aria-describedby="module_description"> -->
                     </div>
                 </div>
             </form>
@@ -111,13 +114,17 @@ h1 {
 <script>
 // import axios from "axios";
 // @ is an alias to /src
-// import HelloWorld from '@/assets/js/HelloWorld.vue'
+import boundInput from '@/components/boundInput.vue'
+// import boundSelect from '@/components/boundSelect.vue'
 
 const _ = require('lodash');
 
 export default {
     name: 'Modules',
-    components: {},
+    components: {
+        'bound-input': boundInput,
+        // 'bound-select': boundSelect,
+    },
     data () {
         return {
             HTTP: this.$parent.$parent.HTTP,
@@ -182,6 +189,9 @@ export default {
                     })
                     .finally(() => this.loading = false)
             }
+        },
+        editModule: function() {
+
         },
         getModuleData: function() {
             var self = this;
