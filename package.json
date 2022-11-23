@@ -52,7 +52,7 @@
     "prisma": "^3.5.0",
     "rfdc": "^1.2.0",
     "serve-index": "^1.9.1",
-    "socket.io": "^2.4.1",
+    "socket.io": "^2.5.0",
     "vue": "^2.6.14",
     "vue-p5": "^0.8.4",
     "vue-router": "^3.4.9",
