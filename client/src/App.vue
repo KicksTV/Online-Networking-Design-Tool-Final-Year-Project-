@@ -71,7 +71,7 @@
               const promise = new Promise((resolve) => {
                 self.HTTP.get('api/user/get/session/')
                   .then(response => {
-                    console.log(response)
+                    // console.log(response)
                     if (response.data) {
                       self.user = response.data
                       resolve(response.data)

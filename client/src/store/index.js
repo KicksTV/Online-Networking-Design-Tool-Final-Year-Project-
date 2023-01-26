@@ -1,26 +1,18 @@
-import { createStore } from 'vuex'
+import Vuex from 'vuex'
 import mod from './modules/module'
+import task from './modules/task'
+import bound from './modules/bound'
 
-// const debug = process.env.NODE_ENV !== 'production'
+import {newVue} from '../router'
 
-export default createStore({
+newVue.use(Vuex)
+
+export default new Vuex.Store({
   modules: {
     mod,
+    task,
+    bound
   },
-  state () {
-    return {
-    }
-  }
-  // mutations: {
-  //   loadValues (state, prop, obj) {
-  //     for (const [key, value] of Object.entries(obj)) {
-  //       state[prop][key] = value
-  //     }
-  //   },
-  //   updateField (state, prop, fieldData) {
-  //     state[prop][fieldData[0]] = fieldData[1]
-  //   }
-  // },
-  // strict: debug,
-  // plugins: debug ? [createLogger()] : []
+  state: {
+  },
 })

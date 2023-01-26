@@ -4,44 +4,45 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient()
 
 
-async function getModule(uniqueModuleData) { // uniqueProjectData (object) can be ID or SLUG
-    async function func(uniqueModuleData) {
+async function getTask(uniqueTaskData) { // uniqueProjectData (object) can be ID or SLUG
+    async function func(uniqueTaskData) {
         try {
-            console.log("uniqueModuleData", uniqueModuleData)
-            const foundModule = await prisma.module.findUnique({where: uniqueModuleData})
-            console.log("foundModule", foundModule)
-            return foundModule
+            console.log("uniqueTaskData", uniqueTaskData)
+            const foundTask = await prisma.task.findUnique({where: uniqueTaskData})
+            console.log("foundTask", foundTask)
+            return foundTask
         } catch(e) {
             console.log(e)
             return
         }
     }
-    var foundModule = await func(uniqueModuleData).catch((e) => {
+    var foundTask = await func(uniqueTaskData).catch((e) => {
         throw e
     }).finally(async () => {
         await prisma.$disconnect()
     })
 
-    return foundModule
+    return foundTask
 }
 
-async function updateModule(req, res) {
-    console.log("updateModule")
+async function updateTask(req, res) {
+    console.log("updateTask")
     try {
-        const m = req.body.module;
-        console.log(m)
-        const updatedModule = await prisma.module.update({
+        const t = req.body.task;
+        console.log(t)
+        const updatedTask = await prisma.task.update({
             data: {
-                slug: m.slug,
-                name: m.name,
-                description: m.description,
+                slug: t.slug,
+                name: t.name,
+                description: t.description,
                 updatedAt: new Date(),
             },
             where: {
-                id: Number.parseInt(m.id)
+                id: Number.parseInt(t.id),
+                moduleID: Number.parseInt(t.module_id)
             }
         })
-        res.json(updatedModule)
+        res.json(updatedTask)
     } catch(e) {
         console.log(e)
         return res.status(500).json({
@@ -50,21 +51,21 @@ async function updateModule(req, res) {
     }
 }
 
-async function createModule(req, res) {
+async function createTask(req, res) {
     try {
-        const m = req.body.module;
-        if (m.slug) {
+        const t = req.body.task;
+        if (t.slug) {
             // use name as slug
-            m.slug = m.name.replace(' ', '-').toLowerCase();
+            t.slug = t.name.replace(' ', '-').toLowerCase();
         }
-        const newModule = await prisma.module.create({
+        const newTask = await prisma.task.create({
             data: {
-                slug: m.slug,
-                name: m.name,
-                description: m.description,
+                slug: t.slug,
+                name: t.name,
+                description: t.description,
             }
         })
-        res.json(newModule)
+        res.json(newTask)
     } catch(e) {
         console.log(e)
         return res.status(500).json({
@@ -73,25 +74,28 @@ async function createModule(req, res) {
     }
 }
 
-async function saveModule(req, res) {
-    var m;
-    if (req.body.module.id) {
-        var uniqueData = { id: Number.parseInt(req.body.module.id) }
-        m = await getModule(uniqueData)
-        console.log(uniqueData, m)
-        if (m) {
-            console.log("edit", hasEditAccess(req, res, m))
-            if (hasEditAccess(req, res, m) || req.user.isAdmin) {
-                await updateModule(req, res)
+async function saveTask(req, res) {
+    var t;
+    if (req.body.task.id) {
+        var uniqueData = { 
+            id: Number.parseInt(req.body.task.id), 
+            moduleID: Number.parseInt(req.body.task.module_id) 
+        }
+        t = await getTask(uniqueData)
+        console.log(uniqueData, t)
+        if (t) {
+            console.log("edit", hasEditAccess(req, res, t))
+            if (hasEditAccess(req, res, t) || req.user.isAdmin) {
+                await updateTask(req, res)
             }
         } else {
             if (hasCreationAccess(req, res)) {
-                await createModule(req, res)
+                await createTask(req, res)
             }
         }
     } else {
         if (hasCreationAccess(req, res)) {
-            await createModule(req, res)
+            await createTask(req, res)
         } else {
             console.log(e)
             return res.status(500).json({
@@ -101,9 +105,9 @@ async function saveModule(req, res) {
     }
 }
 
-function hasEditAccess(req, res, m) {
+function hasEditAccess(req, res, t) {
     // Go through roles to find teachers
-    for (role in m.roles) {
+    for (role in t.roles) {
         // if role is a teacher and matches logged in user
         if (role.user.isTeacher && role.user.username == req.user.username) {
             return true
@@ -116,8 +120,8 @@ function hasCreationAccess(req, res) {
     return req.user.isTeacher || req.user.isAdmin
 }
 
-router.post('/:username/', async (req, res) => {
-    saveModule(req, res).catch((e) => {
+router.post('/', async (req, res) => {
+    saveTask(req, res).catch((e) => {
         throw e
     }).finally(async () => {
         await prisma.$disconnect()
@@ -125,22 +129,22 @@ router.post('/:username/', async (req, res) => {
 })
 
 router.get('/all/', async (req, res) => {
-    var modules = null
-    modules = await prisma.module.findMany()
-    console.log("modules", modules)
-    return res.json(modules)
+    var tasks = null
+    tasks = await prisma.task.findMany()
+    console.log("modules", tasks)
+    return res.json(tasks)
 })
 
 router.get('/:username', async (req, res) => {
-    var modules = null
+    var tasks = null
     if (req.params.username == req.user.username) {
         var username = req.params.username
-        modules = await prisma.user.findUnique({
+        tasks = await prisma.user.findUnique({
             where: {
                 username: username,
             },
             select: {
-                modules: {
+                tasks: {
                     select: {
                         id: true,
                         name: true,
@@ -157,10 +161,10 @@ router.get('/:username', async (req, res) => {
     res.json(modules)
 })
 
-router.get('/:moduleSlug', async (req, res) => {
-    var module = await getModule({slug: req.params.moduleSlug})
-    if (module) {
-        return res.json(module)
+router.get('/:taskSlug', async (req, res) => {
+    var task = await getModule({slug: req.params.taskSlug})
+    if (task) {
+        return res.json(task)
     } else {
         res.json({error: 'Could not find project!'})
     }
@@ -169,4 +173,4 @@ router.get('/:moduleSlug', async (req, res) => {
 
 
 module.exports = router
-module.exports.getModule = getModule
+module.exports.getTask = getTask

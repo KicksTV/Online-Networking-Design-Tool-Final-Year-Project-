@@ -4,7 +4,7 @@ const pgSession = require('connect-pg-simple')(expressSession);
 const passport = require('passport');
 const path = require('path')
 
-const pg = require('pg');
+// const pg = require('pg');
 
 var socket_io = require('./routes/socket_io.js')
 
@@ -76,6 +76,7 @@ app.use(async function (req, res, next) {
 app.use('/api/user', require('./routes/api/user'))
 app.use('/api/project', require('./routes/api/project'))
 app.use('/api/module', require('./routes/api/module'))
+app.use('/api/module/:module_id/task', require('./routes/api/task'))
 
 app.use('/projects', require('./routes/projects'))
 
@@ -114,7 +115,7 @@ function vue_route(req, res) {
 }
 
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res) {
     if (err && env !== 'development') {
         res.send(`
             <h1>There was an error, please try again.</h1>

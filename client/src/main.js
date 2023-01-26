@@ -19,7 +19,6 @@ newVue.use(IconsPlugin)
 
 newVue.config.productionTip = false
 
-newVue.use(store)
 
 const axios = require('axios').default;
 
@@ -29,6 +28,7 @@ const HTTP = axios.create({
 
 
 const vue = new newVue({
+  store: store,
   data () {
     return {
       HTTP: HTTP,
@@ -110,4 +110,6 @@ const vue = new newVue({
 }).$mount('#app')
 
 window.$vue = vue
+
+export default vue
 

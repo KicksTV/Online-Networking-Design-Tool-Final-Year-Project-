@@ -9,17 +9,11 @@ module.exports = {
       template: 'client/public/index.ejs'
     }
   },
-  configureWebpack: {
-    resolve: {
-      alias: {
-        'vue': 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' for webpack 1
-      }
-    },
-  },
   configureWebpack: config => {
     config.resolve = {
       alias: {
         '@': path.resolve(__dirname, 'client/src'),
+        'vue': 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' for webpack 1
       }
     }
     if (process.env.NODE_ENV === 'production') {

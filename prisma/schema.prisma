@@ -52,17 +52,21 @@ model Module {
   slug          String       @unique @db.VarChar(255)
   name          String       @db.VarChar(255)
   description   String       @db.VarChar(255)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @map("updated_at")
 
   roles     EnRolled[]
   tasks     Task[]
 }
 
 model Task {
-  id            Int           @id @default(autoincrement())
-  moduleID      Int
-  slug          String        @unique @db.VarChar(255)
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @default(now()) @map("updated_at")
+  id                    Int           @id @default(autoincrement())
+  moduleID              Int
+  slug                  String        @unique @db.VarChar(255)
+  validation_code_url   String?
+  description           String        @db.VarChar(255)
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @default(now()) @map("updated_at")
 
   module        Module        @relation(fields: [moduleID], references: [id])
 

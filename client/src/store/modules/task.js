@@ -1,4 +1,4 @@
-import modAPI from '../../api/module'
+import taskAPI from '../../api/task'
 
 // initial state
 const state = () => ({
@@ -22,45 +22,45 @@ const getters = {
   
 // actions
 const actions = {
-  async createModule({ commit }, module) {
+  async createTask({ commit }, task) {
     try {
-      var mod = await modAPI.apiSaveModule(module)
-      commit('pushModule', mod)
+      var t = await taskAPI.apiSaveTask(task)
+      commit('pushTask', t)
       return true
     } catch (e) {
       alert(e)
       return false
     }
   },
-  async editModule({ commit }, module) {
+  async editTask({ commit }, task) {
     try {
-      var mod = await modAPI.apiSaveModule(module)
-      commit('editModule', mod)
+      var t = await taskAPI.apiSaveModule(task)
+      commit('editTask', t)
       return true
     } catch (e) {
       alert(e)
       return false
     }
   },
-  async getAllModules({ commit }) {
-    const modules = await modAPI.getAllModules()
-    commit('setModules', modules)
+  async getAllTasks({ commit }) {
+    const tasks = await taskAPI.getAllTasks()
+    commit('setTasks', tasks)
   },
-  async setEditModule({ commit }, module) {
-    commit('setCurrent', module)
+  async setEditTask({ commit }, task) {
+    commit('setCurrent', task)
   }
 }
   
 // mutations
 const mutations = {
-  pushModule(state, obj) {
+  pushTask(state, obj) {
     state.all.push(obj)
   },
-  editModule(state, obj) {
+  editTask(state, obj) {
     state.all.map(o => o.id === obj.id ? obj : o);
   },
-  setModules(state, modules) {
-    state.all = modules
+  setTasks(state, tasks) {
+    state.all = tasks
   },
   updateField(state, obj) {
     // console.log(state, obj)
@@ -69,8 +69,8 @@ const mutations = {
     state.current[prop] = val
    
   },
-  setCurrent(state, mod) {
-    state.current = mod
+  setCurrent(state, task) {
+    state.current = task
   }
 }
   

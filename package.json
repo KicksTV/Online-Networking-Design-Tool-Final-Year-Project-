@@ -5,26 +5,24 @@
   "description": "A network design and learning tool web application for teaching networking concepts.",
   "author": "Llewellyn Brunsdon-Haland",
   "scripts": {
-    "vue-dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "vue-ui": "vue ui",
+    "deploy-production": "git checkout production && git merge master -m 'Merged master into production' && git push && git checkout master",
     "dev": "nodemon app.js",
     "dev-debug": "nodemon --watch app.js --inspect app.js",
-    "start": "npm run migrate && node app && npm run prisma-studio",
-    "run-postgresql": "sudo service postgresql start",
-    "prisma-studio": "npx prisma studio",
     "makemigrations": "npx prisma migrate dev",
     "migrate": "npx prisma migrate deploy",
-    "test": "mocha -r esm",
-    "deploy-production": "git checkout production && git merge master -m 'Merged master into production' && git push && git checkout master"
+    "prisma-studio": "npx prisma studio",
+    "run-postgresql": "sudo service postgresql start",
+    "start": "npm run migrate && node app && npm run prisma-studio",
+    "vue-dev": "vue-cli-service serve",
+    "vue-ui": "vue ui"
   },
   "main": "app.js",
   "dependencies": {
     "@prisma/client": "^3.5.0",
     "@vue/cli": "^4.5.14",
-    "@vue/cli-plugin-vuex": "^4.3.0",
     "@vue/compiler-sfc": "^2.7.10",
     "aws-sdk": "^2.1185.0",
     "axios": "^0.21.1",
@@ -57,7 +55,7 @@
     "vue-p5": "^0.8.4",
     "vue-router": "^3.4.9",
     "vue-template-compiler": "^2.6.14",
-    "vuex": "^3.1.3"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.13.8",
@@ -65,6 +63,7 @@
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "^4.5.9",
     "@vue/cli-plugin-unit-mocha": "~4.5.0",
+    "@vue/cli-plugin-vuex": "^4.5.19",
     "@vue/cli-service": "^4.5.13",
     "@vue/test-utils": "^1.0.3",
     "babel-eslint": "^10.1.0",

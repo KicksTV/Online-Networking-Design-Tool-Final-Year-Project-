@@ -30,6 +30,12 @@ const routes = [
     template: 'App'
   },
   {
+    path: '/modules/:module/tasks',
+    name: 'Tasks',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Tasks.vue'),
+    template: 'App'
+  },
+  {
     path: '/projects',
     name: 'Projects',
     component: () => import(/* webpackChunkName: "about" */ '../views/Projects.vue'),
