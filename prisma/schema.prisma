@@ -3,37 +3,93 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
+  provider          = "cockroachdb"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("HEROKU_POSTGRESQL_AMBER_URL")
+  shadowDatabaseUrl = env("COCKROACH_SHADOW_URL")
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique @db.VarChar(255)
+  id        Int       @id @default(sequence())
+  username  String    @unique @db.String(255)
   password  String
   email     String    @unique 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @map("updated_at")
-  isAdmin   Boolean   @default(false)
+  isAdmin   Boolean   @default(false) @map("is_admin")
+  isTeacher Boolean   @default(false) @map("is_teacher")
   salt      String
-  projects  Project[]
+
+  projects        Project[]
+  roles           EnRolled[]
 }
 
 model Project {
-  id     Int          @id @default(autoincrement())
-  slug   String       @unique @db.VarChar(255)
-  name   String       @db.VarChar(255)
-  userID Int
+  id            Int          @id @default(sequence())
+  slug          String       @db.String(255)
+  name          String       @db.String(255)
+  userID        Int
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @map("updated_at")
+  json          Json?        @default("{}")
+
   user   User         @relation(fields: [userID], references: [id])
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now()) @map("updated_at")
-  json   Json?        @default("{}")
+
+  submissions     Submission[]
+
+  @@unique([userID, slug])
+}
+
+model EnRolled {
+  userID    Int
+  moduleID  Int
+
+  user      User        @relation(fields: [userID], references: [id])
+  module    Module      @relation(fields: [moduleID], references: [id])
+  @@unique([userID, moduleID])
+}
+
+model Module {
+  id            Int          @id @default(sequence())
+  slug          String       @unique @db.String(255)
+  name          String       @db.String(255)
+  description   String       @db.String(255)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @map("updated_at")
+
+  roles     EnRolled[]
+  tasks     Task[]
+}
+
+model Task {
+  id                    Int           @id @default(sequence())
+  moduleID              Int
+  slug                  String        @unique @db.String(255)
+  name                  String        @db.String(255)
+  validation_code_url   String?
+  description           String        @db.String(255)
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @default(now()) @map("updated_at")
+
+  module        Module                @relation(fields: [moduleID], references: [id])
+
+  submissions Submission[]
+}
+
+model Submission {
+  taskID        Int
+  projectID     Int
+  passed        Boolean       @default(false)
+  errors        String
+
+  task      Task              @relation(fields: [taskID], references: [id])
+  project   Project           @relation(fields: [projectID], references: [id])
+
+  @@unique([taskID, projectID])
 }
 
 model session {
-  sid    String   @id @db.VarChar
-  sess   Json     @db.Json
+  sid    String   @id @db.String(255)
+  sess   String     @db.String(255)
   expire DateTime @db.Timestamp(6)
 
   @@index([expire], map: "IDX_session_expire")

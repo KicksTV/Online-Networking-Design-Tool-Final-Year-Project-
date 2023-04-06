@@ -24,6 +24,18 @@ const routes = [
     template: 'App'
   },
   {
+    path: '/modules',
+    name: 'Modules',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Modules.vue'),
+    template: 'App'
+  },
+  {
+    path: '/modules/:module/tasks',
+    name: 'Tasks',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Tasks.vue'),
+    template: 'App'
+  },
+  {
     path: '/projects',
     name: 'Projects',
     component: () => import(/* webpackChunkName: "about" */ '../views/Projects.vue'),
@@ -37,7 +49,7 @@ const routes = [
   },
   {
     path: '/projects/:slug',
-    name: 'NewProject',
+    name: 'SavedProject',
     component: () => import(/* webpackChunkName: "about" */ '../views/NewProject.vue'),
     template: 'App'
   },

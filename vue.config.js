@@ -9,23 +9,25 @@ module.exports = {
       template: 'client/public/index.ejs'
     }
   },
-  configureWebpack: {
-    resolve: {
-      alias: {
-        'vue': 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' for webpack 1
-      }
-    },
-  },
   configureWebpack: config => {
     config.resolve = {
       alias: {
         '@': path.resolve(__dirname, 'client/src'),
+        'vue': 'vue/dist/vue.esm.js', // 'vue/dist/vue.common.js' for webpack 1
+        'codem': 'codemirror/',
       }
     }
     if (process.env.NODE_ENV === 'production') {
       // mutate config for production...
+      console.log('production')
+      console.log(config)
+      // config.pages.index.template = 'client/public/index.ejs'
     } else {
       // mutate for development...
+      console.log('development')
+      console.log(config)
+      // config.pages.index.template = 'client/public/dev_index.ejs'
+
     }
   },
   chainWebpack: config => {

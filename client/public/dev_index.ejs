@@ -24,13 +24,6 @@
     </noscript>
     <div id="app"></div>
 
-    <script>
-      <$ if (locals.pagedata) {  $>
-      window.pagedata = JSON.parse('<$- JSON.stringify(pagedata) $>')
-      <$ } $>
-      console.log(window.pagedata)
-    </script>
-
     <!-- built files will be auto injected -->
     <script src="https://kit.fontawesome.com/96eb25bbd8.js" crossorigin="anonymous"></script>
 

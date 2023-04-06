@@ -1,11 +1,11 @@
 import App from './App.vue'
 import Index from './Index.vue'
+import store from './store'
 
 import {router, newVue} from './router'
 
 import PortalVue from 'portal-vue'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-
 
 const _ = require('lodash');
 
@@ -27,6 +27,7 @@ const HTTP = axios.create({
 
 
 const vue = new newVue({
+  store: store,
   data () {
     return {
       HTTP: HTTP,
@@ -108,4 +109,6 @@ const vue = new newVue({
 }).$mount('#app')
 
 window.$vue = vue
+
+export default vue
 
