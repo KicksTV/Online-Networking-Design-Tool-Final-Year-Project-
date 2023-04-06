@@ -27,7 +27,7 @@ export default {
     async apiSaveTask(task_data) {
         var promise = new Promise((resolve) => {
             console.log(task_data)
-            vue.HTTP.post(`api/module/${task_data.module_id}/task/${task_data.username}/`, {task: task_data})
+            vue.HTTP.post(`api/module/${task_data.module_slug}/task/${task_data.username}/`, {task: task_data})
             .then(response => {
                 console.log(response)
                 if (response.data) {

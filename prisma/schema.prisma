@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = env("PROVIDER")
   url      = env("DATABASE_URL")
 }
 
@@ -63,12 +63,13 @@ model Task {
   id                    Int           @id @default(autoincrement())
   moduleID              Int
   slug                  String        @unique @db.VarChar(255)
+  name                  String        @db.VarChar(255)
   validation_code_url   String?
   description           String        @db.VarChar(255)
   createdAt             DateTime      @default(now()) @map("created_at")
   updatedAt             DateTime      @default(now()) @map("updated_at")
 
-  module        Module        @relation(fields: [moduleID], references: [id])
+  module        Module                @relation(fields: [moduleID], references: [id])
 
   submissions Submission[]
 }
@@ -77,7 +78,7 @@ model Submission {
   taskID        Int
   projectID     Int
   passed        Boolean       @default(false)
-  errors        String[]
+  errors        String
 
   task      Task              @relation(fields: [taskID], references: [id])
   project   Project           @relation(fields: [projectID], references: [id])
@@ -86,7 +87,7 @@ model Submission {
 }
 
 model session {
-  sid    String   @id @db.VarChar
+  sid    String   @id @db.VarChar(255)
   sess   Json     @db.Json
   expire DateTime @db.Timestamp(6)
 

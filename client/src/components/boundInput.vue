@@ -1,12 +1,12 @@
 <template>
     <input autocomplete="off" class="table-editor__input form-control" :id="id" :placeholder="placeholder" :name="name" :type="_type"
-           @input="$emit('update-value', $event)" :value="storedValue" :tabindex="tabindex" />
+           @input="$emit('update-value', $event)" :value="storedValue" :tabindex="tabindex" :required="_required" />
 </template>
 
 <script>
     // import { mapGetters } from 'vuex'
     export default {
-        props: ['current', 'getters', 'name', 'dataValue', '_type', 'url', 'id', 'placeholder', 'tabindex', 'isEditing'],
+        props: ['current', 'getters', 'name', 'dataValue', '_type', 'url', 'id', 'placeholder', '_required', 'tabindex', 'isEditing'],
         created: function () {
         },
         methods: {

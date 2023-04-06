@@ -7,7 +7,6 @@ import {router, newVue} from './router'
 import PortalVue from 'portal-vue'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
-
 const _ = require('lodash');
 
 newVue.use(PortalVue)

@@ -40,28 +40,52 @@
             </div>
         </div>
         <!-- Modal -->
-        <b-modal ref="createTask" v-model="showTaskModel" id="createTaskModel" title="Task settings">
+        <b-modal ref="createTask" v-model="showTaskModel" id="createTaskModel" title="Task settings" size="xl">
             <form id="createTaskForm" @submit.prevent="submitTask">
                 <button id="createTaskFormSubmit" type="submit" class="d-none"></button>
                 <div class="modal-body">
+                    <input type="hidden" name="task_id" v-model="currentTask.id">
+                    <input type="hidden" name="module_id" v-model="currentTask.moduleID">
+                    <input type="hidden" name="module_slug" v-model="module_slug">
+
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="project_name">Name</span>
                         </div>
-                        <bound-input :isEditing="editingTaskComputed" module='task' name="task_name" _type="text" class="form-control" :required="true" ariaLabel="task_name" ariaDescribedby="task_name"></bound-input>
+                        <bound-input v-bind:current="currentTask"  
+                                     :isEditing="editingTaskComputed" 
+                                     @update-value="taskUpdateValue"
+                                     module='task' name="task_name" 
+                                     _type="text" class="form-control" 
+                                     :_required="true" ariaLabel="task_name" 
+                                     ariaDescribedby="task_name"></bound-input>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="project_name">Slug</span>
                         </div>
-                        <bound-input :isEditing="editingTaskComputed" module='task' :name="'task_slug'" _type="text" class="form-control" :required="true" :ariaLabel="'task_slug'" :ariaDescribedby="'task_slug'"></bound-input>
+                        <bound-input v-bind:current="currentTask"
+                                     :isEditing="editingTaskComputed"
+                                     @update-value="taskUpdateValue" 
+                                     module='task' :name="'task_slug'" 
+                                     _type="text" class="form-control" 
+                                     :required="true" :ariaLabel="'task_slug'" 
+                                     :ariaDescribedby="'task_slug'"></bound-input>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="project_name">Description</span>
                         </div>
-                        <bound-input :isEditing="editingTaskComputed" module='task' :name="'task_description'" _type="text" :class="'form-control'" :required="true" :ariaLabel="'task_description'" :ariaDescribedby="'task_description'"></bound-input>
+                        <bound-input v-bind:current="currentTask" 
+                                     :isEditing="editingTaskComputed"
+                                     @update-value="taskUpdateValue" 
+                                     module='task' :name="'task_description'" 
+                                     _type="text" :class="'form-control'" 
+                                     :required="true" :ariaLabel="'task_description'" 
+                                     :ariaDescribedby="'task_description'"></bound-input>
                     </div>
+
+                    <codemirror ref="codemirror" v-model="currentTask.code" :options="cmOptions" @cursorActivity="onCmCursorActivity" @ready="onCmReady" @focus="onCmFocus" @blur="onCmBlur"></codemirror>
                 </div>
             </form>
             <template #modal-footer>
@@ -70,8 +94,7 @@
                         variant="primary"
                         size="sm"
                         class="float-right"
-                        @click="submitForm()">
-                        Create
+                        @click="submitForm()" v-html="editingTask ? 'Save edit' : 'Create'">
                     </b-button>
                     <b-button
                         variant="light"
@@ -117,6 +140,50 @@ h1 {
 
 import { mapState, mapActions  } from 'vuex'
 
+import { codemirror } from 'vue-codemirror'
+
+// base style
+import 'codem/lib/codemirror.css'
+
+// language
+import 'codem/mode/javascript/javascript.js'
+
+// active-line.js
+import 'codem/addon/selection/active-line.js'
+
+// styleSelectedText
+import 'codem/addon/selection/mark-selection.js'
+import 'codem/addon/search/searchcursor.js'
+
+// highlightSelectionMatches
+import 'codem/addon/scroll/annotatescrollbar.js'
+import 'codem/addon/search/matchesonscrollbar.js'
+import 'codem/addon/search/searchcursor.js'
+import 'codem/addon/search/match-highlighter.js'
+
+// keyMap
+import 'codem/mode/clike/clike.js'
+import 'codem/addon/edit/matchbrackets.js'
+import 'codem/addon/comment/comment.js'
+import 'codem/addon/dialog/dialog.js'
+import 'codem/addon/dialog/dialog.css'
+import 'codem/addon/search/searchcursor.js'
+import 'codem/addon/search/search.js'
+import 'codem/keymap/emacs.js'
+
+// foldGutter
+import 'codem/addon/fold/foldgutter.css'
+import 'codem/addon/fold/brace-fold.js'
+import 'codem/addon/fold/comment-fold.js'
+import 'codem/addon/fold/foldcode.js'
+import 'codem/addon/fold/foldgutter.js'
+import 'codem/addon/fold/indent-fold.js'
+import 'codem/addon/fold/markdown-fold.js'
+import 'codem/addon/fold/xml-fold.js'
+
+// theme css
+import 'codem/theme/monokai.css'
+
 import boundInput from '@/components/boundInput.vue'
 // import boundSelect from '@/components/boundSelect.vue'
 
@@ -129,6 +196,7 @@ const _ = require('lodash');
 export default {
     name: 'Tasks',
     components: {
+        'codemirror': codemirror,
         'bound-input': boundInput,
         // 'bound-select': boundSelect,
     },
@@ -141,15 +209,52 @@ export default {
             editingTask: false,
             creatingTask: false,
             saved_tasks: [],
+            module_slug: null,
+
+            code: 'const a = 10',
+            cmOptions: {
+                tabSize: 4,
+                foldGutter: true,
+                styleActiveLine: true,
+                lineNumbers: true,
+                line: true,
+                mode: 'text/javascript',
+                theme: "monokai",
+                extraKeys: {
+                    'F11'(cm) {
+                        cm.setOption("fullScreen", !cm.getOption("fullScreen"))
+                    },
+                    'Esc'(cm) {
+                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false)
+                    },
+                    "Ctrl": "autocomplete"
+                }
+            }
         }
     },
     methods: {
         ...mapActions('task', [
             'createTask',
+            'createCurrentTask',
+            'editTask',
             'getAllTasks',
             'setEditTask',
             'updateField'
         ]),
+
+        onCmCursorActivity(codemirror) {
+            console.debug('onCmCursorActivity', codemirror)
+        },
+        onCmReady(codemirror) {
+            console.debug('onCmReady', codemirror)
+        },
+        onCmFocus(codemirror) {
+            console.debug('onCmFocus', codemirror)
+        },
+        onCmBlur(codemirror) {
+            console.debug('onCmBlur', codemirror)
+        },
+
         submitForm: function() {
             var createTaskFormSubmit = document.getElementById('createTaskFormSubmit')
             createTaskFormSubmit.click();
@@ -159,32 +264,50 @@ export default {
             var form = e.target
             var requiredFields = []
             var emptyRequiredFields = []
-            var fieldsValues = []
+            var fieldsValues = {}
             form.querySelectorAll('input').forEach((el) => {
                 if (el.getAttribute("required")) {
                     requiredFields.push(el)
                     if (el.value !== '') {
-                        fieldsValues.push(el.value)
+                        fieldsValues[el.name] = el.value
                     } else {
                         emptyRequiredFields.push(el)
                     }
+                } else {
+                    fieldsValues[el.name] = el.value
                 }
             })
-            console.log(emptyRequiredFields)
+            console.log(fieldsValues, emptyRequiredFields)
             if (emptyRequiredFields.length > 0) {
                 // form error
                 alert("form error")
             } else {
                 var task_data = {
-                    name: fieldsValues[0],
-                    slug: fieldsValues[1],
-                    description: fieldsValues[2],
+                    id: fieldsValues['task_id'],
+                    module_id: fieldsValues['module_id'],
+                    module_slug: this.creatingTask ? fieldsValues['module_slug'] : null,
+                    name: fieldsValues['task_name'],
+                    slug: fieldsValues['task_slug'],
+                    description: fieldsValues['task_description'],
+                    code: fieldsValues['codemirror'],
                     username: self.user.username
-
                 }
-                var created = self.createTask(task_data)
 
-                if (created) {
+                console.log(task_data)
+                
+                task_data = this.currentTask
+
+                task_data.module_slug = self.module_slug
+                task_data.username = self.user.username
+                
+                if (self.creatingTask) {
+                    var created = self.createTask(this.currentTask)
+                } else {
+                    // editing module
+                    var edited = self.editTask(task_data)
+                }
+
+                if (created || edited) {
                     this.$bvModal.hide('createTaskModel')
                 }
                 
@@ -195,20 +318,39 @@ export default {
             this.showTaskModel=should_show
 
             this.editingTask=!should_show
+
+            setTimeout(() => {
+                console.log(this.$refs)
+                this.$refs.codemirror.refresh()
+            }, 200);
         },
-        isEditingTask: function(should_show, mod) {
+        isEditingTask: function(should_show, task) {
             this.editingTask=should_show
             this.showTaskModel = should_show
-
             // console.log(mod)
-            this.setEditTask(mod)
+            this.setEditTask(task)
+
+            setTimeout(() => {
+                console.log(this.$refs)
+                this.$refs.codemirror.refresh()
+            }, 200);
         },
+        taskUpdateValue: function(e) {
+            var self = this,
+                value = e.target.value;
+            var name = e.target.name.split('_')[1]
+            // console.log("here", value)
+            self.$store.commit(`task/updateField`, {'prop': name, 'val': value})
+        }
     },
     computed: mapState({
         savedTasks: state => _.orderBy(state.task.all, ['updatedAt'], ['desc']),
         editingTaskComputed: function() {
             return this.editingTask
-        }
+        },
+        currentTask: function() {
+            return this.$store.getters[`task/getCurrent`]
+        },
     }),
     created: function() {
         this.$store.dispatch('task/getAllTasks')
@@ -218,6 +360,9 @@ export default {
         self.user = await self.$parent.getUserData()
         // console.log(self.user)
         // console.log(self.mod.all)
+        console.log(this)
+
+        this.module_slug = this.$root._route.params.module
     }
 }
 </script>

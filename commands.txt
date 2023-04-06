@@ -1,3 +1,8 @@
+# kill process using port - for node when it keeps complaining about port being already in use
+$  lsof -i :5555 -t
+12345
+$ kill 12345
+
 # Bundling libraries together.
 browserify -r dat.gui -r socket.io-client -r p5 > bundle.js
 

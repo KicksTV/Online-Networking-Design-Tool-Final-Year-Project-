@@ -3,6 +3,8 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient()
 
+const {aws_upload_file} = require('../../lib/awsUtils')
+
 
 async function getTask(uniqueTaskData) { // uniqueProjectData (object) can be ID or SLUG
     async function func(uniqueTaskData) {
@@ -30,6 +32,9 @@ async function updateTask(req, res) {
     try {
         const t = req.body.task;
         console.log(t)
+        // var mod = {id:t.module_id}
+        // if (t.module_slug)
+        //     mod = await prisma.module.findUnique({where: {slug: t.module_slug}, select: {id: true}})
         const updatedTask = await prisma.task.update({
             data: {
                 slug: t.slug,
@@ -39,7 +44,6 @@ async function updateTask(req, res) {
             },
             where: {
                 id: Number.parseInt(t.id),
-                moduleID: Number.parseInt(t.module_id)
             }
         })
         res.json(updatedTask)
@@ -54,17 +58,38 @@ async function updateTask(req, res) {
 async function createTask(req, res) {
     try {
         const t = req.body.task;
+        console.log(t)
         if (t.slug) {
             // use name as slug
             t.slug = t.name.replace(' ', '-').toLowerCase();
         }
+        if (t.module_slug)
+            mod = await prisma.module.findUnique({where: {slug: t.module_slug}, select: {id: true}})
+        else {
+            return res.status(500).json({
+                msg: `Error creating project: Missing module data`
+            })
+        }
+
+        // they have provided validation code, then save in s3
+        var s3_url = ''
+        if (t.code) {
+            s3_url = `${mod.slug}/${t.slug}/validation.js`
+            var msg = aws_upload_file(s3_url, t.code)
+            console.log(msg)
+        }
+
         const newTask = await prisma.task.create({
             data: {
                 slug: t.slug,
                 name: t.name,
                 description: t.description,
+                moduleID: mod.id,
+                validation_code_url: s3_url
             }
         })
+
+        
         res.json(newTask)
     } catch(e) {
         console.log(e)
@@ -76,12 +101,18 @@ async function createTask(req, res) {
 
 async function saveTask(req, res) {
     var t;
+    console.log(req.body.task)
     if (req.body.task.id) {
-        var uniqueData = { 
-            id: Number.parseInt(req.body.task.id), 
-            moduleID: Number.parseInt(req.body.task.module_id) 
-        }
-        t = await getTask(uniqueData)
+        var uniqueData = {}
+
+        if (req.body.task.id)
+            uniqueData['id'] = Number.parseInt(req.body.task.id)
+        // if (req.body.task.module_id)
+        //     uniqueData['Module'] = {id: Number.parseInt(req.body.task.module_id)}
+        
+        if (uniqueData)
+            t = await getTask(uniqueData)
+
         console.log(uniqueData, t)
         if (t) {
             console.log("edit", hasEditAccess(req, res, t))
@@ -120,7 +151,7 @@ function hasCreationAccess(req, res) {
     return req.user.isTeacher || req.user.isAdmin
 }
 
-router.post('/', async (req, res) => {
+router.post('/:username', async (req, res) => {
     saveTask(req, res).catch((e) => {
         throw e
     }).finally(async () => {
@@ -131,7 +162,7 @@ router.post('/', async (req, res) => {
 router.get('/all/', async (req, res) => {
     var tasks = null
     tasks = await prisma.task.findMany()
-    console.log("modules", tasks)
+    // console.log("modules", tasks)
     return res.json(tasks)
 })
 

@@ -9,7 +9,9 @@ const state = () => ({
     slug: '',
     description: '',
     updatedAt: '',
-    createdAt: ''
+    createdAt: '',
+    module_slug: '',
+    code: ''
   },
 })
   
@@ -34,7 +36,7 @@ const actions = {
   },
   async editTask({ commit }, task) {
     try {
-      var t = await taskAPI.apiSaveModule(task)
+      var t = await taskAPI.apiSaveTask(task)
       commit('editTask', t)
       return true
     } catch (e) {

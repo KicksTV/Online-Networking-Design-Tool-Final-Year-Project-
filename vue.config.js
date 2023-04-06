@@ -13,7 +13,8 @@ module.exports = {
     config.resolve = {
       alias: {
         '@': path.resolve(__dirname, 'client/src'),
-        'vue': 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' for webpack 1
+        'vue': 'vue/dist/vue.esm.js', // 'vue/dist/vue.common.js' for webpack 1
+        'codem': 'codemirror/',
       }
     }
     if (process.env.NODE_ENV === 'production') {

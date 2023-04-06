@@ -49,7 +49,7 @@ const routes = [
   },
   {
     path: '/projects/:slug',
-    name: 'NewProject',
+    name: 'SavedProject',
     component: () => import(/* webpackChunkName: "about" */ '../views/NewProject.vue'),
     template: 'App'
   },
