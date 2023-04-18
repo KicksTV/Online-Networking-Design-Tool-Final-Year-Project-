@@ -23,7 +23,7 @@ var options = {
 ejs.delimiter = '$';
 
 var app = express();
-var PORT = process.env.NODE_PORT || 5000
+var PORT = process.env.PORT || 5000
 var env = process.env.NODE_ENV || 'development';
 
 app.set('view engine', 'ejs');
