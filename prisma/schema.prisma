@@ -3,9 +3,14 @@ generator client {
 }
 
 datasource db {
+<<<<<<< HEAD
   provider          = "cockroachdb"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("COCKROACH_SHADOW_URL")
+=======
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+>>>>>>> master
 }
 
 model User {
@@ -89,7 +94,7 @@ model Submission {
 
 model session {
   sid    String   @id @db.String(255)
-  sess   String     @db.String(255)
+  sess   String   
   expire DateTime @db.Timestamp(6)
 
   @@index([expire], map: "IDX_session_expire")
