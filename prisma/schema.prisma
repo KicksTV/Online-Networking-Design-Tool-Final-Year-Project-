@@ -3,14 +3,9 @@ generator client {
 }
 
 datasource db {
-<<<<<<< HEAD
   provider          = "cockroachdb"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("COCKROACH_SHADOW_URL")
-=======
-  provider = "cockroachdb"
-  url      = env("DATABASE_URL")
->>>>>>> master
 }
 
 model User {
