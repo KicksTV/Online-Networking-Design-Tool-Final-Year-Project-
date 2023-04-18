@@ -3,13 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = env("PROVIDER")
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique @db.VarChar(255)
+  id        Int       @id @default(sequence())
+  username  String    @unique @db.String(255)
   password  String
   email     String    @unique 
   createdAt DateTime  @default(now()) @map("created_at")
@@ -23,9 +23,9 @@ model User {
 }
 
 model Project {
-  id            Int          @id @default(autoincrement())
-  slug          String       @db.VarChar(255)
-  name          String       @db.VarChar(255)
+  id            Int          @id @default(sequence())
+  slug          String       @db.String(255)
+  name          String       @db.String(255)
   userID        Int
   createdAt     DateTime     @default(now()) @map("created_at")
   updatedAt     DateTime     @default(now()) @map("updated_at")
@@ -48,10 +48,10 @@ model EnRolled {
 }
 
 model Module {
-  id            Int          @id @default(autoincrement())
-  slug          String       @unique @db.VarChar(255)
-  name          String       @db.VarChar(255)
-  description   String       @db.VarChar(255)
+  id            Int          @id @default(sequence())
+  slug          String       @unique @db.String(255)
+  name          String       @db.String(255)
+  description   String       @db.String(255)
   createdAt     DateTime     @default(now()) @map("created_at")
   updatedAt     DateTime     @default(now()) @map("updated_at")
 
@@ -60,12 +60,12 @@ model Module {
 }
 
 model Task {
-  id                    Int           @id @default(autoincrement())
+  id                    Int           @id @default(sequence())
   moduleID              Int
-  slug                  String        @unique @db.VarChar(255)
-  name                  String        @db.VarChar(255)
+  slug                  String        @unique @db.String(255)
+  name                  String        @db.String(255)
   validation_code_url   String?
-  description           String        @db.VarChar(255)
+  description           String        @db.String(255)
   createdAt             DateTime      @default(now()) @map("created_at")
   updatedAt             DateTime      @default(now()) @map("updated_at")
 
@@ -87,8 +87,8 @@ model Submission {
 }
 
 model session {
-  sid    String   @id @db.VarChar(255)
-  sess   Json     @db.Json
+  sid    String   @id @db.String(255)
+  sess   String   
   expire DateTime @db.Timestamp(6)
 
   @@index([expire], map: "IDX_session_expire")

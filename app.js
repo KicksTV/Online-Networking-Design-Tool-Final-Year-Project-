@@ -1,6 +1,6 @@
 var express = require('express')
 var expressSession = require('express-session')
-var MySQLStore = require('express-mysql-session')(expressSession);
+const pgSession = require('connect-pg-simple')(expressSession);
 const passport = require('passport');
 const path = require('path')
 var socket_io = require('./routes/socket_io.js')
@@ -32,7 +32,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Setup database session store
 app.use(expressSession({
-    store: new MySQLStore(options),
+    store: new pgSession({
+        conString: process.env.DATABASE_URL,
+        tableName : 'session'   // Use another table-name than the default "session" one
+        // Insert connect-pg-simple options here
+    }),
     secret: process.env.COOKIE_SECRET,
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 30 days
@@ -66,7 +70,7 @@ app.use(async function (req, res, next) {
         // to the API (e.g. in case you use sessions)
         res.setHeader('Access-Control-Allow-Credentials', true);
 
-        req.user = await user.findUnique({where: {username: 'kickstv'}})
+        req.user = await user.findUnique({where: {username: 'kix'}})
         if (req.user) {
             delete req.user['id'];
             delete req.user['password'];
